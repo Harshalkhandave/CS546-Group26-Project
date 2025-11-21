@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "seed": "node data/seed.js"
+    "seed": "node tasks/sampleSiteSeed.js"
   },
   "repository": {
     "type": "git",
