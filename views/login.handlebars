@@ -1,5 +1,10 @@
 <h1 class="page-title">Login</h1>
 
+{{!-- Show error message if login failed --}}
+{{#if error}}
+  <p class="error">{{error}}</p>
+{{/if}}
+
 <form action="/login" method="POST">
 
   <label for="username">Username</label><br>
@@ -16,4 +21,5 @@
     <a href="/signup">Sign Up</a>
   </p>
 </div>
+
 
