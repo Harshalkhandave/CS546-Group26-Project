@@ -20,7 +20,7 @@ router.get('/login', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  // Example only — add real login logic later
+  
   res.render('login', {
     title: 'Login',
     error: 'Invalid username or password',
