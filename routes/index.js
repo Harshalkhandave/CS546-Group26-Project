@@ -12,4 +12,20 @@ router.route('/').get(async (req, res) => {
   }
 });
 
+router.get('/login', async (req, res) => {
+  res.render('login', {
+    title: 'Login',
+    css: '/public/css/styles.css'
+  });
+});
+
+router.post('/login', async (req, res) => {
+  // Example only — add real login logic later
+  res.render('login', {
+    title: 'Login',
+    error: 'Invalid username or password',
+    css: '/public/css/styles.css'
+  });
+});
+
 export default router;
