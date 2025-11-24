@@ -1,24 +1,10 @@
 import {sampleSites} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import * as helpFun from '../helper/sampleSitedataHelper.js';
+import {isValidId} from '../helper/helper.js';
 
-export const createSampleSite = async (
-    sample_site,
-    sample_station,
-    latitude,
-    longitude,
-    borough,
-    neighborhood
-) => {
-  let newsampleSite = {
-    sample_site,
-    sample_station,
-    latitude,
-    longitude,
-    borough,
-    neighborhood
-  };
-  newsampleSite = await helpFun.isValidSampleSiteData(newsampleSite);
+export const createSampleSite = async (sampleSiteObj) => {
+  let newsampleSite = await helpFun.isValidSampleSiteData(sampleSiteObj);
   const sampleSitesCollection = await sampleSites();
   const insertInfo = await sampleSitesCollection.insertOne(newsampleSite);
   if (!insertInfo.acknowledged || !insertInfo.insertedId)
@@ -40,11 +26,19 @@ export const getAllsampleSites = async () => {
 };
   
 export const getSampleSiteById = async (id) => {
-    helpFun.isValidId(id);
-    id = id.trim();
+    id=isValidId(id);
     const sampleSitesCollection = await sampleSites();
     const sampleSite = await sampleSitesCollection.findOne({_id: new ObjectId(id)});
     if (sampleSite === null) throw ("No sample site with that id!");
     sampleSite._id = sampleSite._id.toString();
     return sampleSite;
+};
+
+export const getSampleSiteByNum = async (ssNum) => {
+  ssNum = helpFun.validateSampleSiteFormat(ssNum);
+  const sampleSitesCollection = await sampleSites();
+  const sampleSite = await sampleSitesCollection.findOne({ sample_site: ssNum });
+  if (sampleSite === null) throw ("No sample site with that num!");
+  sampleSite._id = sampleSite._id.toString();
+  return sampleSite;
 };

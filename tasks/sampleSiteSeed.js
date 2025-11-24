@@ -2,7 +2,7 @@ import { createSampleSite } from '../data/sampleSites.js';
 import fs from 'fs';
 import path from 'path';
 
-const seedSampleSites = async () => {
+export const seedSampleSites = async () => {
   try {
     const filePath = path.join(process.cwd(), 'seedData', 'sampleSites.json');
     const fileData = fs.readFileSync(filePath, 'utf-8');
@@ -10,25 +10,15 @@ const seedSampleSites = async () => {
 
     for (const site of sampleSitesArray) {
       try {
-        const insertedSite = await createSampleSite(
-          site.sample_site,
-          site.sample_station,
-          site.latitude,
-          site.longitude,
-          site.borough,
-          site.neighborhood
-        );
+        const insertedSite = await createSampleSite(site);
       } catch (err) {
         console.error(`Skipping ${site.sample_site}: ${err.message || err}`);
       }
     }
-
-    console.log('Seeding completed!');
-    process.exit(0);
+    console.log('Sample Sites Seeding completed!');
   } catch (err) {
-    console.error('Seeding failed:', err);
+    console.error('Sample Sites Seeding failed:', err);
     process.exit(1);
   }
 };
 
-seedSampleSites();

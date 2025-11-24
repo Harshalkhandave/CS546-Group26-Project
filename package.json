@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "seed": "node tasks/sampleSiteSeed.js"
+    "seed": "node tasks/waterSampleSeed.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,8 @@
     "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
-    "mongodb": "^7.0.0"
+    "json2csv": "^6.0.0-alpha.2",
+    "mongodb": "^7.0.0",
+    "papaparse": "^5.5.3"
   }
 }

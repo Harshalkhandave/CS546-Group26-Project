@@ -1,35 +1,26 @@
-import { ObjectId } from "mongodb";
 import {sampleSites} from '../config/mongoCollections.js';
-
-export const checkString = (str, varName) => {
-  if (!str) throw `${varName} is required`;
-  if (typeof str !== "string") throw `${varName} must be a string`;
-  str = str.trim();
-  if (str.length === 0) throw `${varName} cannot be empty or just spaces`;
-};
-
-export const isValidId = (id) => {
-  checkString(id, "id");
-  id = id.trim();
-  if (!ObjectId.isValid(id)) throw `Invalid ObjectId format`;
-};
+import {checkString} from './helper.js';
 
 export const isValidSample_site = async (sample_site) => {
-  checkString(sample_site, "sample_site");
-  // allow letters & digits
-  const regex = /^[A-Za-z0-9]+$/;
-  if (!regex.test(sample_site)) throw `sample_site can only contain letters and numbers`;
-  const escaped = sample_site.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  sample_site=validateSampleSiteFormat(sample_site);
   const sampleSitesCollection = await sampleSites();
-  const query = {sample_site: { $regex: `^${escaped}$`, $options: 'i' }};
-  const existingsampleSite = await sampleSitesCollection.findOne(query);
+  const existingsampleSite = await sampleSitesCollection.findOne({ sample_site });
   if (existingsampleSite) {
       throw ("Duplicate sample site found!");
   }
+  return sample_site;
+};
+
+export const validateSampleSiteFormat = (sample_site) => {
+  sample_site = checkString(sample_site, "sample_site");
+  const regex = /^[A-Z0-9]+$/;
+  if (!regex.test(sample_site))
+    throw `sample_site can only contain capital letters and numbers`;
+  return sample_site;
 };
 
 export const isValidSample_station = (sample_station) => {
-  checkString(sample_station, "sample_station");
+  return checkString(sample_station, "sample_station");
 };
 
 export const isValidLatitude = (lat) => {
@@ -38,6 +29,7 @@ export const isValidLatitude = (lat) => {
   if (isNaN(lat)) throw "latitude must be a valid number";
   if (lat < 40.47729800 || lat > 40.91769100)
     throw `latitude must be a valid NYC latitude`;
+  lat = Number(lat.toFixed(8));
   return lat;
 };
 
@@ -47,18 +39,28 @@ export const isValidLongitude = (lng) => {
   if (isNaN(lng)) throw "longitude must be a valid number";
   if (lng < -74.26036900 || lng > -73.69920600)
     throw `longitude must be a valid NYC longitude`;
+  lng = Number(lng.toFixed(8));
   return lng;
 };
 
 export const isValidBorough = (borough) => {
-  checkString(borough, "borough");
-  const allowed = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"];
-  if (!allowed.includes(borough))
-    throw `borough must be one of: ${allowed.join(", ")}`;
+  borough = checkString(borough, "borough");
+  const normalized = borough.toLowerCase();
+  const allowedMap = {
+    "bronx": "Bronx",
+    "brooklyn": "Brooklyn",
+    "manhattan": "Manhattan",
+    "queens": "Queens",
+    "staten island": "Staten Island"
+  };
+  if (!allowedMap.hasOwnProperty(normalized)) {
+    throw `borough must be one of: ${Object.values(allowedMap).join(", ")}`;
+  }
+  return allowedMap[normalized];
 };
 
 export const isValidNeighborhood = (neighborhood) => {
-  checkString(neighborhood, "neighborhood");
+  return checkString(neighborhood, "neighborhood");
 };
 
 export const isValidSampleSiteData = async({ 
@@ -69,16 +71,12 @@ export const isValidSampleSiteData = async({
   borough, 
   neighborhood 
 }) => {
-  await isValidSample_site(sample_site);
-  isValidSample_station(sample_station);
-  latitude=isValidLatitude(latitude);
-  longitude=isValidLongitude(longitude);
-  isValidBorough(borough);
-  isValidNeighborhood(neighborhood);
-  return {sample_site, 
-    sample_station, 
-    latitude, 
-    longitude, 
-    borough, 
-    neighborhood };
+    return {
+      sample_site: await isValidSample_site(sample_site),
+      sample_station: isValidSample_station(sample_station),
+      latitude: isValidLatitude(latitude),
+      longitude: isValidLongitude(longitude),
+      borough: isValidBorough(borough),
+      neighborhood: isValidNeighborhood(neighborhood)
+  };
 }
