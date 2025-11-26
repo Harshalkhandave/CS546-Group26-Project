@@ -161,3 +161,13 @@ body {
     color: #8f81ff;
     text-decoration: none;
 }
+.error-text {
+    background: rgba(255, 80, 80, 0.18);
+    color: #ff6b6b;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: left;
+}
+
