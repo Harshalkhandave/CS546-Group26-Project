@@ -1,25 +1,60 @@
-<h1 class="page-title">Login</h1>
+<div class="page-bg"></div>
 
-{{!-- Show error message if login failed --}}
-{{#if error}}
-  <p class="error">{{error}}</p>
-{{/if}}
+<div class="card-container">
 
-<form action="/login" method="POST">
+    <!-- LEFT VIDEO PANEL -->
+    <div class="left-panel">
+        <video class="left-video" autoplay muted loop playsinline>
+            <source src="/public/videos/loginSideVideo.mp4" type="video/mp4">
+        </video>
 
-  <label for="username">Username</label><br>
-  <input type="text" id="username" name="username" required /><br><br>
+        <div class="left-caption">
+            Capturing Moments,<br>Creating Memories
+        </div>
 
-  <label for="password">Password</label><br>
-  <input type="password" id="password" name="password" required /><br><br>
+        <div class="slider-dots">
+            <span></span>
+            <span></span>
+            <span class="active"></span>
+            <span></span>
+        </div>
+    </div>
 
-  <button type="submit">Login</button>
-</form>
+    <!-- RIGHT LOGIN FORM -->
+    <div class="right-panel">
 
-<div class="signup-link">
-  <p>Don't have an account?
-    <a href="/signup">Sign Up</a>
-  </p>
+        <h1>Welcome back</h1>
+
+        <p class="login-link">
+            New here?
+            <a href="/register">Create an account</a>
+        </p>
+
+        <form method="POST" action="/login">
+
+            <input type="email" name="email" placeholder="Email" required>
+
+            <input type="password" name="password" placeholder="Enter your password" required>
+
+            <label class="terms">
+                <input type="checkbox" name="remember">
+                Remember me
+            </label>
+
+            <button class="primary-btn">Log in</button>
+        </form>
+
+        <div class="divider">Or continue with</div>
+
+        <div class="social-row">
+            <button class="oauth-btn google">Google</button>
+            <button class="oauth-btn apple">Apple</button>
+        </div>
+
+        <p class="forgot">
+            <a href="/forgot-password">Forgot your password?</a>
+        </p>
+
+    </div>
+
 </div>
-
-
