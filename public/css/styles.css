@@ -1,8 +1,163 @@
+/* BACKGROUND */
 body {
-  font-family: Arial;
-  padding: 20px;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0f0e13;
 }
 
-h1 {
-  color: #1e73be;
+.page-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #1a1625, #0d0c12);
+    z-index: -1;
+}
+
+/* LOGIN CARD */
+.card-container {
+    width: 1250px;
+    height: 680px;
+    background: #1e1b28;
+    border-radius: 32px;
+    display: flex;
+    margin: 40px auto;
+    box-shadow: 0px 22px 45px rgba(0,0,0,0.55);
+    overflow: hidden;
+}
+
+/* LEFT PANEL */
+.left-panel {
+    width: 50%;
+    position: relative;
+}
+
+.left-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.left-caption {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    font-size: 22px;
+    color: white;
+}
+
+.slider-dots {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.slider-dots span {
+    width: 22px;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+.slider-dots .active {
+    background: #fff;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+    width: 50%;
+    padding: 70px;
+    color: #fff;
+}
+
+.right-panel h1 {
+    font-size: 34px;
+    margin-bottom: 6px;
+}
+
+.login-link {
+    font-size: 15px;
+    color: #b9b8c9;
+    margin-bottom: 30px;
+}
+
+.login-link a {
+    color: #8f81ff;
+    text-decoration: none;
+}
+
+/* FORM INPUTS */
+.right-panel input {
+    background: #2b2638;
+    border: 1px solid #3a3347;
+    border-radius: 8px;
+    padding: 14px;
+    width: 100%;
+    font-size: 15px;
+    color: #e6e6f0;
+    margin-top: 14px;
+}
+
+.terms {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #b3adc7;
+}
+
+/* BUTTON */
+.primary-btn {
+    width: 100%;
+    background: #836fff;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    color: #fff;
+    margin-top: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background: #7a63ff;
+}
+
+/* DIVIDER */
+.divider {
+    text-align: center;
+    color: #88829c;
+    margin: 22px 0;
+    font-size: 14px;
+}
+
+/* SOCIAL BUTTONS */
+.social-row {
+    display: flex;
+    gap: 10px;
+}
+
+.oauth-btn {
+    width: 50%;
+    padding: 12px;
+    border-radius: 8px;
+    background: #2b2638;
+    border: 1px solid #3a3347;
+    color: #e6e6f0;
+    cursor: pointer;
+}
+
+.oauth-btn:hover {
+    background: #352f45;
+}
+
+.forgot {
+    margin-top: 18px;
+    text-align: center;
+}
+
+.forgot a {
+    color: #8f81ff;
+    text-decoration: none;
 }
