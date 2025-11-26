@@ -1,1 +1,66 @@
 
+<div class="page-bg"></div>
+
+<div class="card-container">
+
+    <!-- LEFT PANEL WITH VIDEO -->
+    <div class="left-panel">
+        <video class="left-video" autoplay muted loop playsinline>
+            <source src="/public/videos/loginSideVideo.mp4" type="video/mp4">
+        </video>
+
+        <div class="left-caption">
+            Capturing Moments,<br>Creating Memories
+        </div>
+
+        <div class="slider-dots">
+            <span></span>
+            <span class="active"></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL — REGISTER FORM -->
+    <div class="right-panel">
+
+        <h1>Create an account</h1>
+
+        <p class="login-link">
+            Already have an account?
+            <a href="/login">Log in</a>
+        </p>
+
+        {{#if error}}
+        <p class="error-text">{{error}}</p>
+        {{/if}}
+
+        <form method="POST" action="/register">
+
+            <div class="row">
+                <input type="text" name="fname" placeholder="First name" required>
+                <input type="text" name="lname" placeholder="Last name" required>
+            </div>
+
+            <input type="email" name="email" placeholder="Email" required>
+
+            <input type="password" name="password" placeholder="Enter your password" required>
+
+            <label class="terms">
+                <input type="checkbox" required>
+                I agree to the <a href="#">Terms & Conditions</a>
+            </label>
+
+            <button class="primary-btn">Create account</button>
+        </form>
+
+        <div class="divider">Or continue with</div>
+
+        <div class="social-row">
+            <button class="oauth-btn google">Google</button>
+            <button class="oauth-btn apple">Apple</button>
+        </div>
+
+    </div>
+
+</div>
