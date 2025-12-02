@@ -32,6 +32,7 @@ import path from 'path';
 import Papa from 'papaparse';
 import { waterSamples } from '../config/mongoCollections.js';
 import { seedSampleSites } from './sampleSiteSeed.js';
+import { createOrUpdateBoroughs } from '../data/boroughs.js';
 const importWaterSamples = async () => {
   try {
     console.log("Seeding Sample Sites...");
@@ -71,6 +72,9 @@ const importWaterSamples = async () => {
       await collection.insertMany(batch);
     }
     console.log("Water Samples Seeding Completed!");
+    console.log("Updating Boroughs Collection...");
+    await createOrUpdateBoroughs();
+    console.log("Boroughs Collection Updated!");
     process.exit(0);
   } catch (err) {
     console.error("Import failed:", err);
