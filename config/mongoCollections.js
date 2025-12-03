@@ -17,3 +17,4 @@ export const sampleSites = getCollectionFn('sampleSites');
 export const waterSamples = getCollectionFn('waterSamples');
 export const users = getCollectionFn("users");
 export const boroughs = getCollectionFn('boroughs');
+export const comments = getCollectionFn('comments');
