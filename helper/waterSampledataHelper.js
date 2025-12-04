@@ -1,19 +1,19 @@
-import {waterSamples,sampleSites} from '../config/mongoCollections.js';
-import {validateSampleSiteFormat} from './sampleSitedataHelper.js';
-import {checkString} from './helper.js';
+import SampleSite from '../model/SampleSite.js';
+import WaterSample from '../model/WaterSample.js';
+import { validateSampleSiteFormat } from './sampleSitedataHelper.js';
+import { checkString } from './helper.js';
 
 export const isValidSample_number = async (sample_number) => {
     sample_number = validateSampleNumFormat(sample_number);
-    const waterSamplesCollection = await waterSamples();
-    const existingSampleNumber = await waterSamplesCollection.findOne({ sample_number });
-    if (existingSampleNumber) {
-        throw ("Duplicate sample number found!");
+    const existing = await WaterSample.findOne({ sample_number });
+    if (existing) {
+        throw "Duplicate sample number found!";
     }
     return sample_number;
 };
 
 export const validateSampleNumFormat = (sample_number) => {
-    sample_number = checkString(sample_number,"sample_number");
+    sample_number = checkString(sample_number, "sample_number");
     if (!/^\d+$/.test(sample_number)) {
         throw "sample_number must contain only digits";
     }
@@ -24,7 +24,7 @@ export const validateSampleNumFormat = (sample_number) => {
 };
 
 export const isValidSample_date = (sample_date) => {
-    sample_date = checkString(sample_date,"sample_date");
+    sample_date = checkString(sample_date, "sample_date");
     if (!/^\d{4}-\d{2}-\d{2}T/.test(sample_date)) {
         throw "sample_date must be ISO format (YYYY-MM-DDTHH:MM:SS.mmm)";
     }
@@ -45,7 +45,7 @@ export const isValidSample_date = (sample_date) => {
 };
 
 export const isValidSample_time = (sample_time) => {
-    sample_time = checkString(sample_time,"sample_time");
+    sample_time = checkString(sample_time, "sample_time");
     const validFormat = /^(\d{1,2}:\d{2}(:\d{2})?(\.\d+)?)/;
     if (!validFormat.test(sample_time)) {
         throw "sample_time must be in HH:MM, HH:MM.SSS, or HH:MM:SS.mmm format";
@@ -54,8 +54,14 @@ export const isValidSample_time = (sample_time) => {
 };
 
 export const isValidSample_class = (sample_class) => {
-    sample_class = checkString(sample_class,"sample_class");
-    const allowed = ["Compliance", "Operational","Op-resample","Resample_Compliance","Resample_Operational"];
+    sample_class = checkString(sample_class, "sample_class");
+    const allowed = [
+        "Compliance",
+        "Operational",
+        "Op-resample",
+        "Resample_Compliance",
+        "Resample_Operational"
+    ];
     if (!allowed.includes(sample_class)) {
         throw `sample_class must be one of: ${allowed.join(", ")}`;
     }
@@ -64,37 +70,37 @@ export const isValidSample_class = (sample_class) => {
 
 export const isValidWS_Sample_site = async (sample_site) => {
     sample_site = validateSampleSiteFormat(sample_site);
-    const sampleSitesCollection = await sampleSites();
-    const existingsampleSite = await sampleSitesCollection.findOne({ sample_site });
-    if (!existingsampleSite) {
-        throw ("Sample Site not found!");
+    const exists = await SampleSite.findOne({ sample_site });
+    if (!exists) {
+        throw "Sample Site not found!";
     }
     return sample_site;
 };
 
-function parseNumericField(value, fieldName,allowNull = false) {
+function parseNumericField(value, fieldName, allowNull = false) {
     if (value === undefined || value === null) {
         if (allowNull) return null;
-      throw new Error(`${fieldName} cannot be null or undefined`);
+        throw new Error(`${fieldName} cannot be null or undefined`);
     }
-    if (typeof value === "number") {
-      return value;
-    }
+    if (typeof value === "number") return value;
     if (typeof value === "string") {
-      value = value.trim();
-      if (value === "") {
-        if (allowNull) return null;
-        throw new Error(`${fieldName} cannot be empty`);
-      }
-      if (value === "<1") return 0;
-      if (value.startsWith("<") || value.startsWith(">")) {
-        const num = Number(value.slice(1));
-        if (isNaN(num)) throw new Error(`${fieldName} invalid value: ${value}`);
-        return num;
-      }
-      const num = Number(value);
-      if (!isNaN(num)) return num;
-      throw new Error(`${fieldName} must be a valid number or a string like '<1' or '>200'`);
+        value = value.trim();
+        if (value === "") {
+            if (allowNull) return null;
+            throw new Error(`${fieldName} cannot be empty`);
+        }
+        if (value === "<1") return 0;
+        if (value.startsWith("<") || value.startsWith(">")) {
+            const num = Number(value.slice(1));
+            if (isNaN(num)) throw new Error(`${fieldName} invalid value: ${value}`);
+            return num;
+        }
+        const num = Number(value);
+        if (!isNaN(num)) return num;
+
+        throw new Error(
+            `${fieldName} must be a valid number or a string like '<1' or '>200'`
+        );
     }
     throw new Error(`${fieldName} must be a number or a string`);
 }
@@ -111,36 +117,36 @@ export const isValidTurbidity_ntu = (turbidity_ntu) => {
     return num;
 };
 
-export const isValidColiform_quanti_tray_mpn_100ml = (coliform_quanti_tray_mpn_100ml) => {
-    const num = parseNumericField(coliform_quanti_tray_mpn_100ml, "coliform_quanti_tray_mpn_100ml",true);
+export const isValidColiform_quanti_tray_mpn_100ml = (val) => {
+    const num = parseNumericField(val, "coliform_quanti_tray_mpn_100ml", true);
     if (num < 0 || num > 1000) throw "coliform_quanti_tray_mpn_100ml must be between 0 and 1000";
     return num;
 };
 
-export const isValidE_coli_quanti_tray_mpn_100ml = (e_coli_quanti_tray_mpn_100ml) => {
-    const num = parseNumericField(e_coli_quanti_tray_mpn_100ml, "e_coli_quanti_tray_mpn_100ml",true);
+export const isValidE_coli_quanti_tray_mpn_100ml = (val) => {
+    const num = parseNumericField(val, "e_coli_quanti_tray_mpn_100ml", true);
     if (num < 0 || num > 4) throw "e_coli_quanti_tray_mpn_100ml must be between 0 and 4";
     return num;
 };
 
-export const isValidFluoride_mg_l = (fluoride_mg_l) => {
-    const num = parseNumericField(fluoride_mg_l, "fluoride_mg_l",true);
+export const isValidFluoride_mg_l = (fluoride) => {
+    const num = parseNumericField(fluoride, "fluoride_mg_l", true);
     if (num < 0 || num > 4) throw "fluoride_mg_l must be between 0 and 4 mg/L";
     return num;
 };
 
-export const isValidWaterSampleData = async({ 
-    sample_number, 
-    sample_date, 
-    sample_time, 
-    sample_site, 
-    sample_class, 
+export const isValidWaterSampleData = async ({
+    sample_number,
+    sample_date,
+    sample_time,
+    sample_site,
+    sample_class,
     residual_free_chlorine_mg_l,
     turbidity_ntu,
     coliform_quanti_tray_mpn_100ml,
     e_coli_quanti_tray_mpn_100ml,
     fluoride_mg_l
-  }) => {
+}) => {
     return {
         sample_number: await isValidSample_number(sample_number),
         sample_date: isValidSample_date(sample_date),
@@ -153,4 +159,4 @@ export const isValidWaterSampleData = async({
         e_coli_quanti_tray_mpn_100ml: isValidE_coli_quanti_tray_mpn_100ml(e_coli_quanti_tray_mpn_100ml),
         fluoride_mg_l: isValidFluoride_mg_l(fluoride_mg_l)
     };
-}
+};

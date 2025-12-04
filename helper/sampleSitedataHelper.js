@@ -1,12 +1,11 @@
-import {sampleSites} from '../config/mongoCollections.js';
-import {checkString} from './helper.js';
+import SampleSites from '../model/SampleSite.js';
+import { checkString } from './helper.js';
 
 export const isValidSample_site = async (sample_site) => {
-  sample_site=validateSampleSiteFormat(sample_site);
-  const sampleSitesCollection = await sampleSites();
-  const existingsampleSite = await sampleSitesCollection.findOne({ sample_site });
-  if (existingsampleSite) {
-      throw ("Duplicate sample site found!");
+  sample_site = validateSampleSiteFormat(sample_site);
+  const existing = await SampleSites.findOne({ sample_site });
+  if (existing) {
+    throw "Duplicate sample site found!";
   }
   return sample_site;
 };
@@ -14,8 +13,9 @@ export const isValidSample_site = async (sample_site) => {
 export const validateSampleSiteFormat = (sample_site) => {
   sample_site = checkString(sample_site, "sample_site");
   const regex = /^[A-Z0-9]+$/;
-  if (!regex.test(sample_site))
+  if (!regex.test(sample_site)) {
     throw `sample_site can only contain capital letters and numbers`;
+  }
   return sample_site;
 };
 
@@ -29,18 +29,19 @@ export const isValidLatitude = (lat) => {
   if (isNaN(lat)) throw "latitude must be a valid number";
   if (lat < 40.47729800 || lat > 40.91769100)
     throw `latitude must be a valid NYC latitude`;
-  lat = Number(lat.toFixed(8));
-  return lat;
+  return Number(lat.toFixed(8));
 };
 
 export const isValidLongitude = (lng) => {
   if (lng === undefined || lng === null) throw `longitude is required`;
+
   if (typeof lng === "string") lng = Number(lng);
   if (isNaN(lng)) throw "longitude must be a valid number";
+
   if (lng < -74.26036900 || lng > -73.69920600)
     throw `longitude must be a valid NYC longitude`;
-  lng = Number(lng.toFixed(8));
-  return lng;
+
+  return Number(lng.toFixed(8));
 };
 
 export const isValidBorough = (borough) => {
@@ -63,7 +64,7 @@ export const isValidNeighborhood = (neighborhood) => {
   return checkString(neighborhood, "neighborhood");
 };
 
-export const isValidSampleSiteData = async({ 
+export const isValidSampleSiteData = async ({ 
   sample_site, 
   sample_station, 
   latitude, 
@@ -71,12 +72,12 @@ export const isValidSampleSiteData = async({
   borough, 
   neighborhood 
 }) => {
-    return {
-      sample_site: await isValidSample_site(sample_site),
-      sample_station: isValidSample_station(sample_station),
-      latitude: isValidLatitude(latitude),
-      longitude: isValidLongitude(longitude),
-      borough: isValidBorough(borough),
-      neighborhood: isValidNeighborhood(neighborhood)
+  return {
+    sample_site: await isValidSample_site(sample_site),
+    sample_station: isValidSample_station(sample_station),
+    latitude: isValidLatitude(latitude),
+    longitude: isValidLongitude(longitude),
+    borough: isValidBorough(borough),
+    neighborhood: isValidNeighborhood(neighborhood)
   };
-}
+};
