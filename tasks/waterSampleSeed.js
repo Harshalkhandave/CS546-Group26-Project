@@ -30,56 +30,63 @@
 import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
-import { waterSamples } from '../config/mongoCollections.js';
+import WaterSample from '../model/WaterSample.js';
 import { seedSampleSites } from './sampleSiteSeed.js';
 import { createOrUpdateBoroughs } from '../data/boroughs.js';
+import connectDB from '../config/mongoConnection.js'
+import mongoose from "mongoose";
+
+
 const importWaterSamples = async () => {
   try {
+    await connectDB();
     console.log("Seeding Sample Sites...");
     await seedSampleSites();
 
     console.log("Seeding Water Samples...");
     const csvFilePath = path.join(process.cwd(), 'seedData', 'drinkingWaterSamples.csv');
     const csvContent = fs.readFileSync(csvFilePath, 'utf-8');
-    const parsed = Papa.parse(csvContent, {
-      header: true,
-      skipEmptyLines: true
-    });
+    const parsed = Papa.parse(csvContent, { header: true, skipEmptyLines: true });
+
     if (parsed.errors.length > 0) {
       console.error("CSV parsing errors:", parsed.errors);
       throw new Error("CSV parsing failed");
     }
-    let rows = parsed.data;
-    rows = rows.map(row => ({
-        ...row,
-        sample_time: row.sample_time?.trim(), 
-        residual_free_chlorine_mg_l:
-          row.residual_free_chlorine_mg_l === "" ? null : Number(row.residual_free_chlorine_mg_l), 
-        turbidity_ntu:
-          row.turbidity_ntu === "" ? null : Number(row.turbidity_ntu), 
-        coliform_quanti_tray_mpn_100ml:
-          row.coliform_quanti_tray_mpn_100ml === "" ? null : Number(row.coliform_quanti_tray_mpn_100ml),
-        e_coli_quanti_tray_mpn_100ml:
-          row.e_coli_quanti_tray_mpn_100ml === "" ? null : Number(row.e_coli_quanti_tray_mpn_100ml),
-        fluoride_mg_l:
-          row.fluoride_mg_l === "" ? null : Number(row.fluoride_mg_l),
+
+    const rows = parsed.data.map(row => ({
+      sample_number: row.sample_number,
+      sample_date: row.sample_date,
+      sample_time: row.sample_time?.trim(),
+      sample_site: row.sample_site,
+      sample_class: row.sample_class,
+      residual_free_chlorine_mg_l: row.residual_free_chlorine_mg_l === "" ? null : Number(row.residual_free_chlorine_mg_l),
+      turbidity_ntu: row.turbidity_ntu === "" ? null : Number(row.turbidity_ntu),
+      coliform_quanti_tray_mpn_100ml: row.coliform_quanti_tray_mpn_100ml === "" ? null : Number(row.coliform_quanti_tray_mpn_100ml),
+      e_coli_quanti_tray_mpn_100ml: row.e_coli_quanti_tray_mpn_100ml === "" ? null : Number(row.e_coli_quanti_tray_mpn_100ml),
+      fluoride_mg_l: row.fluoride_mg_l === "" ? null : Number(row.fluoride_mg_l)
     }));
 
-    const collection = await waterSamples();
     const batchSize = 1000;
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
-      await collection.insertMany(batch);
+      await WaterSample.insertMany(batch);
     }
+
     console.log("Water Samples Seeding Completed!");
     console.log("Updating Boroughs Collection...");
     await createOrUpdateBoroughs();
     console.log("Boroughs Collection Updated!");
     process.exit(0);
+
   } catch (err) {
     console.error("Import failed:", err);
-    process.exit(1);
+  }
+  finally {
+    await mongoose.connection.close();
+    console.log("MongoDB connection closed.");
+    process.exit(0);
   }
 };
 
 importWaterSamples();
+

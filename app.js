@@ -3,6 +3,9 @@ import exphbs from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import indexRoutes from './routes/index.js';
+import connectDB from '../config/mongoConnection.js'
+
+await connectDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
