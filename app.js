@@ -3,7 +3,7 @@ import exphbs from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import indexRoutes from './routes/index.js';
-import connectDB from './config/mongoConnection.js'
+import connectDB, { disconnectDB } from './config/mongoConnection.js'
 
 await connectDB();
 
@@ -30,4 +30,10 @@ app.use('/', indexRoutes);
 // start server
 app.listen(3000, () => {
   console.log('Server running at http://localhost:3000');
+});
+
+process.on("SIGINT", async () => {
+  console.log("Shutting down...");
+  await disconnectDB();
+  server.close(() => process.exit(0));
 });

@@ -1,11 +1,11 @@
-import SampleSite from '../model/SampleSite.js';
+import { sampleSiteCollection } from '../model/index.js';
 import * as helpFun from '../helper/sampleSitedataHelper.js';
 import { isValidId } from '../helper/helper.js';
 
 export const createSampleSite = async (sampleSiteObj) => {
   const validatedData = await helpFun.isValidSampleSiteData(sampleSiteObj);
 
-  const newSite = new SampleSite(validatedData);
+  const newSite = new sampleSiteCollection(validatedData);
   const savedSite = await newSite.save();
 
   const result = savedSite.toObject();
@@ -14,8 +14,8 @@ export const createSampleSite = async (sampleSiteObj) => {
 };
 
 export const getAllSampleSites = async () => {
-  const sites = await SampleSite.find({}).lean();
-  if (!sites) throw new Error("Could not get all sample sites!");
+  const sites = await sampleSiteCollection.find({}).lean();
+  if (!sites) throw "Could not get all sample sites!";
 
   return sites.map(site => {
     site._id = site._id.toString();
@@ -26,8 +26,8 @@ export const getAllSampleSites = async () => {
 export const getSampleSiteById = async (id) => {
   const validId = isValidId(id);
 
-  const site = await SampleSite.findById(validId).lean();
-  if (!site) throw new Error("No sample site with that id!");
+  const site = await sampleSiteCollection.findById(validId).lean();
+  if (!site) throw "No sample site with that id!";
 
   site._id = site._id.toString();
   return site;
@@ -36,8 +36,8 @@ export const getSampleSiteById = async (id) => {
 export const getSampleSiteByNum = async (ssNum) => {
   const validNum = helpFun.validateSampleSiteFormat(ssNum);
 
-  const site = await SampleSite.findOne({ sample_site: validNum }).lean();
-  if (!site) throw new Error("No sample site with that number!");
+  const site = await sampleSiteCollection.findOne({ sample_site: validNum }).lean();
+  if (!site) throw new "No sample site with that number!";
 
   site._id = site._id.toString();
   return site;

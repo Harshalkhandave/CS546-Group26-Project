@@ -1,9 +1,9 @@
-import SampleSites from '../model/SampleSite.js';
+import { sampleSiteCollection } from '../model/index.js';
 import { checkString } from './helper.js';
 
 export const isValidSample_site = async (sample_site) => {
   sample_site = validateSampleSiteFormat(sample_site);
-  const existing = await SampleSites.findOne({ sample_site });
+  const existing = await sampleSiteCollection.findOne({ sample_site });
   if (existing) {
     throw "Duplicate sample site found!";
   }

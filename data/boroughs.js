@@ -1,6 +1,4 @@
-import Borough from '../model/Borough.js';
-import SampleSite from '../model/SampleSite.js';
-import WaterSample from '../model/WaterSample.js';
+import { boroughCollection, sampleSiteCollection, waterSampleCollection } from '../model/index.js';
 
 import fs from 'fs';
 
@@ -9,7 +7,7 @@ const boroughDes = JSON.parse(
 );
 
 export const createOrUpdateBoroughs = async () => {
-    const siteList = await SampleSite.find({}).lean();
+    const siteList = await sampleSiteCollection.find({}).lean();
     const boroughMap = {};
 
     for (const s of siteList) {
@@ -37,7 +35,7 @@ export const createOrUpdateBoroughs = async () => {
         const neighborhoodStatsArray = [];
 
         for (const [nName, nSiteIds] of Object.entries(data.neighborhoods)) {
-            const waterData = await WaterSample.find({ sample_site: { $in: nSiteIds } }).lean();
+            const waterData = await waterSampleCollection.find({ sample_site: { $in: nSiteIds } }).lean();
 
             const avg = (key) => waterData.length ? waterData.reduce((sum, x) => sum + (x[key] || 0), 0) / waterData.length : 0;
 
@@ -58,7 +56,7 @@ export const createOrUpdateBoroughs = async () => {
             });
         }
 
-        const boroughSamples = await WaterSample.find({ sample_site: { $in: data.site_ids } }).lean();
+        const boroughSamples = await waterSampleCollection.find({ sample_site: { $in: data.site_ids } }).lean();
         const avgB = (key) => boroughSamples.length ? boroughSamples.reduce((sum, x) => sum + (x[key] || 0), 0) / boroughSamples.length : 0;
         const borough_latest_sample = boroughSamples.length
             ? boroughSamples.reduce((a, b) => new Date(a.sample_date) > new Date(b.sample_date) ? a : b).sample_date
@@ -73,9 +71,9 @@ export const createOrUpdateBoroughs = async () => {
             latest_sample_date: borough_latest_sample
         };
 
-        const existing = await Borough.findOne({ name: bName });
+        const existing = await boroughCollection.findOne({ name: bName });
         if (!existing) {
-            await Borough.create({
+            await boroughCollection.create({
                 name: bName,
                 description: boroughDes[bName] || "Description not available for this borough",
                 neighborhoods: neighborhoodStatsArray,

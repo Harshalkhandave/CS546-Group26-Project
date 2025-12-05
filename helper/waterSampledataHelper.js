@@ -1,11 +1,10 @@
-import SampleSite from '../model/SampleSite.js';
-import WaterSample from '../model/WaterSample.js';
+import { sampleSiteCollection, waterSampleCollection } from '../model/index.js';
 import { validateSampleSiteFormat } from './sampleSitedataHelper.js';
 import { checkString } from './helper.js';
 
 export const isValidSample_number = async (sample_number) => {
     sample_number = validateSampleNumFormat(sample_number);
-    const existing = await WaterSample.findOne({ sample_number });
+    const existing = await waterSampleCollection.findOne({ sample_number });
     if (existing) {
         throw "Duplicate sample number found!";
     }
@@ -70,7 +69,7 @@ export const isValidSample_class = (sample_class) => {
 
 export const isValidWS_Sample_site = async (sample_site) => {
     sample_site = validateSampleSiteFormat(sample_site);
-    const exists = await SampleSite.findOne({ sample_site });
+    const exists = await sampleSiteCollection.findOne({ sample_site });
     if (!exists) {
         throw "Sample Site not found!";
     }

@@ -1,4 +1,4 @@
-import Users from "../model/user.js"; // Mongoose model
+import { userCollection } from "../model/index.js";
 import bcrypt from "bcrypt";
 import { checkString, validateEmail, validatePassword } from "../helper/helper.js";
 
@@ -13,10 +13,10 @@ const exportedMethods = {
       throw "Invalid role";
     }
     const lowerEmail = email.toLowerCase();
-    const existing = await Users.findOne({ lowerEmail });
+    const existing = await userCollection.findOne({ lowerEmail });
     if (existing) throw "Email already exists";
     const hash = await bcrypt.hash(password, saltRounds);
-    const newUser = await Users.create({
+    const newUser = await userCollection.create({
       lowerEmail,
       hashedPwd: hash,
       role,
@@ -30,7 +30,7 @@ const exportedMethods = {
   async getUserById(id) {
     id = validateId(id);
 
-    const user = await Users.findById(id);
+    const user = await userCollection.findById(id);
     if (!user) throw "User not found";
     return user;
   },
@@ -40,7 +40,7 @@ const exportedMethods = {
     password = validatePassword(password);
 
     const lowerEmail = email.toLowerCase();
-    const user = await Users.findOne({ lowerEmail });
+    const user = await userCollection.findOne({ lowerEmail });
 
     if (!user) throw "Email or password invalid";
 

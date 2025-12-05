@@ -1,4 +1,4 @@
-import { comments } from "../config/mongoCollections.js";
+import { commentCollection } from "../model/index.js";
 import { ObjectId } from "mongodb";
 import {
     checkString,
@@ -10,48 +10,38 @@ const exportedMethods = {
         userId = validateId(userId);
         boroughId = validateId(boroughId);
         comment = checkString(comment, "Comment");
-        // Check the length
-        if (comment.length > 200) throw "Comment must be 200 characters or less";
-
-        const commentCollection = await comments();
+        if (comment.length > 200) {
+            throw "Comment must be 200 characters or less";
+        }
         const newComment = {
-            _id: new ObjectId(),
             user: new ObjectId(userId),
             borough: new ObjectId(boroughId),
             comment,
             commentDate: new Date()
         };
-
-        const insertInfo = await commentCollection.insertOne(newComment);
-        if (!insertInfo.insertedId) throw "Could not create comment";
-
-        return this.getCommentById(insertInfo.insertedId.toString());
+        const created = await commentCollection.create(newComment);
+        if (!created) throw "Could not create comment";
+        return created;
     },
 
     async getCommentById(id) {
         id = validateId(id);
-        const _id = new ObjectId(id);
-        const commentCollection = await comments();
-        const comment = await commentCollection.findOne({ _id });
+        const comment = await commentCollection.findById(id);
         if (!comment) throw "Comment not found";
         return comment;
     },
 
-    
     async getCommentsByBorough(boroughId) {
         boroughId = validateId(boroughId);
-        const _id = new ObjectId(boroughId);
-        const commentCollection = await comments();
-
-        return commentCollection.find({ borough: _id }).toArray();
+        return await commentCollection.find({
+            borough: new ObjectId(boroughId)
+        });
     },
 
     async deleteComment(id) {
         id = validateId(id);
-        const _id = new ObjectId(id);
-        const commentCollection = await comments();
-        const deletion = await commentCollection.findOneAndDelete({ _id });
-        if (!deletion) throw "Comment not found";
+        const deleted = await commentCollection.findByIdAndDelete(id);
+        if (!deleted) throw "Comment not found";
         return true;
     }
 };

@@ -14,4 +14,5 @@ const userSchema = new Schema(
 
 userSchema.index({ lowerEmail: 1 }, { unique: true });
 
-export default model("User", userSchema);
+const userCollection = model("user", userSchema)
+export default userCollection;

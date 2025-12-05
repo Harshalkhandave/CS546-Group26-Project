@@ -1,13 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
 import Papa from 'papaparse';
-import { waterSamples } from '../config/mongoCollections.js';
+import {waterSampleCollection} from '../model/index.js';
+import connectDB from '../config/mongoConnection.js'
 
 const exportWaterSamples = async () => {
   try {
     console.log("Fetching water samples from database...");
-    const collection = await waterSamples();
-    const docs = await collection.find({}).toArray();
+    await connectDB();
+    const docs = await waterSampleCollection.find({}).lean();
+    if (!docs) throw "Could not get all water samples!";
     console.log(`Fetched ${docs.length} samples.`);
     const COL_ORDER = [
       "sample_number",

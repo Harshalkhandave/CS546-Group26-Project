@@ -30,7 +30,7 @@
 import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
-import WaterSample from '../model/WaterSample.js';
+import { waterSampleCollection } from '../model/index.js';
 import { seedSampleSites } from './sampleSiteSeed.js';
 import { createOrUpdateBoroughs } from '../data/boroughs.js';
 import connectDB from '../config/mongoConnection.js'
@@ -69,7 +69,7 @@ const importWaterSamples = async () => {
     const batchSize = 1000;
     for (let i = 0; i < rows.length; i += batchSize) {
       const batch = rows.slice(i, i + batchSize);
-      await WaterSample.insertMany(batch);
+      await waterSampleCollection.insertMany(batch);
     }
 
     console.log("Water Samples Seeding Completed!");
