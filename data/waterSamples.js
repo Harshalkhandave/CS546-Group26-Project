@@ -22,3 +22,14 @@ export const getWaterSampleById = async (id) => {
   sample._id = sample._id.toString();
   return sample;
 };
+
+export const getAllWaterSamplesForABorough = async (id) => {
+  const validId = isValidId(id);
+  const samples = await WaterSample.find({ borough: validId }).lean();
+
+  if(!samples || samples.length === 0) {
+    throw new Error("No water samples for that borough!");
+  }
+
+  return samples;
+}
