@@ -37,33 +37,7 @@ body {
     object-fit: cover;
 }
 
-.left-caption {
-    position: absolute;
-    bottom: 40px;
-    left: 40px;
-    font-size: 22px;
-    color: white;
-}
 
-.slider-dots {
-    position: absolute;
-    bottom: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-}
-
-.slider-dots span {
-    width: 22px;
-    height: 3px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 3px;
-}
-
-.slider-dots .active {
-    background: #fff;
-}
 
 /* RIGHT PANEL */
 .right-panel {
@@ -146,6 +120,12 @@ body {
     border: 1px solid #3a3347;
     color: #e6e6f0;
     cursor: pointer;
+}
+
+.oauth-btn {
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .oauth-btn:hover {
