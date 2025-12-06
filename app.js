@@ -3,6 +3,9 @@ import exphbs from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import indexRoutes from './routes/index.js';
+import borroughRoutes from './routes/boroughs.js';
+import waterSampleRoutes from './routes/waterSamples.js';
+import commentRoutes from './routes/comments.js';
 import connectDB, { disconnectDB } from './config/mongoConnection.js'
 
 await connectDB();
@@ -26,7 +29,12 @@ app.set('views', path.join(__dirname, 'views'));
 
 // routes
 app.use('/', indexRoutes);
+app.use('/boroughs', borroughRoutes);
+app.use('/waterSamples', waterSampleRoutes);
+app.use('/comments', commentRoutes);
 
+// middleware
+app.use
 // start server
 app.listen(3000, () => {
   console.log('Server running at http://localhost:3000');

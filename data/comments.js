@@ -1,5 +1,5 @@
 import { commentCollection } from "../model/index.js";
-import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 import {
     checkString,
     validateId
@@ -14,8 +14,8 @@ const exportedMethods = {
             throw "Comment must be 200 characters or less";
         }
         const newComment = {
-            user: new ObjectId(userId),
-            borough: new ObjectId(boroughId),
+            user: new mongoose.Types.ObjectId(userId),
+            borough: new mongoose.Types.ObjectId(boroughId),
             comment,
             commentDate: new Date()
         };
@@ -34,7 +34,7 @@ const exportedMethods = {
     async getCommentsByBorough(boroughId) {
         boroughId = validateId(boroughId);
         return await commentCollection.find({
-            borough: new ObjectId(boroughId)
+            borough: new mongoose.Types.ObjectId(boroughId)
         });
     },
 
