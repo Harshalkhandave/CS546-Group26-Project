@@ -1,10 +1,10 @@
 <h1>Welcome to Water Quality Monitor</h1>
 
 {{#if currentUser}}
-<p>Signed in as <strong>{{currentUser.email}}</strong> — <a href="/logout">Sign out</a></p>
+<p>Signed in as <strong>{{currentUser.email}}</strong> — <a href="/user/logout">Sign out</a></p>
 {{else}}
 <p>This is a simple landing page for now.</p>
-<a href="/login">Login</a>
+<a href="/user/login">Login</a>
 {{/if}}
 
 <p>

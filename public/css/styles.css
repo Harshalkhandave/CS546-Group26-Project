@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background: #0f0e13;
+    background: #f7f7fa;
 }
 
 .page-bg {
@@ -151,3 +151,12 @@ body {
     text-align: left;
 }
 
+#boroughMap {
+    width: 100%;
+    max-width: 800px; 
+    height: 500px; 
+    display: block !important;
+    background: #eaeaea;
+    margin: 0 auto;
+  }
+  
