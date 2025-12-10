@@ -1,13 +1,69 @@
-<h1>Welcome to Water Quality Monitor</h1>
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-text">
+      <p class="tagline">NYC · Drinking Water Dashboard</p>
+      <h1>See Borough Water Quality at a Glance</h1>
+      <p class="hero-subtitle">
+        Explore drinking water samples across all five boroughs, compare
+        quality indicators, and spot potential issues early.
+      </p>
 
-{{#if currentUser}}
-<p>Signed in as <strong>{{currentUser.email}}</strong> — <a href="/logout">Sign out</a></p>
-{{else}}
-<p>This is a simple landing page for now.</p>
-<a href="/login">Login</a>
-{{/if}}
+      <div class="hero-actions">
+        <a href="/boroughs" class="btn btn-primary">
+          View Borough Overview
+        </a>
+        <a href="/waterSamples" class="btn btn-outline">
+          Browse Water Samples
+        </a>
+      </div>
 
-<p>
-	<a href="/boroughs">View Boroughs</a> |
-	<a href="/waterSamples">Water Samples</a>
-</p>
+      <ul class="hero-highlights">
+        <li><span class="stat-label">5</span> boroughs covered</li>
+        <li><span class="stat-label">1000+</span> water samples tracked</li>
+        <li><span class="stat-label">Updated</span> with latest records</li>
+      </ul>
+      <p class="disclaimer">* Demo data for academic use only</p>
+    </div>
+
+    <aside class="hero-card">
+      <h2>Today's Borough Snapshot</h2>
+      <ul class="snapshot-list">
+        <li><span>Manhattan</span><strong>Good</strong></li>
+        <li><span>Brooklyn</span><strong>Good</strong></li>
+        <li><span>Queens</span><strong>Moderate</strong></li>
+        <li><span>Bronx</span><strong>Good</strong></li>
+        <li><span>Staten Island</span><strong>Good</strong></li>
+      </ul>
+      <p class="card-note">
+        Values shown here are sample placeholders. Actual status is based on
+        recorded water sample data.
+      </p>
+    </aside>
+  </div>
+</section>
+
+<section class="info-section">
+  <div class="container info-grid">
+    <div class="info-item">
+      <h3>Track Borough Trends</h3>
+      <p>
+        View summarized borough-level descriptions and understand how water
+        quality changes over time.
+      </p>
+    </div>
+    <div class="info-item">
+      <h3>Explore Sample Details</h3>
+      <p>
+        Drill into individual water samples, including collection date,
+        borough, and quality indicators.
+      </p>
+    </div>
+    <div class="info-item">
+      <h3>Create a Profile</h3>
+      <p>
+        Sign up to save favorite boroughs, leave comments, and participate in
+        community discussions.
+      </p>
+    </div>
+  </div>
+</section>
