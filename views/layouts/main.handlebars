@@ -1,15 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{title}}</title>
+  <meta charset="utf-8" />
+  <title>Water Quality Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/public/css/styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 </head>
+
 <body>
-  {{{body}}}
+  <header class="site-header" class="theme-light">
+    <div class="container header-content">
+      <a href="/" class="logo">Water Quality Monitor</a>
+
+      <nav class="main-nav">
+        <a href="/boroughs">Boroughs</a>
+        <a href="/voting">Voting System</a>
+        <a href="/profile">Profile</a>
+        <a href="/login" class="btn btn-outline">Login</a>
+        <a href="/register" class="btn btn-primary">Sign Up</a>
+        <button id="themeToggle" class="btn btn-outline">
+          Toggle Theme
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-main">
+    {{{body}}}
+  </main>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const body = document.body;
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        body.className = savedTheme;
+      }
+
+      // Toggle theme
+      const btn = document.getElementById("themeToggle");
+      if (btn) {
+        btn.addEventListener("click", () => {
+          if (body.classList.contains("theme-light")) {
+            body.className = "theme-dark";
+            localStorage.setItem("theme", "theme-dark");
+          } else {
+            body.className = "theme-light";
+            localStorage.setItem("theme", "theme-light");
+          }
+        });
+      }
+    });
+  </script>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <p>© 2025 Water Quality Monitor · CS546A Group 26 · Final Project</p>
+      <p class="footer-links">
+        <a href="/help">Help</a> ·
+        <a href="/contact">Contact</a> ·
+        <a href="/stevens">Stevens</a>
+      </p>
+    </div>
+  </footer>
 </body>
+
 </html>
