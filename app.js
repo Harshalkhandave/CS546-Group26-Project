@@ -60,7 +60,11 @@ app.engine(
     defaultLayout: 'main',
     helpers: {
       toFixed3: (num) => Number(num).toFixed(3),
-      json: (context) => JSON.stringify(context)
+      json: (context) => JSON.stringify(context),
+      array: (...args) => {
+        args.pop();               // remove Handlebars options object
+        return args;
+      }
   }})
 );
 app.set('view engine', 'handlebars');

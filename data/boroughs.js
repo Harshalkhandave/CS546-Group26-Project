@@ -94,3 +94,74 @@ export const createOrUpdateBoroughs = async () => {
 
     return results;
 };
+
+
+export async function getBoroughsDataByMonthYear(year, month) {
+    const y = Number(year);
+    const m = month !== undefined ? Number(month) : null;
+    if (!Number.isInteger(y) || y < 2015 || y > 2025) {
+        throw new Error("Invalid year! Must be between 2015 and 2025.");
+    }
+    if (m !== null) {
+        if (!Number.isInteger(m) || m < 1 || m > 12) {
+            throw new Error("Invalid month! Must be between 1 and 12.");
+        }
+        const start = new Date(y, m - 1, 1);
+        const end   = new Date(y, m, 0);
+        return aggregateByDateRange(start, end);
+    }
+    const startOfYear = new Date(y, 0, 1);
+    const endOfYear   = new Date(y, 11, 31);
+    return aggregateByDateRange(startOfYear, endOfYear);
+}
+
+async function aggregateByDateRange(start, end) {
+    return await waterSampleCollection.aggregate([
+        {
+            $lookup: {
+                from: "samplesites",
+                localField: "sample_site",
+                foreignField: "sample_site",
+                as: "site"
+            }
+        },
+        { $unwind: "$site" },
+        {
+            $match: {
+                sample_date: { $gte: start, $lte: end }
+            }
+        },
+        {
+            $group: {
+                _id: "$site.borough",
+                avg_chlorine: { $avg: "$residual_free_chlorine_mg_l" },
+                avg_turbidity: { $avg: "$turbidity_ntu" },
+                avg_coliform: { $avg: "$coliform_quanti_tray_mpn_100ml" },
+                avg_e_coli: { $avg: "$e_coli_quanti_tray_mpn_100ml" },
+                avg_fluoride: { $avg: "$fluoride_mg_l" },
+                sample_count: { $sum: 1 }
+            }
+        },
+        {
+            $lookup: {
+                from: "boroughs",
+                localField: "_id",   
+                foreignField: "name",
+                as: "boroughDoc"
+            }
+        },
+        {
+            $project: {
+                borough: "$_id",
+                _id: "$boroughDoc._id",
+                avg_chlorine: 1,
+                avg_turbidity: 1,
+                avg_coliform: 1,
+                avg_e_coli: 1,
+                avg_fluoride: 1,
+                sample_count: 1
+            }
+        },
+        { $sort: { borough: 1 } }
+    ]);
+}

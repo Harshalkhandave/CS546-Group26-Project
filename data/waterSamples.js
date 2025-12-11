@@ -76,3 +76,35 @@ export const deleteWaterSample = async (id) => {
   if (!removed) return { deleted: false };
   return { deleted: true };
 };
+
+export async function getDataDates() {
+  const results = await waterSampleCollection.aggregate([
+    {
+      $group: {
+        _id: {
+          year: { $year: "$sample_date" },
+          month: { $month: "$sample_date" }
+        }
+      }
+    },
+    { $sort: { "_id.year": 1, "_id.month": 1 } }
+  ]);
+
+  const years = new Set();
+  const monthsByYear = {};
+
+  for (const item of results) {
+    const y = item._id.year;
+    const m = item._id.month;
+
+    if (!monthsByYear[y]) monthsByYear[y] = [];
+
+    monthsByYear[y].push(m);
+    years.add(y);
+  }
+
+  return {
+    years: Array.from(years),
+    monthsByYear
+  };
+}
