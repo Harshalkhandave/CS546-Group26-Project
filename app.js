@@ -7,8 +7,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import configRoutes from './routes/index.js';
 import connectDB, { disconnectDB } from './config/mongoConnection.js'
+import { logMdw } from './middleware.js';
+
+dotenv.config();
 
 await connectDB();
+await import('./config/passport.js');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +49,7 @@ app.use(express.json());
 
 // sessions (required for Passport)
 app.use(session({
+  name: 'AuthCookie',
   secret: process.env.SESSION_SECRET || 'dev_session_secret',
   resave: false,
   saveUninitialized: false
@@ -52,7 +57,10 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(logRequest);
+
+// logging middleware
+app.use(logMdw);
+
 // expose session user to templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.session && req.session.user ? req.session.user : null;
@@ -81,8 +89,6 @@ app.set('views', path.join(__dirname, 'views'));
 // routes
 configRoutes(app);
 
-// middleware
-app.use
 // start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -49,5 +49,5 @@ const boroughSchema = new Schema(
 
 boroughSchema.index({ name: 1 }, { unique: true });
 
-const boroughCollection = model("borough", boroughSchema)
+const boroughCollection = model("Borough", boroughSchema)
 export default boroughCollection;

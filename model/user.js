@@ -23,5 +23,5 @@ userSchema.index({ lowerEmail: 1, isDeleted: 1 }, {
   partialFilterExpression: { isDeleted: false }
 });
 
-const userCollection = model("user", userSchema)
+const userCollection = model("User", userSchema)
 export default userCollection;
