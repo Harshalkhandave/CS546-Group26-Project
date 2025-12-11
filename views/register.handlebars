@@ -22,6 +22,18 @@
         {{#if error}}
         <p class="error-text">{{error}}</p>
         {{/if}}
+        {{#if message}}
+        <p class="message-text">{{message}}</p>
+        {{#if loginLink}}
+        <p><a href="{{loginLink}}" class="btn btn-outline">Go to Login</a></p>
+        {{/if}}
+        {{#if resendLink}}
+        <p><a href="{{resendLink}}" class="btn btn-outline">Resend verification</a></p>
+        {{/if}}
+        {{/if}}
+        {{#if verifyUrl}}
+        <p>Verification link (dev): <a href="{{verifyUrl}}">{{verifyUrl}}</a></p>
+        {{/if}}
 
         <form method="POST" action="/users/register">
 
@@ -45,8 +57,7 @@
         <div class="divider">Or continue with</div>
 
         <div class="social-row">
-            <a href="/users/auth/google" class="oauth-btn google">Google</a>
-            <a href="/users/auth/apple" class="oauth-btn apple">Apple</a>
+            <a href="/auth/google" class="oauth-btn google">Google</a>
         </div>
 
     </div>

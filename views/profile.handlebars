@@ -1,0 +1,101 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <h1>My Profile</h1>
+    
+    {{#if currentUser}}
+      <div class="profile-section">
+        <h2>Account Information</h2>
+        <div class="profile-field">
+          <label>Email:</label>
+          <p>{{currentUser.email}}</p>
+        </div>
+        
+        {{#if currentUser.fname}}
+          <div class="profile-field">
+            <label>First Name:</label>
+            <p>{{currentUser.fname}}</p>
+          </div>
+        {{/if}}
+        
+        {{#if currentUser.lname}}
+          <div class="profile-field">
+            <label>Last Name:</label>
+            <p>{{currentUser.lname}}</p>
+          </div>
+        {{/if}}
+        
+        {{#if currentUser.role}}
+          <div class="profile-field">
+            <label>Role:</label>
+            <p>{{currentUser.role}}</p>
+          </div>
+        {{/if}}
+      </div>
+      
+      <div class="profile-actions">
+        <a href="/users/edit-profile" class="btn btn-primary">Edit Profile</a>
+        <a href="/users/logout" class="btn btn-outline">Sign Out</a>
+        <button id="deleteAccountBtn" class="btn btn-danger">Delete Account</button>
+      </div>
+    {{else}}
+      <div class="profile-section">
+        <p class="text-muted">You are not logged in. Please <a href="/users/login">sign in</a> to view your profile.</p>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteAccountModal" class="modal">
+  <div class="modal-content">
+    <h2>Delete Account</h2>
+    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+    <p style="color: #dc3545; font-weight: 600;">All your data will be permanently deleted.</p>
+    <div class="modal-actions">
+      <button class="btn-confirm" id="confirmDeleteBtn">Yes, Delete</button>
+      <button class="btn-cancel" id="cancelDeleteBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+  const modal = document.getElementById('deleteAccountModal');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+  
+  deleteAccountBtn.addEventListener('click', () => {
+    modal.classList.add('show');
+  });
+  
+  cancelDeleteBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+  });
+  
+  confirmDeleteBtn.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/users/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (response.ok) {
+        alert('Account deleted successfully. You will be redirected.');
+        window.location.href = '/';
+      } else {
+        const error = await response.json();
+        alert('Error deleting account: ' + (error.error || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Error deleting account');
+    }
+  });
+  
+  // Close modal when clicking outside
+  window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      modal.classList.remove('show');
+    }
+  });
+</script>

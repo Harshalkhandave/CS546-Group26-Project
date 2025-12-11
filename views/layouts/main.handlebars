@@ -19,11 +19,18 @@
       <a href="/" class="logo">Water Quality Monitor</a>
 
       <nav class="main-nav">
+        <a href="/">Home</a>
         <a href="/boroughs">Boroughs</a>
         <a href="/votes">Voting System</a>
-        <a href="/users/profile">Profile</a>
-        <a href="/users/login" class="btn btn-outline">Login</a>
-        <a href="/users/register" class="btn btn-primary">Sign Up</a>
+        {{#if currentUser}}
+          <a href="/users/profile">Profile</a>
+          <span class="nav-user">Hello, {{#if currentUser.fname}}{{currentUser.fname}}{{else}}{{currentUser.email}}{{/if}}</span>
+          <a href="/users/logout" class="btn btn-outline">Sign Out</a>
+        {{else}}
+          <a href="/users/profile">Profile</a>
+          <a href="/users/login" class="btn btn-outline">Login</a>
+          <a href="/users/register" class="btn btn-primary">Sign Up</a>
+        {{/if}}
         <button id="themeToggle" class="btn btn-outline">
           Toggle Theme
         </button>
@@ -72,6 +79,10 @@
       </p>
     </div>
   </footer>
-</body>
+  <!-- server flash container (used by client toast script) -->
+  <div id="server-flash-global" data-error="{{error}}" data-message="{{message}}" data-resend="{{resendLink}}" style="display:none"></div>
+
+  <script src="/public/js/toast.js"></script>
+  </body>
 
 </html>

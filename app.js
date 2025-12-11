@@ -21,6 +21,14 @@ dotenv.config();
 // Dynamically import Passport configuration and routes so env vars are available
 await import('./config/passport.js');
 
+// Run file-based users -> Mongo migration (idempotent)
+try {
+  const { default: migrateUsers } = await import('./tasks/migrateUsersToMongo.js');
+  await migrateUsers();
+} catch (e) {
+  console.warn('User migration step skipped or failed:', e && e.message ? e.message : e);
+}
+
 export function logRequest(req, res, next) {
   const timestamp = new Date().toUTCString();
   const method = req.method;

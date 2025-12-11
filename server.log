@@ -1,0 +1,73 @@
+✅ MongoDB connected!
+[dotenv@17.2.3] injecting env (9) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+ Google OAuth strategy registered
+✅ Apple OAuth strategy registered
+No file-based users.json found, skipping migration.
+Server running at http://localhost:3000
+[Thu, 11 Dec 2025 08:57:17 GMT]: GET /auth/google/callback (Non-Authenticated)
+Google OAuth callback error: { error: 'invalid_grant', error_description: 'Bad Request' }
+[Thu, 11 Dec 2025 08:57:17 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:17 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:19 GMT]: GET /auth/google/callback (Non-Authenticated)
+Google OAuth callback error: { error: 'invalid_grant', error_description: 'Bad Request' }
+[Thu, 11 Dec 2025 08:57:19 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:19 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:22 GMT]: GET / (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:22 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:22 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:23 GMT]: GET /users/register (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:23 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:23 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:24 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:24 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:25 GMT]: GET /auth/google (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:36 GMT]: GET /auth/google/callback (Non-Authenticated)
+✗ Login attempt with recently deleted email: ysatyaanil2021@gmail.com
+[Thu, 11 Dec 2025 08:57:36 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:36 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:43 GMT]: GET /users/register (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:43 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:43 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:43 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:57:43 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:12 GMT]: POST /users/register (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:12 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:12 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:12 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:12 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:27 GMT]: GET /users/resend-verification (Non-Authenticated)
+Resent email verification link (dev): http://localhost:3000/users/verify?token=5e0a0c407275e045bbc2bf71c53c645e99a39ef2
+[Thu, 11 Dec 2025 08:58:28 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:28 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:28 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 08:58:28 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 09:00:04 GMT]: GET /users/resend-verification (Non-Authenticated)
+Resent email verification link (dev): http://localhost:3000/users/verify?token=984021cf077f28f5dc34266f826c220c50046eea
+[Thu, 11 Dec 2025 09:00:04 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 09:00:04 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 09:00:04 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 09:00:04 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 09:00:10 GMT]: GET /auth/google (Non-Authenticated)
+[Thu, 11 Dec 2025 09:00:15 GMT]: GET /auth/google/callback (Non-Authenticated)
+✓ OAuth login for existing user: zooniorntr@gmail.com
+✓ Session created for user: zooniorntr@gmail.com
+[Thu, 11 Dec 2025 09:00:15 GMT]: GET / (Authenticated user)
+[Thu, 11 Dec 2025 09:00:15 GMT]: GET /public/css/styles.css (Authenticated user)
+[Thu, 11 Dec 2025 09:00:15 GMT]: GET /public/js/toast.js (Authenticated user)
+[Thu, 11 Dec 2025 09:03:49 GMT]: GET / (Authenticated user)
+[Thu, 11 Dec 2025 09:03:49 GMT]: GET /public/css/styles.css (Authenticated user)
+[Thu, 11 Dec 2025 09:03:49 GMT]: GET /public/js/toast.js (Authenticated user)
+[Thu, 11 Dec 2025 09:03:54 GMT]: GET /users/logout (Authenticated user)
+[Thu, 11 Dec 2025 09:03:54 GMT]: GET / (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:54 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:54 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:55 GMT]: GET /users/login (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:55 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:55 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:55 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 09:03:55 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 09:04:12 GMT]: POST /users/login (Non-Authenticated)
+[Thu, 11 Dec 2025 09:04:12 GMT]: GET /public/css/styles.css (Non-Authenticated)
+[Thu, 11 Dec 2025 09:04:12 GMT]: GET /public/js/toast.js (Non-Authenticated)
+[Thu, 11 Dec 2025 09:04:12 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
+[Thu, 11 Dec 2025 09:04:12 GMT]: GET /public/css/videos/loginSideVideo.mp4 (Non-Authenticated)
