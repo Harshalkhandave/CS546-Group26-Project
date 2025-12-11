@@ -1,6 +1,6 @@
 import { userCollection } from "../model/index.js";
 import bcrypt from "bcrypt";
-import { checkString, validateEmail, validatePassword } from "../helper/helper.js";
+import { checkString, validateEmail, validatePassword, isValidId } from "../helper/helper.js";
 
 const saltRounds = 10;
 
@@ -52,6 +52,37 @@ const exportedMethods = {
       lowerEmail: user.lowerEmail,
       role: user.role
     };
+  },
+
+  async updateProfile(userId, fname, lname, email) {
+    userId = isValidId(userId);
+    fname = checkString(fname, "First name");
+    lname = checkString(lname, "Last name");
+    email = validateEmail(email);
+
+    const user = await userCollection.findById(userId);
+    if (!user) throw "User not found";
+
+    const newLowerEmail = email.toLowerCase();
+    
+    // Check if new email is different and already exists
+    if (newLowerEmail !== user.lowerEmail) {
+      const existing = await userCollection.findOne({ lowerEmail: newLowerEmail });
+      if (existing) throw "Email already exists";
+    }
+
+    const updated = await userCollection.findByIdAndUpdate(
+      userId,
+      {
+        fname,
+        lname,
+        lowerEmail: newLowerEmail,
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+
+    return updated;
   }
 };
 

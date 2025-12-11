@@ -20,6 +20,82 @@ router.get('/profile', (req, res) => {
   });
 });
 
+// Edit Profile (GET)
+router.get('/edit-profile', (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.redirect('/users/login');
+  }
+  res.render('edit-profile', {
+    title: 'Edit Profile',
+    css: '/public/css/styles.css',
+    user: req.session.user
+  });
+});
+
+// Edit Profile (POST)
+router.post('/edit-profile', async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  const { fname, lname, email } = req.body;
+  const userId = req.session.user.id;
+
+  try {
+    if (!fname || !lname || !email) {
+      return res.render('edit-profile', {
+        title: 'Edit Profile',
+        css: '/public/css/styles.css',
+        user: req.session.user,
+        error: 'All fields are required.'
+      });
+    }
+
+    const newLowerEmail = email.toLowerCase();
+    
+    // Check if the new email is different and already exists
+    if (newLowerEmail !== req.session.user.email) {
+      const existing = await Users.findOne({ lowerEmail: newLowerEmail });
+      if (existing) {
+        return res.render('edit-profile', {
+          title: 'Edit Profile',
+          css: '/public/css/styles.css',
+          user: req.session.user,
+          error: 'Email already exists. Please use a different email.'
+        });
+      }
+    }
+
+    const updated = await Users.findByIdAndUpdate(
+      userId,
+      { fname, lname, lowerEmail: newLowerEmail },
+      { new: true }
+    );
+
+    console.log(`[Edit Profile] Profile updated for user ${userId}`);
+
+    // Update session with new data
+    req.session.user = {
+      id: updated._id.toString(),
+      email: updated.lowerEmail,
+      fname: updated.fname || '',
+      lname: updated.lname || '',
+      role: updated.role
+    };
+
+    // Redirect to profile page after successful update
+    return res.redirect('/users/profile');
+  } catch (e) {
+    console.error('Edit profile error:', e);
+    return res.render('edit-profile', {
+      title: 'Edit Profile',
+      css: '/public/css/styles.css',
+      user: req.session.user,
+      error: e.toString()
+    });
+  }
+});
+
 // Logout
 router.get('/logout', (req, res) => {
   if (req.session) {
