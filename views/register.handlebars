@@ -16,14 +16,14 @@
 
         <p class="login-link">
             Already have an account?
-            <a href="/user/login">Log in</a>
+            <a href="/users/login">Log in</a>
         </p>
 
         {{#if error}}
         <p class="error-text">{{error}}</p>
         {{/if}}
 
-        <form method="POST" action="/user/register">
+        <form method="POST" action="/users/register">
 
             <div class="row">
                 <input type="text" name="fname" placeholder="First name" required>
@@ -45,8 +45,8 @@
         <div class="divider">Or continue with</div>
 
         <div class="social-row">
-            <a href="/user/auth/google" class="oauth-btn google">Google</a>
-            <a href="/user/auth/apple" class="oauth-btn apple">Apple</a>
+            <a href="/users/auth/google" class="oauth-btn google">Google</a>
+            <a href="/users/auth/apple" class="oauth-btn apple">Apple</a>
         </div>
 
     </div>
