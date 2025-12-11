@@ -15,31 +15,19 @@ export const isValidId = (id) => {
   return id;
 };
 
-export function validateEmail(email) {
-  let trimmed = checkString(email, "Email").toLowerCase();
-  if (trimmed.includes(" ")) throw "Email is invalid";
-
-  const firstAtIndex = trimmed.indexOf("@");
-  const lastAtIndex = trimmed.lastIndexOf("@");
-  if (firstAtIndex <= 0 || firstAtIndex !== lastAtIndex) throw "Email is invalid";
-
-  const dotIndex = trimmed.indexOf(".", firstAtIndex + 2);
-  if (dotIndex === -1 || dotIndex === trimmed.length - 1)
+export const validateEmail = (email) => {
+  email = checkString(email, "Email").toLowerCase();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
     throw "Email is invalid";
-
-  if (trimmed.includes("..")) throw "Email is invalid";
-  if (trimmed.startsWith(".")) throw "Email is invalid";
-  if (trimmed[firstAtIndex - 1] === ".") throw "Email is invalid";
-
-  return trimmed;
-}
+  }
+  return email;
+};
 
 export function validatePassword(password) {
   const trimmed = checkString(password, "Password");
+  if (trimmed.includes(" ")) throw "Password cannot contain spaces";
   if (trimmed.length < 6) throw "Password must be at least 6 characters";
   return trimmed;
 }
 
-export function validateId(id) {
-  return isValidId(id);
-}

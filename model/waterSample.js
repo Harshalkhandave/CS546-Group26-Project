@@ -21,5 +21,5 @@ waterSampleSchema.index({ sample_number: 1 }, { unique: true });
 waterSampleSchema.index({ sample_site: 1 });
 waterSampleSchema.index({ sample_date: -1 });
 
-const waterSampleCollection = model("waterSample", waterSampleSchema);
+const waterSampleCollection = model("WaterSample", waterSampleSchema);
 export default waterSampleCollection;

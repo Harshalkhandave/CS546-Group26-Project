@@ -15,5 +15,5 @@ const sampleSiteSchema = new Schema(
 
 sampleSiteSchema.index({ sample_site: 1 }, { unique: true });
 
-const sampleSiteCollection = model("sampleSite", sampleSiteSchema)
+const sampleSiteCollection = model("SampleSite", sampleSiteSchema)
 export default sampleSiteCollection;

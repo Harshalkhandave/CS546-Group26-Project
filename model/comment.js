@@ -14,5 +14,5 @@ const commentSchema = new Schema(
 commentSchema.index({ borough: 1 });
 commentSchema.index({ user: 1 });
 
-const commentCollection =  model("comment", commentSchema)
+const commentCollection =  model("Comment", commentSchema)
 export default commentCollection;
