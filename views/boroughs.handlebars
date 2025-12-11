@@ -1,0 +1,145 @@
+<div class="container mt-4">
+    <h1 class="mb-4">NYC Borough Water Quality Overview</h1>
+
+    <div class="map-container">
+        <h3>Borough Water Quality Heat Map</h3>
+        <div id="boroughMap" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+    </div>
+
+    <div class="row">
+        {{#each boroughs}}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+
+                    <h4 class="card-title">{{this.name}}</h4>
+
+                    <p class="card-text">
+                        {{this.description}}
+                    </p>
+
+                    <hr>
+
+                    <p><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
+
+                    {{#if this.stats.[0]}}
+                        <p><strong>Avg Chlorine:</strong> {{toFixed3 this.stats.[0].avg_chlorine}} NTU</p>
+                        <p><strong>Avg Turbidity:</strong> {{toFixed3 this.stats.[0].avg_turbidity}} mg/L</p>
+                        <p><strong>Avg Coliform:</strong> {{toFixed3 this.stats.[0].avg_coliform}} NTU</p>
+                        <p><strong>Avg E Coli:</strong> {{toFixed3 this.stats.[0].avg_e_coli}} mg/L</p>
+                        <p><strong>Avg Fluoride:</strong> {{toFixed3 this.stats.[0].avg_fluoride}} NTU</p>
+                    {{else}}
+                        <p><em>No statistics available.</em></p>
+                    {{/if}}
+
+                    <a href="/boroughs/{{this._id}}" class="btn btn-primary mt-3">
+                        View Details
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+<script>
+
+const boroughStats = {{{json boroughs}}};
+
+const map = L.map('boroughMap',{
+  center: [40.7128, -74.0060],
+  zoom: 10,
+  dragging: false,          
+  zoomControl: false,       
+  scrollWheelZoom: false,   
+  doubleClickZoom: false,
+  boxZoom: false,
+  keyboard: false,
+  tap: false}).setView([40.7128, -74.0060], 10);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18
+}).addTo(map);
+
+function getColor(chlorine, turbidity) {
+  let score = 100;
+
+  // chlorine 0.2–1.0
+  if (!chlorine || chlorine < 0.2 || chlorine > 1.0)
+    score -= 40;
+
+  // turbidity < 1 ideal
+  if (!turbidity || turbidity > 1)
+    score -= 40;
+
+  if (score >= 80) return "green";
+  if (score >= 50) return "yellow";
+  return "red";
+}
+
+const boroughDict = {};
+for (const b of boroughStats) {
+  boroughDict[b.name] = b.quality || null;
+}
+function toFixed3(num) {
+  return (num !== undefined && num !== null) ? num.toFixed(3) : "N/A";
+}
+
+fetch("/public/geojson/new-york-city-boroughs.geojson")
+  .then(res => res.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: function(feature) {
+        const name = feature.properties.BoroName;
+        const q = boroughDict[name];
+
+        const fillColor = q
+          ? getColor(q.chlorine, q.turbidity)
+          : "#bbbbbb";
+
+        return {
+          color: "black",
+          weight: 2,
+          fillColor,
+          fillOpacity: 0.7
+        };
+      },
+
+      onEachFeature: function(feature, layer) {
+        const name = feature.properties.BoroName;
+        const q = boroughDict[name];
+
+        let popup = `<strong>${name}</strong><br>`;
+        if (q) {
+          popup += `
+            Avg. Chlorine: ${toFixed3(q.chlorine)}<br>
+            Avg. Turbidity: ${toFixed3(q.turbidity)}<br>
+            <a href="/boroughs/${q._id}">View Borough</a>
+          `;
+        } else {
+          popup += "No sample data available.";
+        }
+
+        layer.bindPopup(popup);
+      }
+    }).addTo(map);
+  });
+
+const legend = L.control({ position: "bottomright" });
+
+legend.onAdd = function (map) {
+    const div = L.DomUtil.create("div", "info legend");
+    const grades = ["Good", "Average", "Poor"];
+    const colors = ["green", "yellow", "red"];
+
+    div.innerHTML = "<strong>Overall Water Quality</strong><br>";
+    for (let i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+        `<i style="background:${colors[i]}; width:18px; height:18px; display:inline-block; margin-right:5px;"></i> ${grades[i]}<br>`;
+    }
+
+     return div;
+};
+
+legend.addTo(map);
+</script>

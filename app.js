@@ -5,10 +5,7 @@ import dotenv from 'dotenv';
 import exphbs from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import indexRoutes from './routes/index.js';
-import borroughRoutes from './routes/boroughs.js';
-import waterSampleRoutes from './routes/waterSamples.js';
-import commentRoutes from './routes/comments.js';
+import configRoutes from './routes/index.js';
 import connectDB, { disconnectDB } from './config/mongoConnection.js'
 
 await connectDB();
@@ -24,6 +21,15 @@ dotenv.config();
 // Dynamically import Passport configuration and routes so env vars are available
 await import('./config/passport.js');
 
+export function logRequest(req, res, next) {
+  const timestamp = new Date().toUTCString();
+  const method = req.method;
+  const path = req.path;
+  let authStatus = 'Non-Authenticated';
+  if (req.session.user) authStatus = `Authenticated ${req.session.user.role}`;
+  console.log(`[${timestamp}]: ${method} ${path} (${authStatus})`);
+  next();
+}
 
 // request parsing
 app.use(express.urlencoded({ extended: true }));
@@ -38,7 +44,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(logRequest);
 // expose session user to templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.session && req.session.user ? req.session.user : null;
@@ -51,27 +57,28 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.engine(
   'handlebars',
   exphbs.engine({
-    defaultLayout: 'main'
-  })
+    defaultLayout: 'main',
+    helpers: {
+      toFixed3: (num) => Number(num).toFixed(3),
+      json: (context) => JSON.stringify(context)
+  }})
 );
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 // routes
-app.use('/', indexRoutes);
-app.use('/boroughs', borroughRoutes);
-app.use('/waterSamples', waterSampleRoutes);
-app.use('/comments', commentRoutes);
+configRoutes(app);
 
 // middleware
 app.use
 // start server
-app.listen(3000, () => {
-  console.log('Server running at http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
 
 process.on("SIGINT", async () => {
   console.log("Shutting down...");
   await disconnectDB();
-  server.close(() => process.exit(0));
+  process.exit(0);
 });
