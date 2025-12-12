@@ -576,6 +576,7 @@ body.theme-dark .error-text {
     padding: 32px 24px;
   }
 }
+
 #boroughMap {
     width: 100%;
     max-width: 800px; 
@@ -583,7 +584,8 @@ body.theme-dark .error-text {
     display: block !important;
     background: #eaeaea;
     margin: 0 auto;
-  }
+}
+
   
 
 /* =========================
