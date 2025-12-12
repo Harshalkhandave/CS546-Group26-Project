@@ -8,6 +8,18 @@ export const checkString = (str, varName) => {
   return str;
 };
 
+export const validateName = (name, varName) => {
+  name = checkString(name, varName);
+  if (name.length < 2) throw `${varName} must be at least 2 characters`;
+  if (name.length > 50) throw `${varName} cannot exceed 50 characters`;
+  const nameRegex = /^[a-zA-Z\s\-']+$/;
+
+  if (!nameRegex.test(name)) {
+    throw `${varName} format is not valid`;
+  }
+  return name;
+};
+
 export const isValidId = (id) => {
   checkString(id, "id");
   id = id.trim();
@@ -27,7 +39,10 @@ export const validateEmail = (email) => {
 export function validatePassword(password) {
   const trimmed = checkString(password, "Password");
   if (trimmed.includes(" ")) throw "Password cannot contain spaces";
-  if (trimmed.length < 6) throw "Password must be at least 6 characters";
+  const pwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  if (!pwdRe.test(trimmed)) {
+    throw "Password must be at least 8 characters and include uppercase, lowercase, number and symbol.";
+  }
+  
   return trimmed;
 }
-
