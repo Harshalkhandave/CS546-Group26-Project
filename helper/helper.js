@@ -8,6 +8,18 @@ export const checkString = (str, varName) => {
   return str;
 };
 
+export const validateName = (name, varName) => {
+  name = checkString(name, varName);
+  if (name.length < 2) throw `${varName} must be at least 2 characters`;
+  if (name.length > 50) throw `${varName} cannot exceed 50 characters`;
+  const nameRegex = /^[a-zA-Z\s\-']+$/;
+
+  if (!nameRegex.test(name)) {
+    throw `${varName} format is not valid`;
+  }
+  return name;
+};
+
 export const isValidId = (id) => {
   checkString(id, "id");
   id = id.trim();
@@ -15,31 +27,22 @@ export const isValidId = (id) => {
   return id;
 };
 
-export function validateEmail(email) {
-  let trimmed = checkString(email, "Email").toLowerCase();
-  if (trimmed.includes(" ")) throw "Email is invalid";
-
-  const firstAtIndex = trimmed.indexOf("@");
-  const lastAtIndex = trimmed.lastIndexOf("@");
-  if (firstAtIndex <= 0 || firstAtIndex !== lastAtIndex) throw "Email is invalid";
-
-  const dotIndex = trimmed.indexOf(".", firstAtIndex + 2);
-  if (dotIndex === -1 || dotIndex === trimmed.length - 1)
+export const validateEmail = (email) => {
+  email = checkString(email, "Email").toLowerCase();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
     throw "Email is invalid";
-
-  if (trimmed.includes("..")) throw "Email is invalid";
-  if (trimmed.startsWith(".")) throw "Email is invalid";
-  if (trimmed[firstAtIndex - 1] === ".") throw "Email is invalid";
-
-  return trimmed;
-}
+  }
+  return email;
+};
 
 export function validatePassword(password) {
   const trimmed = checkString(password, "Password");
-  if (trimmed.length < 6) throw "Password must be at least 6 characters";
+  if (trimmed.includes(" ")) throw "Password cannot contain spaces";
+  const pwdRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  if (!pwdRe.test(trimmed)) {
+    throw "Password must be at least 8 characters and include uppercase, lowercase, number and symbol.";
+  }
+  
   return trimmed;
-}
-
-export function validateId(id) {
-  return isValidId(id);
 }

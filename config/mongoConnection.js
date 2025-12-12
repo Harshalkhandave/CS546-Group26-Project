@@ -6,9 +6,9 @@ const connectDB = async () => {
       "mongodb+srv://harshalkhandave19_db_user:NdlOn3UpsnzGKKpW@cluster0.izltwpm.mongodb.net/DeepSip",
       {}
     );
-    console.log("✅ MongoDB connected!");
+    console.log("MongoDB connected!");
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message);
+    console.error("MongoDB connection failed:", error.message);
     process.exit(1);
   }
 };
@@ -16,9 +16,9 @@ const connectDB = async () => {
 export const disconnectDB = async () => {
   try {
     await mongoose.disconnect();
-    console.log("🔌 MongoDB disconnected!");
+    console.log("MongoDB disconnected!");
   } catch (error) {
-    console.error("❌ MongoDB disconnection failed:", error.message);
+    console.error("MongoDB disconnection failed:", error.message);
   }
 };
 
