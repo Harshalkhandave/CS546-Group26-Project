@@ -29,13 +29,13 @@ export function validatePassword(password) {
   if (trimmed.includes(" ")) throw "Password cannot contain spaces";
   if (trimmed.length < 6) throw "Password must be at least 6 characters";
   return trimmed;
-}
+};
 
 export function getCurrentWeekStart() {
   const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay();      
-  const diff = (day + 6) % 7;  
+  d.setHours(0, 0, 0, 0);      // strip time
+  const day = d.getDay();      // 0 = Sun
+  const diff = (day + 6) % 7;  // Monday = 0
   d.setDate(d.getDate() - diff);
   return d;
-}
+};

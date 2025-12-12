@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
 
-  // ---- NEW: Extract toast message safely ----
+  // Extract toast message
   let toast = null;
   if (req.session.toast) {
     toast = req.session.toast;
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     }
   });
 
-  // ---- detect if user voted this week ----
+  // detect if user voted this week
   let userVoteBoroughId = null;
 
   if (req.session.user) {
@@ -52,13 +52,13 @@ router.get('/', async (req, res) => {
     }
   }
 
-  // ---- render with toast ----
+  // render with toast
   res.render("boroughs", { 
     boroughs,
     isAuthenticated: !!req.session.user,
     user: req.session.user || null,
     userVoteBoroughId,
-    toast    // 👈 MUST PASS THIS OR HANDLEBARS DOESN’T KNOW IT
+    toast
   });
 });
 

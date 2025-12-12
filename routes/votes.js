@@ -7,16 +7,6 @@ import { boroughCollection, voteCollection } from '../model/index.js';
 
 const router = express.Router();
 
-// ---- helper: start of current week (Mon 00:00) ----
-function getCurrentWeekStart() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);      // strip time
-  const day = d.getDay();      // 0 = Sun
-  const diff = (day + 6) % 7;  // Monday = 0
-  d.setDate(d.getDate() - diff);
-  return d;
-}
-
 router.post('/', requireLogin, async (req, res) => {
   try {
     console.log('POST /votes body:', req.body);
@@ -44,7 +34,7 @@ router.post('/', requireLogin, async (req, res) => {
         type: 'error',
         message: 'You have already voted for a borough this week.'
       };
-      return res.redirect('/votes/best');   // 👈 stay on Best Borough page
+      return res.redirect('/votes/best');   // stay on Best Borough page after login
     }
 
     await voteCollection.create({
@@ -66,19 +56,19 @@ router.post('/', requireLogin, async (req, res) => {
 });
 
 
-// ---- GET /votes/best  (Best Borough of current week) ----
+// GET /votes/best 
 router.get("/best", async (req, res) => {
   try {
     const weekStart = getCurrentWeekStart();
 
-    // --- Toast from session (for this page only) ---
+    // Toast from session (for this page only)
     let toast = null;
     if (req.session.toast) {
       toast = req.session.toast;
       delete req.session.toast;
     }
 
-    // --- 1) Winner for this week (for the top card) ---
+    // Winner for this week
     const agg = await voteCollection.aggregate([
       { $match: { weekStart } },
       { $group: { _id: "$boroughId", count: { $sum: 1 } } },
@@ -98,10 +88,10 @@ router.get("/best", async (req, res) => {
       }
     }
 
-    // --- 2) Get all boroughs ---
+    // Get all boroughs
     const allBoroughs = await boroughCollection.find().lean();
 
-    // --- 3) Find which borough THIS user voted for this week ---
+    // Find which borough THIS user voted for this week
     let userVoteBoroughId = null;
     if (req.session.user) {
       const userId = new mongoose.Types.ObjectId(req.session.user.id);
@@ -115,9 +105,9 @@ router.get("/best", async (req, res) => {
       }
     }
 
-    // --- 4) Build the borough list shown in "Cast Your Vote" ---
-    // If the user has voted -> show ONLY their borough
-    // If not -> show all boroughs
+    /* Build the borough list shown in "Cast Your Vote"
+       If the user has voted -> show ONLY their borough
+       If not -> show all boroughs */
     let votingBoroughs;
     let userHasVoted = !!userVoteBoroughId;
 
@@ -131,11 +121,11 @@ router.get("/best", async (req, res) => {
 
     return res.render("bestBorough", {
       bestBorough,
-      boroughs: votingBoroughs,                 // 👈 list used by the template
+      boroughs: votingBoroughs,                 
       weekStart: weekStart.toDateString(),
       isAuthenticated: !!req.session.user,
       user: req.session.user || null,
-      userHasVoted,                             // 👈 simple boolean for template
+      userHasVoted,                             
       toast
     });
   } catch (err) {

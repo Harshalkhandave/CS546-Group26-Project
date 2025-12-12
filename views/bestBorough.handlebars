@@ -53,10 +53,10 @@
             </p> --}}
 
             {{#if ../userHasVoted}}
-              {{!-- User already voted → only their chosen borough is in the list --}}
+              {{!-- already voted → only their chosen borough --}}
               <button class="btn btn-success mt-2" disabled>✓ Voted this week</button>
             {{else}}
-              {{!-- User has not voted yet → show vote button --}}
+              {{!-- has not voted yet → show vote button --}}
               <form method="POST" action="/votes">
                 <input type="hidden" name="boroughId" value="{{this._id}}">
                 <button class="btn btn-outline-primary mt-2">
