@@ -31,3 +31,11 @@ export function validatePassword(password) {
   return trimmed;
 }
 
+export function getCurrentWeekStart() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay();      
+  const diff = (day + 6) % 7;  
+  d.setDate(d.getDate() - diff);
+  return d;
+}

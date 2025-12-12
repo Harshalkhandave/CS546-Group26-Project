@@ -82,7 +82,8 @@ router.get('/debug/session', (req, res) => {
 router.get('/login', async (req, res) => {
   res.render('login', {
     title: 'Login',
-    css: '/public/css/styles.css'
+    css: '/public/css/styles.css',
+    redirect: req.query.redirect || '/'
   });
 });
 
@@ -128,7 +129,8 @@ router.post('/login', async (req, res) => {
     console.log(`[Login] ✓ Login successful for ${lowerEmail}`);
     // LOGIN SUCCESS
     req.session.user = { id: user._id.toString(), email: user.lowerEmail, fname: user.fname || '', lname: user.lname || '', role: user.role };
-    return res.redirect('/');
+    const redirectTo = req.body.redirect || '/';
+    return res.redirect(redirectTo); // make redirect
 
   } catch (e) {
     console.error("Login Error:", e);
