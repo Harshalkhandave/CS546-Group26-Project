@@ -1071,3 +1071,60 @@ body.theme-dark .btn-success:disabled {
   font-style: italic;
   margin-top: 1.5rem;
 }
+
+
+/* =========================
+   Health Tips
+   ========================= */
+
+.health-tips {
+  background-color: #f8f9fa;
+  /* border-left: 6px solid #0d6efd; */
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.health-tips h3 {
+  margin-top: 0;
+  color: #0d6efd;
+}
+
+.health-notice {
+  background-color: #fff3cd;
+  /* border-left: 4px solid #ffc107; */
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.health-disclaimer {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.75rem;
+}
+
+.health-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* controls vertical spacing */
+}
+
+.health-tip-card {
+  background-color: #ffffff;
+  /* border-left: 4px solid #198754; */
+  padding: 0.75rem 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.health-tip-lines {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.health-tip-line {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  padding-left: 0.5rem;
+  /* border-left: 2px solid #e9ecef; */
+}
