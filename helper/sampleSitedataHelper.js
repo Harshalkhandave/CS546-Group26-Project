@@ -34,13 +34,10 @@ export const isValidLatitude = (lat) => {
 
 export const isValidLongitude = (lng) => {
   if (lng === undefined || lng === null) throw `longitude is required`;
-
   if (typeof lng === "string") lng = Number(lng);
   if (isNaN(lng)) throw "longitude must be a valid number";
-
   if (lng < -74.26036900 || lng > -73.69920600)
     throw `longitude must be a valid NYC longitude`;
-
   return Number(lng.toFixed(8));
 };
 
@@ -48,10 +45,10 @@ export const isValidBorough = (borough) => {
   borough = checkString(borough, "borough");
   const normalized = borough.toLowerCase();
   const allowedMap = {
-    "bronx": "Bronx",
-    "brooklyn": "Brooklyn",
-    "manhattan": "Manhattan",
-    "queens": "Queens",
+    bronx: "Bronx",
+    brooklyn: "Brooklyn",
+    manhattan: "Manhattan",
+    queens: "Queens",
     "staten island": "Staten Island"
   };
   if (!allowedMap.hasOwnProperty(normalized)) {
@@ -60,24 +57,19 @@ export const isValidBorough = (borough) => {
   return allowedMap[normalized];
 };
 
-export const isValidNeighborhood = (neighborhood) => {
-  return checkString(neighborhood, "neighborhood");
-};
-
-export const isValidSampleSiteData = async ({ 
-  sample_site, 
-  sample_station, 
-  latitude, 
-  longitude, 
-  borough, 
-  neighborhood 
+export const isValidSampleSiteData = async ({
+  sample_site,
+  sample_station,
+  latitude,
+  longitude,
+  borough,
+  neighborhood
 }) => {
   return {
     sample_site: await isValidSample_site(sample_site),
     sample_station: isValidSample_station(sample_station),
     latitude: isValidLatitude(latitude),
     longitude: isValidLongitude(longitude),
-    borough: isValidBorough(borough),
-    neighborhood: isValidNeighborhood(neighborhood)
+    borough: isValidBorough(borough)
   };
 };

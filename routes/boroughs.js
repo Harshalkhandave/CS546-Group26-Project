@@ -1,5 +1,5 @@
 import express from 'express';
-import { voteCollection, boroughCollection, waterSampleCollection} from '../model/index.js';
+import { voteCollection, boroughCollection, waterSampleCollection, sampleSiteCollection} from '../model/index.js';
 import { isValidId, checkString, getCurrentWeekStart } from '../helper/helper.js';
 import mongoose from 'mongoose';
 const router = express.Router();
@@ -66,20 +66,41 @@ router.get('/', async (req, res) => {
 
 
 router.get('/:id', async (req, res) => {
-  const borough = await boroughCollection.findById(req.params.id).lean();
-  const samples = await waterSampleCollection
-      .find({ boroughId: req.params.id })
-      .sort({ sample_date: -1 })
+  try {
+    const borough = await boroughCollection.findById(req.params.id).lean();
+    if (!borough) {
+      return res.status(404).render('error', { error: 'Borough not found' });
+    }
+
+    const sites = await sampleSiteCollection
+      .find({ borough: borough.name }) 
+      .select('sample_site')
       .lean();
 
-  samples.forEach(s => {
-      s.sample_date = new Date(s.sample_date).toISOString().split("T")[0];
-  });
+    const siteNames = sites.map(s => s.sample_site);
 
-  res.render("boroughDetails", {
-      borough,
-      samples
-  });
+    const samples = await waterSampleCollection
+        .find({ sample_site: { $in: siteNames } }) 
+        .sort({ sample_date: -1 })
+        .limit(200) 
+        .lean();
+
+    samples.forEach(s => {
+        s.sample_date = s.sample_date 
+          ? new Date(s.sample_date).toISOString().split("T")[0] 
+          : 'N/A';
+    });
+
+    res.render("boroughDetails", {
+        borough,
+        samples,
+        isAuthenticated: !!req.session.user
+    });
+
+  } catch (e) {
+    console.error("Borough Details Error:", e);
+    res.status(500).render('error', { error: 'Could not load borough details' });
+  }
 });
 
 router.delete('/:id', async (req, res) => {

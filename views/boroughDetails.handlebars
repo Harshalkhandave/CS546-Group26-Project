@@ -11,95 +11,27 @@
     <h3>Borough Statistics</h3>
 
     {{#if borough.stats.[0]}}
-        <ul class="list-group mb-4">
-            <li class="list-group-item">
-                <strong>Avg Chlorine:</strong> {{toFixed3 borough.stats.[0].avg_chlorine}} mg/L
-            </li>
-            <li class="list-group-item">
-                <strong>Avg Turbidity:</strong> {{toFixed3 borough.stats.[0].avg_turbidity}} NTU
-            </li>
-            <li class="list-group-item">
-                <strong>Avg Coliform:</strong> {{toFixed3 borough.stats.[0].avg_coliform}} MPN/100mL
-            </li>
-            <li class="list-group-item">
-                <strong>Avg E. Coli:</strong> {{toFixed3 borough.stats.[0].avg_e_coli}} MPN/100mL
-            </li>
-            <li class="list-group-item">
-                <strong>Avg Fluoride:</strong> {{toFixed3 borough.stats.[0].avg_fluoride}} mg/L
-            </li>
-        </ul>
+    <ul class="list-group mb-4">
+        <li class="list-group-item">
+            <strong>Avg Chlorine:</strong> {{toFixed3 borough.stats.[0].avg_chlorine}} mg/L
+        </li>
+        <li class="list-group-item">
+            <strong>Avg Turbidity:</strong> {{toFixed3 borough.stats.[0].avg_turbidity}} NTU
+        </li>
+        <li class="list-group-item">
+            <strong>Avg Coliform:</strong> {{toFixed3 borough.stats.[0].avg_coliform}} MPN/100mL
+        </li>
+        <li class="list-group-item">
+            <strong>Avg E. Coli:</strong> {{toFixed3 borough.stats.[0].avg_e_coli}} MPN/100mL
+        </li>
+        <li class="list-group-item">
+            <strong>Avg Fluoride:</strong> {{toFixed3 borough.stats.[0].avg_fluoride}} mg/L
+        </li>
+    </ul>
     {{else}}
-        <p><em>No statistics available for this borough.</em></p>
+    <p><em>No statistics available for this borough.</em></p>
     {{/if}}
 
     <hr>
-
-    <h3>Neighborhoods</h3>
-
-    {{#if borough.neighborhoods}}
-        <ul class="list-group mb-4">
-
-            {{#each borough.neighborhoods}}
-            <li class="list-group-item">
-
-                <h5>{{this.name}}</h5>
-
-                {{#if this.stats}}
-                <div class="mt-2">
-                    <strong>Avg Chlorine:</strong> {{toFixed3 this.stats.avg_chlorine}} mg/L<br>
-                    <strong>Avg Turbidity:</strong> {{toFixed3 this.stats.avg_turbidity}} NTU<br>
-                    <strong>Avg Coliform:</strong> {{toFixed3 this.stats.avg_coliform}} MPN/100mL<br>
-                    <strong>Avg E. Coli:</strong> {{toFixed3 this.stats.avg_e_coli}} MPN/100mL<br>
-                    <strong>Avg Fluoride:</strong> {{toFixed3 this.stats.avg_fluoride}} mg/L<br>
-                    <strong>Latest Sample:</strong> 
-                    {{this.stats.latest_sample_date}}
-                </div>
-                {{else}}
-                    <em>No stats available.</em>
-                {{/if}}
-
-            </li>
-            {{/each}}
-
-        </ul>
-    {{else}}
-        <p><em>No neighborhoods listed.</em></p>
-    {{/if}}
-
-    <hr>
-
-    {{#if samples}}
-        <h3>Water Quality Samples</h3>
-
-        <div class="table-responsive mb-5">
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Date</th>
-                        <th>Site</th>
-                        <th>Chlorine (mg/L)</th>
-                        <th>Turbidity (NTU)</th>
-                        <th>Coliform</th>
-                        <th>E. Coli</th>
-                        <th>Fluoride (mg/L)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each samples}}
-                    <tr>
-                        <td>{{this.sample_date}}</td>
-                        <td>{{this.sample_site}}</td>
-                        <td>{{toFixed3 this.residual_free_chlorine_mg_l}}</td>
-                        <td>{{toFixed3 this.turbidity_ntu}}</td>
-                        <td>{{this.coliform_quanti_tray_mpn_100ml}}</td>
-                        <td>{{this.e_coli_quanti_tray_mpn_100ml}}</td>
-                        <td>{{toFixed3 this.fluoride_mg_l}}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </div>
-
-    {{/if}}
 
 </div>

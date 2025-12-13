@@ -35,7 +35,10 @@ const exportedMethods = {
         boroughId = isValidId(boroughId);
         return await commentCollection.find({
             borough: new mongoose.Types.ObjectId(boroughId)
-        });
+        })
+        .populate('user', 'fname lname')
+        .sort({ commentDate: -1 })
+        .lean();
     },
 
     async deleteComment(id) {
