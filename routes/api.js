@@ -21,4 +21,14 @@ router.get("/data-dates", async (req, res) => {
     }
 });
 
+router.get('/water-samples', async (req, res) => {
+  try {
+    const { page } = req.query;
+    const results = await waterSamplesData.getSamplesByPage(page);
+    res.json(results);
+  } catch (e) {
+    res.status(500).json({ e });
+  }
+});
+
 export default router;

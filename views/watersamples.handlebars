@@ -1,0 +1,19 @@
+<div class="ws-container">
+    <h2 class="bb-title">Water Quality Data (2023 - 2024)</h2>
+    <p class="ws-description">
+        Showing water quality samples from 2023 to 2024. 
+        Data is loaded via AJAX.
+    </p>
+
+    <div id="error-div" class="ws-error hidden"></div>
+    <p id="loading-msg" class="ws-status-text hidden">Loading data...</p>
+    <ul id="sample-list" class="ws-list">
+        </ul>
+
+    <button id="btn-load-more" class="ws-load-more-btn hidden">Load More</button>
+
+    <p id="no-more-data" class="ws-status-text hidden">No more samples to load.</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/public/js/ajax_watersamples.js"></script>
