@@ -26,18 +26,24 @@
     </div>
 
     <aside class="hero-card">
-      <h2>Today's Borough Snapshot</h2>
+      <h2>This Week's Best Borough</h2>
       <ul class="snapshot-list">
-        <li><span>Manhattan</span><strong>Good</strong></li>
-        <li><span>Brooklyn</span><strong>Good</strong></li>
-        <li><span>Queens</span><strong>Moderate</strong></li>
-        <li><span>Bronx</span><strong>Good</strong></li>
-        <li><span>Staten Island</span><strong>Good</strong></li>
+        {{#each boroughSnapshots}}
+          <li><span>{{this.name}}</span><strong>{{this.voteCount}} votes</strong></li>
+        {{/each}}
       </ul>
       <p class="card-note">
-        Values shown here are sample placeholders. Actual status is based on
-        recorded water sample data.
+        Vote counts this week. Cast your vote to support your favorite borough!
       </p>
+      {{#if isAuthenticated}}
+        <p>
+          <a href="/votes/best" class="btn btn-primary">Vote</a>
+        </p>
+      {{else}}
+        <p>
+          <a href="/users/login" class="btn btn-outline">Sign in to vote</a>
+        </p>
+      {{/if}}
     </aside>
   </div>
 </section>
