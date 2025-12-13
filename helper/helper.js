@@ -45,4 +45,13 @@ export function validatePassword(password) {
   }
   
   return trimmed;
-}
+};
+
+export function getCurrentWeekStart() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);      // strip time
+  const day = d.getDay();      // 0 = Sun
+  const diff = (day + 6) % 7;  // Monday = 0
+  d.setDate(d.getDate() - diff);
+  return d;
+};

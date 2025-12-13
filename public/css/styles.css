@@ -10,7 +10,8 @@
 
 /* Default (light) theme */
 :root {
-  --bg: #f5f5f9;
+  /* --bg: #f5f5f9; */
+  --bg: #ffffff;
   --surface: #ffffff;
   --surface-soft: #f9f9ff;
   --text-main: #222222;
@@ -576,6 +577,7 @@ body.theme-dark .error-text {
     padding: 32px 24px;
   }
 }
+
 #boroughMap {
     width: 100%;
     max-width: 800px; 
@@ -583,7 +585,8 @@ body.theme-dark .error-text {
     display: block !important;
     background: #eaeaea;
     margin: 0 auto;
-  }
+}
+
   
 
 /* =========================
@@ -637,9 +640,10 @@ body.theme-dark .error-text {
 
 .profile-card {
   background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft); 
 }
 
 .profile-card h1 {
@@ -837,3 +841,125 @@ body.theme-dark .error-text {
   }
 }
 
+/* =========================
+   Best Borough
+   ========================= */
+
+
+.bb-container {
+  max-width: 1150px;            /* closer to landing spacing */
+  margin: 0 auto;
+  padding: 0 1.5rem;            /* match .container */
+}
+
+.bb-mt-4 { margin-top: 2.5rem; } /* match page-main feel */
+
+/* Use theme typography */
+.bb-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  margin: 0 0 0.75rem;
+  color: var(--text-main);
+}
+
+.bb-subtitle {
+  color: var(--text-muted);
+  margin: 0 0 1.25rem;
+}
+
+/* Divider consistent with theme */
+.bb-hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1.75rem 0;
+}
+
+/* Cards match landing hero-card style */
+.bb-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.bb-card + .bb-card { margin-top: 1rem; }
+
+.bb-card-body {
+  padding: 1.25rem 1.3rem;
+}
+
+.bb-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.bb-card-text {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.bb-card-meta {
+  margin: 0;
+  color: var(--text-main);
+}
+
+/* Section title */
+.bb-section-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 0.75rem;
+  color: var(--text-main);
+}
+
+.bb-helptext {
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+/* Grid similar layout */
+.bb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .bb-grid { grid-template-columns: 1fr; }
+}
+
+/* Small borough cards */
+.bb-mini-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.bb-mini-card .bb-card-body { padding: 1rem 1.1rem; }
+
+.bb-mini-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+/* Keep existing button system (DON'T re-define .btn globally) */
+.bb-btn-row { margin-top: 0.5rem; }
+
+/* Make the "Voted this week" button readable in dark mode */
+body.theme-dark .btn-success {
+  background-color: var(--primary);     
+  border-color: var(--primary);
+  color: #fff;
+}
+
+body.theme-dark .btn-success:disabled {
+  opacity: 1; /* prevent dimming */
+  filter: none;
+  cursor: not-allowed;
+  box-shadow: none;
+}

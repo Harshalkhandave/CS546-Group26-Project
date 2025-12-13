@@ -75,6 +75,7 @@ app.engine(
   exphbs.engine({
     defaultLayout: 'main',
     helpers: {
+      eq: (a, b) => a == b,
       toFixed3: (num) => Number(num).toFixed(3),
       json: (context) => JSON.stringify(context),
       array: (...args) => {

@@ -3,14 +3,16 @@ import usersRoutes from './users.js';
 import boroughsRoutes from './boroughs.js';
 import apiRoutes from './api.js';
 import authRoutes from './auth.js';
+import voteRoutes from "./votes.js";
 
 const constructorMethod = (app) => {
   app.use('/', authRoutes);
   app.use('/users', usersRoutes);
   app.use('/boroughs', boroughsRoutes);
   app.use('/', homeRoutes);
-
+  app.use("/votes", voteRoutes);
   app.use('/api', apiRoutes);
+  
   app.use((req, res) => {
     res.status(404).json({error: 'Route Not found'});
   });

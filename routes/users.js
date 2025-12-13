@@ -85,9 +85,13 @@ router.get('/debug/session', (req, res) => {
 /* ===========================================
    LOGIN PAGE (GET)
 =========================================== */
-router.get('/login', (req, res) => {
+router.get('/login', async (req, res) => {
   if (req.session.user) return res.redirect('/');
-  res.render('login', { title: 'Login', css: '/public/css/styles.css' });
+  res.render('login', {
+    title: 'Login',
+    css: '/public/css/styles.css',
+    redirect: req.query.redirect || '/'
+  });
 });
 
 /* ===========================================

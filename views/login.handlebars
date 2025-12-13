@@ -30,6 +30,8 @@
         {{/if}}
 
         <form method="POST" action="/users/login">
+            {{!-- redirect route key --}}
+            <input type="hidden" name="redirect" value="{{redirect}}">  
 
             <input type="email" name="email" placeholder="Email" required>
 

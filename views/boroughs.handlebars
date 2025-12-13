@@ -1,5 +1,11 @@
 <div class="container mt-4">
     <h1 class="mb-4">NYC Borough Water Quality Overview</h1>
+    {{#if toast}}
+      <div id="server-flash-global" 
+          data-error="{{toast.message}}">
+      </div>
+    {{/if}}
+
     <div class="filter-box mt-3 mb-3">
         <label><input type="checkbox" id="overallCheck" checked> Overall Data</label>
         <label class="ms-3"><input type="checkbox" id="monthCheck"> By Month</label>
@@ -50,6 +56,10 @@
                     <a href="/boroughs/{{this._id}}" class="btn btn-primary mt-3">
                         View Details
                     </a>
+
+                    
+
+
 
                 </div>
             </div>
@@ -321,3 +331,11 @@ function fetchAndRefreshMap(year, month) {
 
 loadDataDates();
 </script>
+
+{{#if toast}}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    showToast("{{toast.message}}", "{{toast.type}}");
+  });
+</script>
+{{/if}}

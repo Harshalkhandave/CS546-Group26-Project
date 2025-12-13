@@ -1,10 +1,20 @@
 import express from 'express';
-import { boroughCollection, waterSampleCollection} from '../model/index.js';
-import { isValidId, checkString } from '../helper/helper.js';
+import { voteCollection, boroughCollection, waterSampleCollection} from '../model/index.js';
+import { isValidId, checkString, getCurrentWeekStart } from '../helper/helper.js';
+import mongoose from 'mongoose';
 const router = express.Router();
 
 router.get('/', async (req, res) => {
+
+  // Extract toast message
+  let toast = null;
+  if (req.session.toast) {
+    toast = req.session.toast;
+    delete req.session.toast;   // ensure it only displays once
+  }
+
   const boroughs = await boroughCollection.find().lean(); 
+
   boroughs.forEach(b => {
     if (b.stats && b.stats.length > 0) {
       b.quality = {
@@ -14,9 +24,45 @@ router.get('/', async (req, res) => {
       };
     }
   });
+
+  // detect if user voted this week
+  let userVoteBoroughId = null;
+
+  if (req.session.user) {
+    const userId = req.session.user.id;
+
+    const getCurrentWeekStart = () => {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      const day = d.getDay();
+      const diff = (day + 6) % 7;
+      d.setDate(d.getDate() - diff);
+      return d;
+    };
+
+    const weekStart = getCurrentWeekStart();
+
+    const existingVote = await voteCollection.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+      weekStart
+    }).lean();
+
+    if (existingVote) {
+      userVoteBoroughId = existingVote.boroughId.toString();
+    }
+  }
+
+  // render with toast
   res.render("boroughs", { 
-    boroughs});
+    boroughs,
+    isAuthenticated: !!req.session.user,
+    user: req.session.user || null,
+    userVoteBoroughId,
+    toast
+  });
 });
+
+
 
 
 router.get('/:id', async (req, res) => {
