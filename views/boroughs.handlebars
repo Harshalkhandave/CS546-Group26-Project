@@ -1,323 +1,645 @@
 <div class="container mt-4">
-    <h1 class="mb-4">NYC Borough Water Quality Overview</h1>
-    <div class="filter-box mt-3 mb-3">
-        <label><input type="checkbox" id="overallCheck" checked> Overall Data</label>
-        <label class="ms-3"><input type="checkbox" id="monthCheck"> By Month</label>
-        <label class="ms-3"><input type="checkbox" id="yearCheck"> By Year</label>
+  <h1 class="mb-4">NYC Borough Water Quality Overview</h1>
+  <div class="filter-box mt-3 mb-3">
+    <label><input type="checkbox" id="overallCheck" checked> Overall Data</label>
+    <label class="ms-3"><input type="checkbox" id="dateCheck"> By Date</label>
+    <label class="ms-3"><input type="checkbox" id="monthCheck"> By Month</label>
+    <label class="ms-3"><input type="checkbox" id="yearCheck"> By Year</label>
 
-        <div id="yearSelectBox" class="mt-2" style="display:none;">
-            <label><strong>Select Year:</strong></label>
-            <select id="yearDropdown" class="form-select"></select>
+    <div id="yearSelectBox" class="mt-2" style="display:none;">
+      <label><strong>Select Year:</strong></label>
+      <select id="yearDropdown" class="form-select"></select>
+    </div>
+
+    <div id="monthSelectBox" class="mt-2" style="display:none;">
+      <label><strong>Select Month:</strong></label>
+      <select id="monthDropdown" class="form-select"></select>
+    </div>
+
+    <div id="daySelectBox" class="mt-2" style="display:none;">
+      <label><strong>Select Day:</strong></label>
+      <select id="dayDropdown" class="form-select"></select>
+    </div>
+  </div>
+
+  <div class="dashboard-guide-box">
+    <ul class="mb-0">
+      <h5>How to Use This Dashboard</h5>
+      <li><strong>Filtering Data:</strong> Use the checkboxes at the top to select how you want to filter the water
+        quality data:
+        <ul>
+          <li><strong>Overall Data:</strong> Shows the overall available data for all boroughs.</li>
+          <li><strong>By Year:</strong> Choose a year from the dropdown to view statistics for that year.</li>
+          <li><strong>By Month:</strong> Choose a year first, then a month to narrow the data.</li>
+          <li><strong>By Date:</strong> Choose a specific year, month, and day to see daily data.</li>
+        </ul>
+      </li>
+      <li><strong>Interacting with Boroughs:</strong>
+        <ul>
+          <li>Click on borough names on the map to view a popup with average metrics and total samples.</li>
+          <li>Colored dots on each card indicate the water quality for that metric: green = good, yellow = average, red
+            = poor.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="map-container">
+    <h3>Borough Water Quality Heat Map</h3>
+    <div id="boroughMap" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+  </div>
+
+  <div class="row">
+    {{#each boroughs}}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100" data-borough="{{this.name}}">
+        <div class="card-body">
+          <h4 class="card-title">{{this.name}}</h4>
+          <p class="card-text">{{this.description}}</p>
+          <hr>
+          <p><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
+
+          {{#if this.stats.[0]}}
+          <p><strong>Total Samples:</strong> <span class="sample-count">{{this.stats.[0].sample_count}}</span></p>
+          <p><strong>Avg Chlorine:</strong> <span class="chlorine">{{toFixed3 this.stats.[0].avg_chlorine}}</span></p>
+          <p><strong>Avg Turbidity:</strong> <span class="turbidity">{{toFixed3 this.stats.[0].avg_turbidity}}</span>
+          </p>
+          <p><strong>Avg Coliform:</strong> <span class="coliform">{{toFixed3 this.stats.[0].avg_coliform}}</span></p>
+          <p><strong>Avg E Coli:</strong> <span class="ecoli">{{toFixed3 this.stats.[0].avg_e_coli}}</span></p>
+          <p><strong>Avg Fluoride:</strong> <span class="fluoride">{{toFixed3 this.stats.[0].avg_fluoride}}</span></p>
+          {{else}}
+          <p><em>No statistics available.</em></p>
+          {{/if}}
+
+          <a href="/boroughs/{{this._id}}" class="btn btn-primary mt-3">View Details</a>
         </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  <hr class="my-4">
 
-        <div id="monthSelectBox" class="mt-2" style="display:none;">
-            <label><strong>Select Month:</strong></label>
-            <select id="monthDropdown" class="form-select"></select>
+  <div class="legend-container mb-4">
+    <h4>Legend & Water Quality Metrics</h4>
+
+    <div class="mb-3">
+      <h5>Card Metrics Dots</h5>
+      <p>
+        <span class="value-dot" style="background:#52c41a;"></span> Good<br>
+        <span class="value-dot" style="background:#fadb14;"></span> Average<br>
+        <span class="value-dot" style="background:#ff4d4f;"></span> Poor
+      </p>
+      <p>Each colored dot before a metric in the borough cards indicates the water quality for that metric:</p>
+      <ul>
+        <li><strong>Avg Chlorine:</strong> Good (0.4–0.9 mg/L), Average (0.2–0.4 or 0.9–1.0 mg/L), Poor (&lt;0.2 or
+          &gt;1.0 mg/L)</li>
+        <li><strong>Avg Turbidity:</strong> Good (&lt;=1 NTU), Average (&gt;1 &amp; <=2 NTU), Poor (&gt;2 NTU)</li>
+        <li><strong>Avg Coliform:</strong> Good (&lt;=0.1 CFU/100mL), Average (&gt;0.1 &amp; <=1), Poor (&gt;1)</li>
+        <li><strong>Avg E Coli:</strong> Good (=0 CFU/100mL), Poor (&gt;0 CFU/100mL)</li>
+        <li><strong>Avg Fluoride:</strong> Good (0.6–0.9 mg/L), Average (0.5–0.6 or 0.9–1.0 mg/L), Poor (&lt;0.5 or
+          &gt;1.0 mg/L)</li>
+      </ul>
+    </div>
+
+    <div>
+      <h5>Map Colors</h5>
+      <p>
+        <span style="display:inline-block;width:18px;height:18px;background:green;margin-right:5px;"></span> Good<br>
+        <span style="display:inline-block;width:18px;height:18px;background:yellow;margin-right:5px;"></span>
+        Average<br>
+        <span style="display:inline-block;width:18px;height:18px;background:red;margin-right:5px;"></span> Poor
+      </p>
+      <p>The color of each borough on the map represents the overall water quality based on <strong>chlorine</strong>
+        and <strong>turbidity</strong>.</p>
+    </div>
+  </div>
+
+  <hr class="my-5">
+  <div class="container">
+    <h3 class="mb-4">Borough Water Quality Trend Analysis</h3>
+    <div class="trend-guide-box">
+      <h5>Trend Analysis Guide</h5>
+      <p>Use this section to explore how water quality metrics change over time for different boroughs.</p>
+      <ol class="mb-0">
+        <li><strong>Select Borough:</strong> Use the dropdown to choose the primary borough you want to analyze.</li>
+        <li><strong>Compare Boroughs:</strong>
+          <ul>
+            <li>Enable the "Compare" checkbox to select a second borough for side-by-side comparison.</li>
+            <li>This allows you to see differences in water quality trends between two boroughs on the same chart.</li>
+          </ul>
+        </li>
+        <li><strong>Select Time Interval:</strong>
+          <ul>
+            <li>Use the "Year" checkbox to view trends for a specific year.</li>
+            <li>Use the "Month" checkbox to view more granular, monthly trends.</li>
+            <li>The dropdowns will automatically populate based on your selection, showing only available years and
+              months.</li>
+          </ul>
+        </li>
+        <li><strong>Choose Metrics:</strong>
+          <ul>
+            <li>Select the water quality metrics (Avg Chlorine, Avg Turbidity, Avg Coliform, Avg E Coli, Avg Fluoride)
+              you want to visualize.</li>
+            <li>Multiple metrics can be selected at once, and each will appear as a separate line on the chart.</li>
+          </ul>
+        </li>
+        <li><strong>Chart Interaction:</strong>
+          <ul>
+            <li>The line chart updates automatically when you change boroughs, time, or metrics.</li>
+            <li>Hover over any point to see the exact metric value for that date.</li>
+            <li>Colors correspond to the selected boroughs and metrics for easy comparison.</li>
+          </ul>
+        </li>
+        <li><strong>Tips:</strong>
+          <ul>
+            <li>Always select at least one metric and one borough; otherwise, the chart will remain blank.</li>
+            <li>Switching between "Year" and "Month" allows you to view trends at different levels of detail.</li>
+            <li>If data is missing for a specific date, the chart will automatically skip those points.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label"><strong>Borough</strong></label>
+        <select id="trendBorough" class="form-select">
+          {{#each boroughs}}
+          <option value="{{this.name}}" {{#ifEquals this.name "Manhattan" }}selected{{/ifEquals}}>
+            {{this.name}}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" id="compareToggle">
+          <label class="form-check-label"><strong>Compare</strong></label>
         </div>
+      </div>
+
+      <div class="col-md-4" id="compareBoroughBox" style="display:none;">
+        <label class="form-label"><strong>Compare With</strong></label>
+        <select id="compareBorough" class="form-select">
+          {{#each boroughs}}
+          <option value="{{this.name}}">{{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
     </div>
 
-    <div class="map-container">
-        <h3>Borough Water Quality Heat Map</h3>
-        <div id="boroughMap" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+    <div class="row g-3 align-items-end mt-3">
+      <div class="col-md-4">
+        <label class="form-label"><strong>Time</strong></label><br>
+        <label class="me-3">
+          <input type="checkbox" id="trendYearCheck" checked> Year
+        </label>
+        <label>
+          <input type="checkbox" id="trendMonthCheck"> Month
+        </label>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label"><strong>Year</strong></label>
+        <select id="trendYear" class="form-select"></select>
+      </div>
+
+      <div class="col-md-4" id="trendMonthBox" style="display:none;">
+        <label class="form-label"><strong>Month</strong></label>
+        <select id="trendMonth" class="form-select"></select>
+      </div>
     </div>
 
-    <div class="row">
-        {{#each boroughs}}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100" data-borough="{{this.name}}">
-                <div class="card-body">
-
-                    <h4 class="card-title">{{this.name}}</h4>
-
-                    <p class="card-text">
-                        {{this.description}}
-                    </p>
-
-                    <hr>
-
-                    <p><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
-
-                    {{#if this.stats.[0]}}
-                        <p><strong>Avg Chlorine:</strong> <span class="chlorine">{{toFixed3 this.stats.[0].avg_chlorine}}</span></p>
-                        <p><strong>Avg Turbidity:</strong> <span class="turbidity">{{toFixed3 this.stats.[0].avg_turbidity}}</span></p>
-                        <p><strong>Avg Coliform:</strong> <span class="coliform">{{toFixed3 this.stats.[0].avg_coliform}}</span></p>
-                        <p><strong>Avg E Coli:</strong> <span class="ecoli">{{toFixed3 this.stats.[0].avg_e_coli}}</span></p>
-                        <p><strong>Avg Fluoride:</strong> <span class="fluoride">{{toFixed3 this.stats.[0].avg_fluoride}}</span></p>
-                    {{else}}
-                        <p><em>No statistics available.</em></p>
-                    {{/if}}
-
-                    <a href="/boroughs/{{this._id}}" class="btn btn-primary mt-3">
-                        View Details
-                    </a>
-
-                </div>
-            </div>
-            </div>
-
-        {{/each}}
+    <div class="mt-4">
+      <label><strong>Metrics</strong></label><br>
+      <label><input type="checkbox" class="metricCheck" value="avg_chlorine" checked> Avg Chlorine</label>
+      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_turbidity"> Avg Turbidity</label>
+      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_coliform"> Avg Coliform</label>
+      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_e_coli"> Avg E Coli</label>
+      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_fluoride"> Avg Fluoride</label>
     </div>
+
+    <div class="mt-4">
+      <canvas id="trendChart" height="120"></canvas>
+    </div>
+
+  </div>
 </div>
+
 <script>
+  const boroughStats = {{{ json boroughs }}};
+  const boroughDict = {};
 
-const boroughStats = {{{json boroughs}}};
-const boroughDict = {};
-boroughStats.forEach(b => {
-  boroughDict[b.name] = {
-    chlorine: b.stats?.[0]?.avg_chlorine,
-    turbidity: b.stats?.[0]?.avg_turbidity,
-    coliform: b.stats?.[0]?.avg_coliform,
-    ecoli: b.stats?.[0]?.avg_e_coli,
-    fluoride: b.stats?.[0]?.avg_fluoride,
-    _id: b._id
-  };
-});
-
-const map = L.map('boroughMap',{
-  center: [40.7128, -74.0060],
-  zoom: 10,
-  dragging: false,          
-  zoomControl: false,       
-  scrollWheelZoom: false,   
-  doubleClickZoom: false,
-  boxZoom: false,
-  keyboard: false,
-  tap: false}).setView([40.7128, -74.0060], 10);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18
-}).addTo(map);
-
-function getColor(chlorine, turbidity) {
-  let score = 100;
-
-  if (!chlorine || chlorine < 0.2 || chlorine > 1.0)
-    score -= 40;
-
-  if (!turbidity || turbidity > 1)
-    score -= 40;
-
-  if (score >= 80) return "green";
-  if (score >= 50) return "yellow";
-  return "red";
-}
-
-function toFixed3(num) {
-  return (num !== undefined && num !== null) ? num.toFixed(3) : "N/A";
-}
-let boroughLayer;
-
-fetch("/public/geojson/new-york-city-boroughs.geojson")
-  .then(res => res.json())
-  .then(data => {
-    boroughLayer = L.geoJSON(data, {
-      style: feature => {
-        const name = feature.properties.BoroName;
-        const q = boroughDict[name];
-        const fillColor = q
-          ? getColor(q.chlorine, q.turbidity)
-          : "#bbbbbb";
-
-        return {
-          color: "black",
-          weight: 2,
-          fillColor,
-          fillOpacity: 0.7
-        };
-      },
-      onEachFeature: (feature, layer) => {
-        layer.bindPopup(makePopup(feature.properties.BoroName));
-      }
-    }).addTo(map);
+  boroughStats.forEach(b => {
+    boroughDict[b.name] = {
+      chlorine: b.stats?.[0]?.avg_chlorine,
+      turbidity: b.stats?.[0]?.avg_turbidity,
+      coliform: b.stats?.[0]?.avg_coliform,
+      ecoli: b.stats?.[0]?.avg_e_coli,
+      fluoride: b.stats?.[0]?.avg_fluoride,
+      _id: b._id,
+      sample_count: b.stats?.[0]?.sample_count || 0
+    };
   });
 
+  const map = L.map('boroughMap', {
+    center: [40.7128, -74.0060],
+    zoom: 10,
+    dragging: false,
+    zoomControl: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    tap: false
+  });
 
-const legend = L.control({ position: "bottomright" });
-function makePopup(name) {
-  const q = boroughDict[name];
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 
-  if (!q) return `<strong>${name}</strong><br>No sample data available.`;
+  function getColor(chlorine, turbidity) {
+    let score = 100;
+    if (!chlorine || chlorine < 0.2 || chlorine > 1.0) score -= 40;
+    if (!turbidity || turbidity > 1) score -= 40;
+    if (score >= 80) return "green";
+    if (score >= 50) return "yellow";
+    return "red";
+  }
 
-  return `
-    <strong>${name}</strong><br>
-    Avg. Chlorine: ${toFixed3(q.chlorine)}<br>
-    Avg. Turbidity: ${toFixed3(q.turbidity)}<br>
-    <a href="/boroughs/${q._id}">View Borough</a>
-  `;
-}
+  function metricColor(metric, value) {
+    const v = Number(value);
+    if (!Number.isFinite(v)) return "#bbbbbb";
+    switch (metric) {
+      case "chlorine": if (v < 0.2 || v > 1.0) return "#ff4d4f"; if (v < 0.4 || v > 0.9) return "#fadb14"; return "#52c41a";
+      case "turbidity": if (v > 2) return "#ff4d4f"; if (v > 1) return "#fadb14"; return "#52c41a";
+      case "coliform": if (v > 1) return "#ff4d4f"; if (v > 0.1) return "#fadb14"; return "#52c41a";
+      case "ecoli": if (v === 0) return "#52c41a"; return "#ff4d4f";
+      case "fluoride": if (v < 0.5 || v > 1.0) return "#ff4d4f"; if (v < 0.6 || v > 0.9) return "#fadb14"; return "#52c41a";
+      default: return "#bbbbbb";
+    }
+  }
 
-legend.onAdd = function (map) {
+  function coloredDotHtml(metric, val) {
+    const c = metricColor(metric, val);
+    return `<span class="value-dot" style="background:${c}"></span>`;
+  }
+
+  function toFixed3(num) {
+    return (num !== undefined && num !== null) ? num.toFixed(3) : "N/A";
+  }
+
+  function getPolygonCentroid(latlngs) {
+    let points = [];
+    if (Array.isArray(latlngs[0][0])) {
+      latlngs.forEach(polygon => polygon[0].forEach(p => points.push(p)));
+    } else {
+      latlngs[0].forEach(p => points.push(p));
+    }
+    let lat = 0, lng = 0;
+    points.forEach(p => { lat += p.lat; lng += p.lng; });
+    return L.latLng(lat / points.length, lng / points.length);
+  }
+
+  let boroughLayer;
+  fetch("/public/geojson/new-york-city-boroughs.geojson")
+    .then(res => res.json())
+    .then(data => {
+      boroughLayer = L.geoJSON(data, {
+        style: feature => {
+          const name = feature.properties.BoroName;
+          const q = boroughDict[name];
+          const fillColor = q ? getColor(q.chlorine, q.turbidity) : "#bbbbbb";
+          return { color: "black", weight: 2, fillColor, fillOpacity: 0.7 };
+        },
+        onEachFeature: (feature, layer) => {
+          const boroughName = feature.properties.BoroName;
+          layer.bindPopup(makePopup(boroughName));
+
+          const center = getPolygonCentroid(layer.getLatLngs());
+          L.marker(center, { interactive: false, opacity: 0 })
+            .bindTooltip(boroughName, { permanent: true, direction: "center", className: "borough-label", opacity: 0.9 })
+            .addTo(map);
+        }
+      }).addTo(map);
+    });
+
+  function makePopup(name) {
+    const q = boroughDict[name];
+    if (!q) return `<strong>${name}</strong><br>No sample data available.`;
+    return `<strong>${name}</strong><br>
+            Avg. Chlorine: ${toFixed3(q.chlorine)}<br>
+            Avg. Turbidity: ${toFixed3(q.turbidity)}<br>
+            Total Samples: ${q.sample_count || 0}<br>
+            <a href="/boroughs/${q._id}">View Borough</a>`;
+  }
+
+  const legend = L.control({ position: "bottomright" });
+  legend.onAdd = function (map) {
     const div = L.DomUtil.create("div", "info legend");
     const grades = ["Good", "Average", "Poor"];
     const colors = ["green", "yellow", "red"];
-
     div.innerHTML = "<strong>Overall Water Quality</strong><br>";
     for (let i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-        `<i style="background:${colors[i]}; width:18px; height:18px; display:inline-block; margin-right:5px;"></i> ${grades[i]}<br>`;
+      div.innerHTML += `<i style="background:${colors[i]}; width:18px; height:18px; display:inline-block; margin-right:5px;"></i> ${grades[i]}<br>`;
     }
+    return div;
+  };
+  legend.addTo(map);
 
-     return div;
-};
+  let availableYears = [], monthsByYear = {};
 
-legend.addTo(map);
+  function loadDataDates() {
+    return $.get("/api/data-dates")
+      .then(res => {
+        availableYears = res.years || [];
+        monthsByYear = res.monthsByYear || {};
+        populateYearDropdown();
+      }).catch(() => console.error("Failed to load data dates"));
+  }
+
+  function populateYearDropdown() {
+    const yearSel = $("#yearDropdown");
+    yearSel.empty().append(`<option value="">Select Year</option>`);
+    availableYears.forEach(y => yearSel.append(`<option value="${y}">${y}</option>`));
+  }
+
+  function populateMonthDropdown(year) {
+    const monthSel = $("#monthDropdown");
+    monthSel.empty().append(`<option value="">Select Month</option>`);
+    if (!year || !monthsByYear[year]) return;
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    monthsByYear[year].forEach(m => monthSel.append(`<option value="${m}">${m} - ${monthNames[m - 1]}</option>`));
+  }
+
+  function populateDayDropdown(year, month) {
+    const daySel = $("#dayDropdown");
+    daySel.empty().append(`<option value="">Select Day</option>`);
+    if (!year || !month) return;
+    const days = new Date(year, month, 0).getDate();
+    for (let d = 1; d <= days; d++) daySel.append(`<option value="${d}">${d}</option>`);
+  }
+
+  function uncheckExcept(id) {
+    ["#overallCheck", "#yearCheck", "#monthCheck", "#dateCheck"].forEach(sel => {
+      if (sel !== id) $(sel).prop("checked", false);
+    });
+  }
+
+  function hideAllDropdowns() { $("#yearSelectBox,#monthSelectBox,#daySelectBox").hide(); }
+  function resetDropdowns() { $("#yearDropdown,#monthDropdown,#dayDropdown").val(""); }
+
+  $("#overallCheck").on("change", function () {
+    if (this.checked) { uncheckExcept("#overallCheck"); hideAllDropdowns(); resetDropdowns(); location.reload(); }
+  });
+  $("#yearCheck").on("change", function () {
+    if (this.checked) { uncheckExcept("#yearCheck"); $("#yearSelectBox").show(); $("#monthSelectBox,#daySelectBox").hide(); resetDropdowns(); }
+  });
+  $("#monthCheck").on("change", function () {
+    if (this.checked) { uncheckExcept("#monthCheck"); $("#yearSelectBox,#monthSelectBox").show(); $("#daySelectBox").hide(); resetDropdowns(); }
+  });
+  $("#dateCheck").on("change", function () {
+    if (this.checked) { uncheckExcept("#dateCheck"); $("#yearSelectBox,#monthSelectBox,#daySelectBox").show(); resetDropdowns(); }
+  });
+
+  $("#yearDropdown").on("change", function () {
+    const y = $(this).val();
+    if ($("#monthCheck,#dateCheck").is(":checked")) populateMonthDropdown(y);
+    if ($("#dateCheck").is(":checked")) {
+      const m = $("#monthDropdown").val(); if (m) populateDayDropdown(y, m);
+    }
+    if ($("#yearCheck").is(":checked") && y) fetchAndRefreshMap(y, null, null);
+  });
+
+  $("#monthDropdown").on("change", function () {
+    const y = $("#yearDropdown").val(), m = $(this).val();
+    if ($("#dateCheck").is(":checked")) populateDayDropdown(y, m);
+    if (y && m && $("#monthCheck").is(":checked")) fetchAndRefreshMap(y, m, null);
+  });
+
+  $("#dayDropdown").on("change", function () {
+    const y = $("#yearDropdown").val(), m = $("#monthDropdown").val(), d = $(this).val();
+    if (y && m && d && $("#dateCheck").is(":checked")) fetchAndRefreshMap(y, m, d);
+  });
+
+  function updateBoroughCards(stats) {
+    stats.forEach(d => {
+      const name = d.borough.trim();
+      const card = $(`div[data-borough="${name}"]`);
+      card.find(".value-dot").remove();
+
+      card.find(".chlorine").before(coloredDotHtml("chlorine", d.avg_chlorine));
+      card.find(".turbidity").before(coloredDotHtml("turbidity", d.avg_turbidity));
+      card.find(".coliform").before(coloredDotHtml("coliform", d.avg_coliform));
+      card.find(".ecoli").before(coloredDotHtml("ecoli", d.avg_e_coli));
+      card.find(".fluoride").before(coloredDotHtml("fluoride", d.avg_fluoride));
+
+      card.find(".chlorine").text(toFixed3(d.avg_chlorine));
+      card.find(".turbidity").text(toFixed3(d.avg_turbidity));
+      card.find(".coliform").text(toFixed3(d.avg_coliform));
+      card.find(".ecoli").text(toFixed3(d.avg_e_coli));
+      card.find(".fluoride").text(toFixed3(d.avg_fluoride));
+
+      if (card.find(".sample-count").length) card.find(".sample-count").text(d.sample_count || 0);
+      else card.find(".card-body").append(`<p><strong>Total Samples:</strong> <span class="sample-count">${d.sample_count || 0}</span></p>`);
+
+      boroughDict[name] = { chlorine: d.avg_chlorine, turbidity: d.avg_turbidity, coliform: d.avg_coliform, ecoli: d.avg_e_coli, fluoride: d.avg_fluoride, _id: d._id, sample_count: d.sample_count || 0 };
+    });
+  }
+
+  function fetchAndRefreshMap(year, month, day) {
+    const params = {};
+    if (year) params.year = year;
+    if (month) params.month = month;
+    if (day) params.day = day;
+
+    $.get("/api/borough-stats", params)
+      .done(data => {
+        data.forEach(b => {
+          boroughDict[b.borough] = { chlorine: b.avg_chlorine, turbidity: b.avg_turbidity, coliform: b.avg_coliform, ecoli: b.avg_e_coli, fluoride: b.avg_fluoride, _id: b._id, sample_count: b.sample_count || 0 };
+        });
+
+        if (boroughLayer && boroughLayer.setStyle) {
+          boroughLayer.setStyle(feature => {
+            const name = feature.properties.BoroName;
+            const q = boroughDict[name];
+            const fillColor = q ? getColor(q.chlorine, q.turbidity) : "#bbbbbb";
+            return { color: "black", weight: 2, fillColor, fillOpacity: 0.7 };
+          });
+
+          boroughLayer.eachLayer(layer => {
+            const name = layer.feature.properties.BoroName;
+            layer.bindPopup(makePopup(name));
+          });
+        }
+
+        updateBoroughCards(data);
+        console.log("Updated map + cards", data);
+      })
+      .fail(err => console.error("Error loading borough stats:", err));
+  }
+
+  $("#compareToggle").on("change", () => $("#compareBoroughBox").toggle($("#compareToggle").is(":checked")));
+  $("#trendMode").on("change", () => $("#trendMonthBox").toggle($("#trendMode").val() === "month"));
 </script>
 
+
 <script>
+  let trendYears = [];
+  let trendMonthsByYear = {};
 
-let availableYears = [];
-let monthsByYear = {};
+  function loadTrendDates() {
+    return $.get("/api/data-dates").then(res => {
+      trendYears = res.years || [];
+      trendMonthsByYear = res.monthsByYear || {};
 
-function loadDataDates() {
-  return $.get("/api/data-dates")
-    .then(res => {
-      availableYears = res.years || [];
-      monthsByYear = res.monthsByYear || {};
+      const yearSel = $("#trendYear");
+      yearSel.empty();
 
-      populateYearDropdown();
+      trendYears.forEach(y => {
+        yearSel.append(`<option value="${y}">${y}</option>`);
+      });
 
-    })
-    .catch(() => console.error("Failed to load data dates"));
-}
-
-
-function populateYearDropdown() {
-  const yearSel = $("#yearDropdown");
-  yearSel.empty().append(`<option value="">Select Year</option>`);
-
-  availableYears.forEach(y => {
-    yearSel.append(`<option value="${y}">${y}</option>`);
-  });
-}
-
-function populateMonthDropdown(year) {
-  const monthSel = $("#monthDropdown");
-  monthSel.empty().append(`<option value="">Select Month</option>`);
-
-  if (!year || !monthsByYear[year]) return;
-
-  monthsByYear[year].forEach(m => {
-    monthSel.append(`<option value="${m}">${m}</option>`);
-  });
-}
-
-
-function uncheckExcept(id) {
-  ["#overallCheck", "#yearCheck", "#monthCheck"].forEach(sel => {
-    if (sel !== id) $(sel).prop("checked", false);
-  });
-}
-
-function hideAllDropdowns() {
-  $("#yearSelectBox").hide();
-  $("#monthSelectBox").hide();
-}
-
-
-$("#overallCheck").on("change", function () {
-  if (this.checked) {
-    uncheckExcept("#overallCheck");
-    hideAllDropdowns();
-    location.reload(); 
-  }
-});
-
-$("#yearCheck").on("change", function () {
-  if (this.checked) {
-    uncheckExcept("#yearCheck");
-    $("#yearSelectBox").show();
-    $("#monthSelectBox").hide();
-  }
-});
-
-$("#monthCheck").on("change", function () {
-  if (this.checked) {
-    uncheckExcept("#monthCheck");
-    $("#yearSelectBox").show();
-    $("#monthSelectBox").show();
-  }
-});
-
-$("#yearDropdown").on("change", function () {
-  const y = $(this).val();
-
-  if ($("#monthCheck").is(":checked")) {
-    populateMonthDropdown(y);
-  }
-
-  if ($("#yearCheck").is(":checked") && y) {
-    fetchAndRefreshMap(y, null);
-  }
-});
-
-$("#monthDropdown").on("change", function () {
-  const y = $("#yearDropdown").val();
-  const m = $(this).val();
-
-  if (y && m && $("#monthCheck").is(":checked")) {
-    fetchAndRefreshMap(y, m);
-  }
-});
-function updateBoroughCards(stats) {
-  stats.forEach(d => {
-    const name = d.borough.trim();
-    const card = $(`div[data-borough="${name}"]`);
-
-
-    card.find(".chlorine").text(toFixed3(d.avg_chlorine));
-    card.find(".turbidity").text(toFixed3(d.avg_turbidity));
-    card.find(".coliform").text(toFixed3(d.avg_coliform));
-    card.find(".ecoli").text(toFixed3(d.avg_e_coli));
-    card.find(".fluoride").text(toFixed3(d.avg_fluoride));
-  });
-}
-
-function fetchAndRefreshMap(year, month) {
-  const params = {};
-  if (year) params.year = year;
-  if (month) params.month = month;
-
-  $.get("/api/borough-stats", params)
-    .done(data => {
-
-    data.forEach(b => {
-        boroughDict[b.borough] = {
-            chlorine: b.avg_chlorine,
-            turbidity: b.avg_turbidity,
-            coliform: b.avg_coliform,
-            ecoli: b.avg_e_coli,
-            fluoride: b.avg_fluoride,
-            _id: b._id
-        };
+      if (trendYears.length) {
+        yearSel.val(trendYears[trendYears.length - 1]).trigger("change");
+      }
     });
+  }
+
+  function populateTrendMonths(year) {
+    const monthSel = $("#trendMonth");
+    monthSel.empty();
+
+    if (!trendMonthsByYear[year]) return;
+
+    const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    trendMonthsByYear[year].forEach(m => {
+      monthSel.append(`<option value="${m}">${names[m - 1]}</option>`);
+    });
+  }
+  $("#trendYearCheck").on("change", function () {
+    if (this.checked) {
+      $("#trendMonthCheck").prop("checked", false);
+      $("#trendMonthBox").hide();
+      loadTrend();
+    }
+  });
+
+  $("#trendMonthCheck").on("change", function () {
+    if (this.checked) {
+      $("#trendYearCheck").prop("checked", false);
+      $("#trendMonthBox").show();
+      populateTrendMonths($("#trendYear").val());
+      loadTrend();
+    }
+  });
+
+  $("#trendYear").on("change", function () {
+    if ($("#trendMonthCheck").is(":checked")) {
+      populateTrendMonths(this.value);
+    }
+    loadTrend();
+  });
+
+  let trendChart; 
+
+  async function loadTrend() {
+    const boroughs = [$("#trendBorough").val()];
+    if ($("#compareToggle").is(":checked")) {
+      boroughs.push($("#compareBorough").val());
+    }
+
+    const metrics = $(".metricCheck:checked").map((_, el) => el.value).get();
+    if (!metrics.length) return;
+
+    const isMonth = $("#trendMonthCheck").is(":checked");
+    const year = $("#trendYear").val();
+    const month = isMonth ? $("#trendMonth").val() : null;
+
+    if (!year || year === "null") {
+      console.warn("Trend chart skipped: year not selected");
+      return;
+    }
+    const datasets = [];
+    const colors = ["#007bff", "#dc3545", "#28a745", "#6f42c1", "#fd7e14"];
+    let colorIdx = 0;
+
+    for (const borough of boroughs) {
+      for (const metric of metrics) {
+        const params = new URLSearchParams({ borough, year, metric });
+        if (month) params.append("month", month);
+
+        const res = await fetch(`/api/borough-trends?${params}`);
+        const data = await res.json();
+
+        const cleanData = data
+          .map(d => ({
+            x: new Date(d.date + "T00:00:00Z"), 
+            y: Number(d.value)
+          }))
+          .filter(p => !isNaN(p.x) && !isNaN(p.y));
+
+        if (!cleanData.length) continue;
+
+        datasets.push({
+          label: `${borough} – ${metric}`,
+          data: cleanData,
+          borderColor: colors[colorIdx++ % colors.length],
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          tension: 0.3,
+          fill: false
+        });
+      }
+    }
+
+    const existingChart = Chart.getChart(document.getElementById("trendChart"));
+    if (existingChart) existingChart.destroy();
+
+    trendChart = new Chart(document.getElementById("trendChart"), {
+      type: "line",
+      data: { datasets },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: "bottom" }
+        },
+        scales: {
+          x: {
+            type: "time",
+            time: { unit: month ? "day" : "month" }
+          },
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  $("#trendBorough").on("change", loadTrend);
+  $("#compareBorough").on("change", loadTrend);
+  $("#compareToggle").on("change", loadTrend);
+
+  $(".metricCheck").on("change", loadTrend);
+  $("#trendMonth").on("change", loadTrend);
 
 
-      boroughLayer.setStyle(feature => {
-        const name = feature.properties.BoroName;
-        const q = boroughDict[name];
-        const fillColor = q
-          ? getColor(q.chlorine, q.turbidity)
-          : "#bbbbbb";
+  $(document).ready(() => {
+    const initial = Object.keys(boroughDict).map(k => ({
+      borough: k,
+      avg_chlorine: boroughDict[k].chlorine,
+      avg_turbidity: boroughDict[k].turbidity,
+      avg_coliform: boroughDict[k].coliform,
+      avg_e_coli: boroughDict[k].ecoli,
+      avg_fluoride: boroughDict[k].fluoride,
+      _id: boroughDict[k]._id,
+      sample_count: boroughDict[k].sample_count
+    }));
 
-        return {
-          color: "black",
-          weight: 2,
-          fillColor,
-          fillOpacity: 0.7
-        };
-      });
-
-      boroughLayer.eachLayer(layer => {
-        const name = layer.feature.properties.BoroName;
-        layer.bindPopup(makePopup(name));
-      });
-
-      updateBoroughCards(data);
-
-      console.log("Updated map + cards", data);
-    })
-    .fail(err => console.error("Error loading borough stats:", err));
-}
-
-loadDataDates();
+    updateBoroughCards(initial);
+    loadDataDates();
+    loadTrendDates();
+    loadTrend(); 
+  });
 </script>
