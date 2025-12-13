@@ -1301,7 +1301,8 @@ body.theme-dark .btn-success:disabled {
 }
 
 .soft-title {
-  margin-top: 0;
+  font-size: 1.25rem;
+  margin-top: 3rem;
   color: var(--text-main);
 }
 
