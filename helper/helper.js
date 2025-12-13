@@ -47,11 +47,16 @@ export function validatePassword(password) {
   return trimmed;
 };
 
-export function getCurrentWeekStart() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);      // strip time
-  const day = d.getDay();      // 0 = Sun
-  const diff = (day + 6) % 7;  // Monday = 0
-  d.setDate(d.getDate() - diff);
-  return d;
+export const getCurrentWeekStart = () => {
+  // Using UTC to prevent DST issues like Lab6
+  // Existing vote data was deleted after changing this function
+  const now = new Date();
+  const day = now.getUTCDay(); 
+  const diff = (day + 6) % 7;
+  
+  const monday = new Date(now);
+  monday.setUTCDate(now.getUTCDate() - diff);
+  monday.setUTCHours(0, 0, 0, 0);
+  
+  return monday;
 };
