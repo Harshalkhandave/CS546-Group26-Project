@@ -2,13 +2,13 @@ import { commentCollection } from "../model/index.js";
 import mongoose from "mongoose";
 import {
     checkString,
-    validateId
+    isValidId
 } from "../helper/helper.js";
 
 const exportedMethods = {
     async createComment(userId, boroughId, comment) {
-        userId = validateId(userId);
-        boroughId = validateId(boroughId);
+        userId = isValidId(userId);
+        boroughId = isValidId(boroughId);
         comment = checkString(comment, "Comment");
         if (comment.length > 200) {
             throw "Comment must be 200 characters or less";
@@ -25,21 +25,21 @@ const exportedMethods = {
     },
 
     async getCommentById(id) {
-        id = validateId(id);
+        id = isValidId(id);
         const comment = await commentCollection.findById(id);
         if (!comment) throw "Comment not found";
         return comment;
     },
 
     async getCommentsByBorough(boroughId) {
-        boroughId = validateId(boroughId);
+        boroughId = isValidId(boroughId);
         return await commentCollection.find({
             borough: new mongoose.Types.ObjectId(boroughId)
         });
     },
 
     async deleteComment(id) {
-        id = validateId(id);
+        id = isValidId(id);
         const deleted = await commentCollection.findByIdAndDelete(id);
         if (!deleted) throw "Comment not found";
         return true;
