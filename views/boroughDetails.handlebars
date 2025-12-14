@@ -1,9 +1,18 @@
 <div class="container mt-4">
 
-    <a href="/boroughs" class="btn btn-secondary mb-3">← Back to Home</a>
+    <a href="/boroughs" class="btn btn-secondary mb-3">← Back to Boroughs List</a>
 
-    <h1 class="mb-3">{{borough.name}}</h1>
-
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">{{borough.name}}</h1>
+        {{!--Community feedback: Like/Unlike button for authenticated users --}}
+        {{#if isAuthenticated}}
+        <button id="like-button" data-borough-id="{{borough._id}}"
+            class="btn btn-lg {{#if isLiked}}btn-danger{{else}}btn-outline{{/if}}">
+            <i class="fas fa-heart"></i>
+            <span id="like-status">{{#if isLiked}}Liked!{{else}}Like This Borough{{/if}}</span>
+        </button>
+        {{/if}}
+    </div>
     <p class="lead">{{borough.description}}</p>
 
     <hr>
@@ -34,4 +43,50 @@
 
     <hr>
 
+    {{!-- Comment posting and comment list--}}
+    <section id="comments-section" class="mt-5">
+        <h2>Community Feedback ({{comments.length}})</h2>
+
+        {{#if isAuthenticated}}
+        <div id="add-comment-form-container">
+            <form id="comment-form" data-borough-id="{{borough._id}}">
+                <div class="form-group">
+                    <label for="comment-text">Leave a Comment (max 200 chars):</label>
+                    <textarea class="form-control" id="comment-text" name="comment" rows="3" maxlength="200"
+                        required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+                <div id="comment-error" class="error-text hidden mt-2"></div>
+            </form>
+        </div>
+        {{else}}
+        <p class="text-muted mt-3">Please <a href="/users/login">login</a> to post a comment and share your feedback.
+        </p>
+        {{/if}}
+
+        <ul id="comment-list" class="list-group mt-4">
+            {{#each comments}}
+            <li class="list-group-item">
+                <p>{{this.comment}}</p>
+                <small class="text-muted">
+                    Posted by
+                    {{#if this.user}}
+                    <strong>{{this.user.fname}} {{this.user.lname}}</strong>
+                    {{else}}
+                    <span class="text-danger">Deleted User</span>
+                    {{/if}}
+                    on {{this.commentDate}}
+                </small>
+            </li>
+            {{/each}}
+        </ul>
+
+        {{#unless comments}}
+        <p class="text-muted mt-3">Be the first to leave a comment!</p>
+        {{/unless}}
+    </section>
+
 </div>
+
+<script src="/public/js/like.js"></script>
+<script src="/public/js/comments.js"></script>

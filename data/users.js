@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { userCollection } from "../model/index.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -22,7 +23,6 @@ const fitForSession = (user) => {
 };
 
 const exportedMethods = {
-
   async createUser(fname, lname, email, password, role = "user") {
     fname = validateName(fname, "First Name");
     lname = validateName(lname, "Last Name");
@@ -37,11 +37,9 @@ const exportedMethods = {
     const lowerEmail = email.toLowerCase();
     const existing = await userCollection.findOne({ lowerEmail });
 
-    // Check if there's a deleted account with this email - if so, reactivate it
     if (existing) {
       if (!existing.isDeleted) throw "Email already exists";
 
-      // Reactivate the deleted account
       const hash = await bcrypt.hash(password, saltRounds);
       const reactivatedUser = await userCollection.findByIdAndUpdate(
         existing._id,
@@ -77,7 +75,6 @@ const exportedMethods = {
     const user = await userCollection.findOne({ lowerEmail });
 
     if (!user) throw "Email or password invalid";
-    // Check if account exists but is deleted
     if (user.isDeleted) throw "This account has been deleted.";
 
     const match = await bcrypt.compare(password, user.hashedPwd);
@@ -96,8 +93,7 @@ const exportedMethods = {
     if (!user) throw "User not found";
 
     const newLowerEmail = email.toLowerCase();
-    
-    // Check if the new email is different and already exists
+
     if (newLowerEmail !== user.lowerEmail) {
       const existing = await userCollection.findOne({ lowerEmail: newLowerEmail });
       if (existing) throw "Email already exists. Please use a different email.";
@@ -133,12 +129,10 @@ const exportedMethods = {
     const lowerEmail = email.toLowerCase();
     const user = await userCollection.findOne({ lowerEmail, isDeleted: false });
 
-    // Don't reveal if email exists (security best practice)
     if (!user) return null;
 
-    // Generate reset token (random 32-char hex string)
     const resetToken = crypto.randomBytes(16).toString("hex");
-    const resetTokenExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    const resetTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
 
     await userCollection.findByIdAndUpdate(user._id, {
       resetToken,
@@ -159,7 +153,6 @@ const exportedMethods = {
 
     if (!user) throw "Token invalid or expired";
 
-    // Hash new password and update user
     const hash = await bcrypt.hash(newPassword, saltRounds);
     await userCollection.findByIdAndUpdate(user._id, {
       hashedPwd: hash,
@@ -168,6 +161,25 @@ const exportedMethods = {
     });
 
     return true;
+  },
+
+  // Like toggle
+  async toggleLikeBorough(userId, boroughId) {
+    userId = isValidId(userId);
+    boroughId = isValidId(boroughId);
+
+    const user = await userCollection.findById(userId);
+    if (!user) throw "User not found";
+
+    const boroughObjectId = new mongoose.Types.ObjectId(boroughId);
+    const isLiked = (user.likedBoroughs || []).some(id => id.equals(boroughObjectId));
+
+    const updateQuery = isLiked
+      ? { $pull: { likedBoroughs: boroughObjectId } }
+      : { $push: { likedBoroughs: boroughObjectId } };
+
+    const updatedUser = await userCollection.findByIdAndUpdate(userId, updateQuery, { new: true });
+    return updatedUser;
   }
 };
 

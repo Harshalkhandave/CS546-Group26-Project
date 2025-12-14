@@ -1,104 +1,91 @@
 import express from 'express';
-import { voteCollection, boroughCollection, waterSampleCollection, sampleSiteCollection} from '../model/index.js';
-import { isValidId, checkString, getCurrentWeekStart } from '../helper/helper.js';
-import mongoose from 'mongoose';
+import { boroughCollection, waterSampleCollection, sampleSiteCollection, userCollection as User } from '../model/index.js';
+import commentsData from '../data/comments.js';
+import userData from '../data/users.js';
+import { isValidId } from '../helper/helper.js';
+
 const router = express.Router();
 
+const requireAuth = (req, res, next) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'You must be logged in to perform this action.' });
+  }
+  next();
+};
+
 router.get('/', async (req, res) => {
+  try {
+    const boroughs = await boroughCollection.find().lean();
 
-  // Extract toast message
-  let toast = null;
-  if (req.session.toast) {
-    toast = req.session.toast;
-    delete req.session.toast;   // ensure it only displays once
+    boroughs.forEach(b => {
+      if (b.stats && b.stats.length > 0) {
+        b.avg_chlorine = b.stats[0].avg_chlorine;
+        b.avg_turbidity = b.stats[0].avg_turbidity;
+      }
+    });
+
+    res.render('boroughs', {
+      boroughs,
+      isAuthenticated: !!req.session.user
+    });
+  } catch (e) {
+    console.error('Borough Listings Error:', e);
+    res.status(500).render('error', { error: 'Could not load borough listings' });
   }
-
-  const boroughs = await boroughCollection.find().lean(); 
-
-  boroughs.forEach(b => {
-    if (b.stats && b.stats.length > 0) {
-      b.quality = {
-        _id: b._id,
-        chlorine: b.stats[0].avg_chlorine,
-        turbidity: b.stats[0].avg_turbidity
-      };
-    }
-  });
-
-  // detect if user voted this week
-  let userVoteBoroughId = null;
-
-  if (req.session.user) {
-    const userId = req.session.user.id;
-
-    const getCurrentWeekStart = () => {
-      const d = new Date();
-      d.setHours(0, 0, 0, 0);
-      const day = d.getDay();
-      const diff = (day + 6) % 7;
-      d.setDate(d.getDate() - diff);
-      return d;
-    };
-
-    const weekStart = getCurrentWeekStart();
-
-    const existingVote = await voteCollection.findOne({
-      userId: new mongoose.Types.ObjectId(userId),
-      weekStart
-    }).lean();
-
-    if (existingVote) {
-      userVoteBoroughId = existingVote.boroughId.toString();
-    }
-  }
-
-  // render with toast
-  res.render("boroughs", { 
-    boroughs,
-    isAuthenticated: !!req.session.user,
-    user: req.session.user || null,
-    userVoteBoroughId,
-    toast
-  });
 });
-
-
-
 
 router.get('/:id', async (req, res) => {
   try {
-    const borough = await boroughCollection.findById(req.params.id).lean();
+    const boroughId = req.params.id;
+    const borough = await boroughCollection.findById(boroughId).lean();
+
     if (!borough) {
       return res.status(404).render('error', { error: 'Borough not found' });
     }
 
     const sites = await sampleSiteCollection
-      .find({ borough: borough.name }) 
+      .find({ borough: borough.name })
       .select('sample_site')
       .lean();
 
     const siteNames = sites.map(s => s.sample_site);
 
     const samples = await waterSampleCollection
-        .find({ sample_site: { $in: siteNames } }) 
-        .sort({ sample_date: -1 })
-        .limit(200) 
-        .lean();
+      .find({ sample_site: { $in: siteNames } })
+      .sort({ sample_date: -1 })
+      .limit(200)
+      .lean();
 
     samples.forEach(s => {
-        s.sample_date = s.sample_date 
-          ? new Date(s.sample_date).toISOString().split("T")[0] 
-          : 'N/A';
+      s.sample_date = s.sample_date
+        ? new Date(s.sample_date).toISOString().split('T')[0]
+        : 'N/A';
     });
 
-    res.render("boroughDetails", {
-        borough,
-        samples,
-        isAuthenticated: !!req.session.user
-    });
+    const comments = await commentsData.getCommentsByBorough(boroughId);
 
+    let isLiked = false;
+    if (req.session.user) {
+      const user = await User.findById(req.session.user.id)
+        .select('likedBoroughs')
+        .lean();
+
+      if (user && user.likedBoroughs) {
+        isLiked = user.likedBoroughs
+          .map(id => id.toString())
+          .includes(boroughId);
+      }
+    }
+
+    res.render('boroughDetails', {
+      borough,
+      samples,
+      comments,
+      isLiked,
+      isAuthenticated: !!req.session.user
+    });
   } catch (e) {
-    console.error("Borough Details Error:", e);
+    console.error('Borough Details Error:', e);
     res.status(500).render('error', { error: 'Could not load borough details' });
   }
 });
@@ -107,10 +94,31 @@ router.delete('/:id', async (req, res) => {
   try {
     const id = isValidId(req.params.id);
     const borough = await boroughCollection.findByIdAndDelete(id);
-    if (!borough) return res.status(404).json({ error: 'Borough not found' });
+
+    if (!borough) {
+      return res.status(404).json({ error: 'Borough not found' });
+    }
+
     res.json({ deleted: true });
   } catch (e) {
     res.status(500).json({ error: e.message || e });
+  }
+});
+
+router.post('/:id/like', requireAuth, async (req, res) => {
+  const boroughId = req.params.id;
+  const userId = req.session.user.id;
+
+  try {
+    const updatedUser = await userData.toggleLikeBorough(userId, boroughId);
+
+    const isLiked = updatedUser.likedBoroughs
+      .map(id => id.toString())
+      .includes(boroughId);
+
+    res.json({ success: true, isLiked });
+  } catch (e) {
+    res.status(400).json({ error: e.toString() });
   }
 });
 

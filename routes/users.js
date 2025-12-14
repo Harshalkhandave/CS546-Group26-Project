@@ -1,23 +1,52 @@
 import { Router } from 'express';
-const router = Router();
 import userData from '../data/users.js';
+import commentsData from '../data/comments.js';
+import { boroughCollection, userCollection as User } from '../model/index.js';
 
-// Middleware: ensure user is logged in
+const router = Router();
+
 const requireAuth = (req, res, next) => {
   if (!req.session.user) return res.redirect('/users/login');
   next();
 };
 
-// Profile
-router.get('/profile', requireAuth, (req, res) => {
-  res.render('profile', {
-    title: 'My Profile',
-    user: req.session.user,
-    css: '/public/css/styles.css'
-  });
+router.get('/profile', requireAuth, async (req, res) => {
+  try {
+    const userId = req.session.user.id;
+
+    const user = await User.findById(userId)
+      .select('likedBoroughs')
+      .lean();
+
+    let likedBoroughsDetails = [];
+    if (user && user.likedBoroughs.length > 0) {
+      likedBoroughsDetails = await boroughCollection
+        .find({ _id: { $in: user.likedBoroughs } })
+        .select('name')
+        .lean();
+    }
+
+    let userComments = await commentsData.getCommentsByUser(userId);
+
+    userComments.forEach(c => {
+      c.commentDate = c.commentDate
+        ? new Date(c.commentDate).toLocaleDateString()
+        : 'N/A';
+    });
+
+    res.render('profile', {
+      title: 'My Profile',
+      user: req.session.user,
+      likedBoroughs: likedBoroughsDetails,
+      userComments,
+      css: '/public/css/styles.css'
+    });
+  } catch (e) {
+    console.error('Profile Load Error:', e);
+    res.render('error', { error: 'Failed to load profile data.' });
+  }
 });
 
-// Edit Profile (GET)
 router.get('/edit-profile', requireAuth, (req, res) => {
   res.render('edit-profile', {
     title: 'Edit Profile',
@@ -26,9 +55,8 @@ router.get('/edit-profile', requireAuth, (req, res) => {
   });
 });
 
-// Edit Profile (POST)
 router.post('/edit-profile', requireAuth, async (req, res) => {
-  let { fname, lname, email } = req.body;
+  const { fname, lname, email } = req.body;
 
   try {
     const updatedUser = await userData.updateUser(
@@ -39,10 +67,9 @@ router.post('/edit-profile', requireAuth, async (req, res) => {
     );
 
     req.session.user = updatedUser;
-
-    return res.redirect('/users/profile');
+    res.redirect('/users/profile');
   } catch (e) {
-    return res.render('edit-profile', {
+    res.status(400).render('edit-profile', {
       title: 'Edit Profile',
       css: '/public/css/styles.css',
       user: req.session.user,
@@ -52,40 +79,33 @@ router.post('/edit-profile', requireAuth, async (req, res) => {
   }
 });
 
-// Logout
 router.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/');
 });
 
-// Delete Account
 router.post('/delete-account', requireAuth, async (req, res) => {
   try {
     await userData.removeUser(req.session.user.id);
     req.session.destroy();
-    return res.json({ success: true, message: 'Account deleted' });
+    res.json({ success: true, message: 'Account deleted' });
   } catch (e) {
-    return res.status(500).json({ error: e });
+    res.status(500).json({ error: e });
   }
 });
 
-// Dev-only: inspect session (useful for debugging OAuth flows)
 router.get('/debug/session', (req, res) => {
-  if (process.env.NODE_ENV === 'production')
+  if (process.env.NODE_ENV === 'production') {
     return res.status(404).send('Not found');
+  }
 
-  return res.json({
+  res.json({
     session: req.session || null,
     user: req.session ? req.session.user : null
   });
 });
 
-// Dev simulate Apple removed
-
-/* ===========================================
-   LOGIN PAGE (GET)
-=========================================== */
-router.get('/login', async (req, res) => {
+router.get('/login', (req, res) => {
   if (req.session.user) return res.redirect('/');
   res.render('login', {
     title: 'Login',
@@ -94,30 +114,24 @@ router.get('/login', async (req, res) => {
   });
 });
 
-/* ===========================================
-   LOGIN PAGE (POST)
-=========================================== */
 router.post('/login', async (req, res) => {
-  let { email, password } = req.body;
+  const { email, password } = req.body;
+
   try {
-    // LOGIN (DATA): VERIFY EMAIL + PASSWORD
     const sessionUser = await userData.login(email, password);
     req.session.user = sessionUser;
-    return res.redirect('/');
+    res.redirect('/');
   } catch (e) {
-    return res.status(400).render('login', {
+    res.status(400).render('login', {
       title: 'Login',
       error: e,
       hasErrors: true,
-      email: email,
+      email,
       css: '/public/css/styles.css'
     });
   }
 });
 
-/* ===========================================
-   REGISTER PAGE (GET)
-=========================================== */
 router.get('/register', (req, res) => {
   if (req.session.user) return res.redirect('/');
   res.render('register', {
@@ -126,25 +140,21 @@ router.get('/register', (req, res) => {
   });
 });
 
-/* ===========================================
-   REGISTER PAGE (POST)
-   + PASSWORD HASHING (bcrypt)
-=========================================== */
 router.post('/register', async (req, res) => {
-  let { fname, lname, email, password } = req.body;
+  const { fname, lname, email, password } = req.body;
+
   try {
-    // REGISTER (DATA): VALIDATE INPUT + HASH PASSWORD (bcrypt)
     const sessionUser = await userData.createUser(
       fname,
       lname,
       email,
       password
     );
-    // Auto-login after registration
+
     req.session.user = sessionUser;
-    return res.redirect('/');
+    res.redirect('/');
   } catch (e) {
-    return res.status(400).render('register', {
+    res.status(400).render('register', {
       title: 'Create Account',
       error: e,
       hasErrors: true,
@@ -154,9 +164,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/* ===========================================
-   FORGOT PASSWORD PAGE (GET)
-=========================================== */
 router.get('/forgot-password', (req, res) => {
   res.render('forgot-password', {
     title: 'Forgot Password',
@@ -164,28 +171,21 @@ router.get('/forgot-password', (req, res) => {
   });
 });
 
-/* ===========================================
-   FORGOT PASSWORD PAGE (POST) - Send Reset Link
-=========================================== */
 router.post('/forgot-password', async (req, res) => {
-  let { email } = req.body;
+  const { email } = req.body;
+
   try {
     const result = await userData.creatPwdResetToken(email);
 
-    // Don't reveal if email exists (security best practice)
     let message =
       'If an account with that email exists, you will receive password reset instructions.';
     let resetLink = null;
 
     if (result) {
-      // Build reset link (dev)
       resetLink = `http://localhost:3000/users/reset-password/${result.token}`;
-
-      // For development: log the link to console
       console.log(`[Dev Reset Link]: ${resetLink}`);
     }
 
-    // For development: show the link directly on the page
     res.render('forgot-password', {
       title: 'Forgot Password',
       message,
@@ -202,10 +202,7 @@ router.post('/forgot-password', async (req, res) => {
   }
 });
 
-/* ===========================================
-   RESET PASSWORD PAGE (GET) - Show Reset Form
-=========================================== */
-router.get('/reset-password/:token', async (req, res) => {
+router.get('/reset-password/:token', (req, res) => {
   res.render('reset-password', {
     title: 'Reset Password',
     token: req.params.token,
@@ -213,12 +210,9 @@ router.get('/reset-password/:token', async (req, res) => {
   });
 });
 
-/* ===========================================
-   RESET PASSWORD PAGE (POST) - Update Password
-=========================================== */
 router.post('/reset-password/:token', async (req, res) => {
-  let { password, confirmPassword } = req.body;
-  let token = req.params.token;
+  const { password, confirmPassword } = req.body;
+  const token = req.params.token;
 
   try {
     if (password !== confirmPassword) throw 'Passwords do not match';
