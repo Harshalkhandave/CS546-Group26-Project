@@ -38,10 +38,10 @@
   <!-- Filters -->
   <section class="section-card filter-box">
     <div class="check-row check-row-with-help">
-      <label class="check"><input type="checkbox" id="overallCheck" checked> <span>Overall Data</span></label>
-      <label class="check"><input type="checkbox" id="dateCheck"> <span>By Date</span></label>
-      <label class="check"><input type="checkbox" id="monthCheck"> <span>By Month</span></label>
-      <label class="check"><input type="checkbox" id="yearCheck"> <span>By Year</span></label>
+      <label class="check"><input type="checkbox" class="filterCheck" id="overallCheck" checked> <span>Overall Data</span></label>
+      <label class="check"><input type="checkbox" class="filterCheck" id="dateCheck"> <span>By Date</span></label>
+      <label class="check"><input type="checkbox" class="filterCheck" id="monthCheck"> <span>By Month</span></label>
+      <label class="check"><input type="checkbox" class="filterCheck" id="yearCheck"> <span>By Year</span></label>
       <!-- Help toggle button -->
       <button type="button" id="guideToggleBtn" class="filter-help-btn" aria-expanded="false"
         aria-controls="dashboardGuide">
@@ -203,8 +203,8 @@
       <div class="field time-field">
         <label class="field-label">Time</label>
         <div class="check-row">
-          <label class="check"><input type="checkbox" id="trendYearCheck" checked> <span>Year</span></label>
-          <label class="check"><input type="checkbox" id="trendMonthCheck"> <span>Month</span></label>
+          <label class="check"><input type="checkbox" class="filterTimeCheck" id="trendYearCheck" checked> <span>Year</span></label>
+          <label class="check"><input type="checkbox" class="filterTimeCheck" id="trendMonthCheck"> <span>Month</span></label>
         </div>
       </div>
 
@@ -460,6 +460,28 @@
     });
   }
 
+  $(".filterCheck").on("click", function (e) {
+    if (this.checked && $(".filterCheck:checked").length === 1) {
+      return;
+    }
+    if (!this.checked) {
+      e.preventDefault();
+      return;
+    }
+    $(".filterCheck").not(this).prop("checked", false);
+  });
+
+  $(".filterTimeCheck").on("click", function (e) {
+    if (this.checked && $(".filterCheck:checked").length === 1) {
+      return;
+    }
+    if (!this.checked) {
+      e.preventDefault();
+      return;
+    }
+    $(".filterCheck").not(this).prop("checked", false);
+  });
+  
   function hideAllDropdowns() { $("#yearSelectBox,#monthSelectBox,#daySelectBox").hide(); }
   function resetDropdowns() { $("#yearDropdown,#monthDropdown,#dayDropdown").val(""); }
 
