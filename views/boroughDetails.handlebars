@@ -92,29 +92,42 @@
 
   {{!-- Neighborhoods --}}
   {{!-- <section class="soft-panel section-gap"> --}}
-    <h3 class="soft-title">Neighborhoods</h3>
+    <h3 class="soft-title">Browse Through Neighborhoods</h3>
 
     {{#if borough.neighborhoods}}
-    <div class="nb-list">
-      {{#each borough.neighborhoods}}
-      <div class="nb-item">
-        <h5 class="nb-name">{{this.name}}</h5>
 
-        {{#if this.stats}}
-        <div class="neighborhood-stats">
-          <div><strong>Avg Chlorine:</strong> {{toFixed3 this.stats.avg_chlorine}} mg/L</div>
-          <div><strong>Avg Turbidity:</strong> {{toFixed3 this.stats.avg_turbidity}} NTU</div>
-          <div><strong>Avg Coliform:</strong> {{toFixed3 this.stats.avg_coliform}} MPN/100mL</div>
-          <div><strong>Avg E. Coli:</strong> {{toFixed3 this.stats.avg_e_coli}} MPN/100mL</div>
-          <div><strong>Avg Fluoride:</strong> {{toFixed3 this.stats.avg_fluoride}} mg/L</div>
-          <div><strong>Latest Sample:</strong> {{this.stats.latest_sample_date}}</div>
-        </div>
-        {{else}}
-        <em class="text-muted">No stats available.</em>
-        {{/if}}
-      </div>
+    <select id="neighborhoodSelect" class="form-select mb-3">
+      <option value="">Select a neighborhood</option>
+      {{#each borough.neighborhoods}}
+        <option 
+          value="{{this.name}}"
+          data-chlorine="{{this.stats.avg_chlorine}}"
+          data-turbidity="{{this.stats.avg_turbidity}}"
+          data-coliform="{{this.stats.avg_coliform}}"
+          data-ecoli="{{this.stats.avg_e_coli}}"
+          data-fluoride="{{this.stats.avg_fluoride}}"
+          data-latest="{{this.stats.latest_sample_date}}"
+        >
+          {{this.name}}
+        </option>
       {{/each}}
+    </select>
+    <p class="text-muted mb-2">
+      <strong>Choose a neighborhood from the dropdown.</strong><br>
+      Water quality details for the selected neighborhood will appear below.
+    </p>
+
+    <div id="neighborhoodDetails" class="neighborhood-stats" style="display:none;">
+      <h5 id="nbName"></h5>
+
+      <div><strong>Avg Chlorine:</strong> <span id="chlorine"></span> mg/L</div>
+      <div><strong>Avg Turbidity:</strong> <span id="turbidity"></span> NTU</div>
+      <div><strong>Avg Coliform:</strong> <span id="coliform"></span> MPN/100mL</div>
+      <div><strong>Avg E. Coli:</strong> <span id="ecoli"></span> MPN/100mL</div>
+      <div><strong>Avg Fluoride:</strong> <span id="fluoride"></span> mg/L</div>
+      <div><strong>Latest Sample:</strong> <span id="latest"></span></div>
     </div>
+
     {{else}}
     <p class="text-muted"><em>No neighborhoods listed.</em></p>
     {{/if}}
@@ -215,6 +228,27 @@
     </section>
 
 </div>
+<script>
+$("#neighborhoodSelect").on("change", function () {
+  const selected = $(this).find(":selected");
+
+  if (!selected.val()) {
+    $("#neighborhoodDetails").hide();
+    return;
+  }
+
+  $("#nbName").text(selected.val());
+  $("#chlorine").text(Number(selected.data("chlorine")).toFixed(3));
+  $("#turbidity").text(Number(selected.data("turbidity")).toFixed(3));
+  $("#coliform").text(Number(selected.data("coliform")).toFixed(3));
+  $("#ecoli").text(Number(selected.data("ecoli")).toFixed(3));
+  $("#fluoride").text(Number(selected.data("fluoride")).toFixed(3));
+  $("#latest").text(selected.data("latest"));
+
+  $("#neighborhoodDetails").fadeIn(200);
+});
+
+</script>
 
 <script src="/public/js/like.js"></script>
 <script src="/public/js/comments.js"></script>
