@@ -1,10 +1,6 @@
 (function ($) {
-    let sampleList = $('#sample-list');
-    let errorDiv = $('#error-div');
-    let loadMoreBtn = $('#btn-load-more');
-    let noMoreMsg = $('#no-more-data');
-    let loadingMsg = $('#loading-msg');
-
+    // Module-scoped variables
+    let sampleList, errorDiv, loadMoreBtn, noMoreMsg, loadingMsg;
     let currentPage = 0;
     let isLoading = false;   //Prevents duplicate concurrent requests
 
@@ -16,7 +12,6 @@
         errorDiv.text('').addClass('hidden');
     }
 
-    // return text value or 'N/A'
     function textOrNA(v) {
         if (v === null || v === undefined) return 'N/A';
         return String(v);
@@ -59,13 +54,12 @@
         return li;
     }
 
-    // If no result on first page, show error, on later pages, show "no more data"
     function loadSamples() {
         if (isLoading) return;
         isLoading = true;
         hideError();
-        loadingMsg.removeClass('hidden');  // Avoid repeated clicks
-        
+        loadingMsg.removeClass('hidden');
+
         loadMoreBtn.addClass('hidden');
 
         let nextPage = currentPage + 1;
@@ -100,10 +94,57 @@
             });
     }
 
-    loadMoreBtn.on('click', function (e) {
-        e.preventDefault();
-        loadSamples();
-    });
+    function bindHandlers() {
+        // unbind previous handlers to avoid duplicates
+        loadMoreBtn.off('click').on('click', function (e) {
+            e.preventDefault();
+            // if a paginated search is active, skip the default loader behavior
+            if (window.WSLoader && window.WSLoader.searchActive) {
+                return;
+            }
+            loadSamples();
+        });
+    }
 
-    loadSamples();
+    function init() {
+        // initialize DOM refs
+        sampleList = $('#sample-list');
+        errorDiv = $('#error-div');
+        loadMoreBtn = $('#btn-load-more');
+        noMoreMsg = $('#no-more-data');
+        loadingMsg = $('#loading-msg');
+
+        // reset state
+        currentPage = 0;
+        isLoading = false;
+
+        hideError();
+        sampleList.empty();
+        noMoreMsg.addClass('hidden');
+        loadMoreBtn.addClass('hidden');
+
+        bindHandlers();
+        loadSamples();
+    }
+
+    function reset() {
+        currentPage = 0;
+        isLoading = false;
+        hideError();
+        sampleList.empty();
+        noMoreMsg.addClass('hidden');
+        loadMoreBtn.addClass('hidden');
+        loadSamples();
+    }
+
+    window.WSLoader = window.WSLoader || {};
+    window.WSLoader.init = init;
+    window.WSLoader.reset = reset;
+    // helper for other scripts to trigger a non-search load-more
+    window.WSLoader.loadMore = function () { loadSamples(); };
+
+    // auto-init on DOM ready
+    $(function () {
+        if (window.WSLoader && typeof window.WSLoader.init === 'function') window.WSLoader.init();
+    });
 })(window.jQuery);

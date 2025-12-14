@@ -298,3 +298,130 @@ export async function getTrendData(borough, year, month, metric) {
     { $sort: { date: 1 } }
   ]);
 }
+
+export const getSamplesByFilter = async (filter = {}) => {
+  const {
+    sample_number,
+    sample_site,
+    borough,
+    startDate,
+    endDate,
+    page = 1,
+    limit = 50
+  } = filter;
+
+  const query = {};
+
+  if (sample_number) {
+    query.sample_number = sample_number;
+  }
+
+  // case-insensitive matching for sample_site
+  let sampleSiteRegex = null;
+  if (sample_site) {
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    sampleSiteRegex = new RegExp(esc(sample_site), 'i');
+    query.sample_site = sampleSiteRegex;
+  }
+
+  // Default behavior: searches without explicit dates should return only samples
+  // from the dataset window (2023-01-01 .. 2024-12-31). If caller provides
+  // startDate and/or endDate, clamp them into that window and apply them.
+  {
+    const minAllowed = new Date('2023-01-01T00:00:00Z');
+    const maxAllowed = new Date('2024-12-31T23:59:59Z');
+
+    let sd = startDate ? new Date(startDate) : null;
+    let ed = endDate ? new Date(endDate) : null;
+
+    if (sd && isNaN(sd.getTime())) sd = null;
+    if (ed && isNaN(ed.getTime())) ed = null;
+
+    // clamp provided dates to allowed bounds
+    if (sd && sd < minAllowed) sd = minAllowed;
+    if (ed && ed > maxAllowed) ed = maxAllowed;
+
+    // If user didn't provide either date, default to full allowed window
+    if (!sd && !ed) {
+      sd = minAllowed;
+      ed = maxAllowed;
+    }
+
+    // Normalize to full-day UTC boundaries to make endDate inclusive
+    if (sd) {
+      const y = sd.getUTCFullYear();
+      const m = sd.getUTCMonth();
+      const d = sd.getUTCDate();
+      sd = new Date(Date.UTC(y, m, d, 0, 0, 0, 0));
+    }
+    if (ed) {
+      const y = ed.getUTCFullYear();
+      const m = ed.getUTCMonth();
+      const d = ed.getUTCDate();
+      ed = new Date(Date.UTC(y, m, d, 23, 59, 59, 999));
+    }
+
+    // invalid range -> empty
+    if (sd && ed && sd > ed) return [];
+
+    query.sample_date = {};
+    if (sd) query.sample_date.$gte = sd;
+    if (ed) query.sample_date.$lte = ed;
+  }
+
+  // If borough provided, need to find sample_site values for that borough
+  let siteFilter = null;
+  if (borough) {
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const boroughRegex = new RegExp('^' + esc(borough) + '$', 'i');
+    const sites = await sampleSiteCollection.find({ borough: boroughRegex }).select('sample_site').lean();
+    const siteVals = sites.map(s => s.sample_site);
+    // if no sites found, return empty
+    if (siteVals.length === 0) return [];
+    // merge with existing sample_site query (regex)
+    if (sampleSiteRegex) {
+      const filtered = siteVals.filter(val => sampleSiteRegex.test(val));
+      if (filtered.length === 0) return [];
+      siteFilter = filtered;
+    } else {
+      siteFilter = siteVals;
+    }
+  }
+
+  // Interpret limit: default to 10 items per page when not provided. If a positive
+  // numeric limit is provided, use it. (limit=0 is no longer special.)
+  const parsedLimit = typeof limit === 'string' ? parseInt(limit, 10) : Number(limit);
+  let lim = 10;
+  if (!isNaN(parsedLimit) && parsedLimit > 0) {
+    lim = Math.max(1, parsedLimit);
+  }
+  const pageNum = Math.max(1, parseInt(page) || 1);
+  const skip = (pageNum - 1) * lim;
+
+  const mongoQuery = { ...query };
+  if (siteFilter) mongoQuery.sample_site = { $in: siteFilter };
+  else if (sampleSiteRegex) mongoQuery.sample_site = sampleSiteRegex;
+
+  let cursor = waterSampleCollection.find(mongoQuery).sort({ sample_date: -1 }).skip(skip).limit(lim);
+  const samples = await cursor.lean();
+  if (samples.length === 0) return [];
+
+  // Resolve borough names via sampleSiteCollection
+  const siteIds = [...new Set(samples.map(s => s.sample_site))];
+  const siteDocs = await sampleSiteCollection.find({ sample_site: { $in: siteIds } }).select('sample_site borough').lean();
+  const siteMap = {};
+  siteDocs.forEach(doc => { siteMap[doc.sample_site] = doc.borough || 'Unknown'; });
+
+  return samples.map((s) => ({
+    _id: s._id.toString(),
+    sample_number: s.sample_number,
+    sample_site: s.sample_site || 'N/A',
+    borough: siteMap[s.sample_site] || 'Unknown',
+    date: s.sample_date ? s.sample_date.toISOString().split('T')[0] : 'N/A',
+    chlorine: s.residual_free_chlorine_mg_l,
+    turbidity: s.turbidity_ntu,
+    fluoride: s.fluoride_mg_l,
+    coliform: s.coliform_quanti_tray_mpn_100ml,
+    ecoli: s.e_coli_quanti_tray_mpn_100ml
+  }));
+};
