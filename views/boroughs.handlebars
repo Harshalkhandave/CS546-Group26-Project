@@ -49,41 +49,26 @@
     <div id="boroughMap" style="height: 500px; width: 100%; margin-top: 20px;"></div>
   </div>
 
-  <div class="row">
-    {{#each boroughs}}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100" data-borough="{{this.name}}">
-        <div class="card-body">
-          <h4 class="card-title">{{this.name}}</h4>
-          <p class="card-text">{{this.description}}</p>
-          <hr>
-          <p><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
+  <div class="table-responsive">
+    <table class="table table-bordered" id="boroughTable">
+      <thead class="table-light">
+        <tr id="boroughTableHeader">
+          <th>Metric \ Borough</th>
+        </tr>
+      </thead>
+      <tbody id="boroughTableBody">
 
-          {{#if this.stats.[0]}}
-          <p><strong>Total Samples:</strong> <span class="sample-count">{{this.stats.[0].sample_count}}</span></p>
-          <p><strong>Avg Chlorine:</strong> <span class="chlorine">{{toFixed3 this.stats.[0].avg_chlorine}}</span></p>
-          <p><strong>Avg Turbidity:</strong> <span class="turbidity">{{toFixed3 this.stats.[0].avg_turbidity}}</span>
-          </p>
-          <p><strong>Avg Coliform:</strong> <span class="coliform">{{toFixed3 this.stats.[0].avg_coliform}}</span></p>
-          <p><strong>Avg E Coli:</strong> <span class="ecoli">{{toFixed3 this.stats.[0].avg_e_coli}}</span></p>
-          <p><strong>Avg Fluoride:</strong> <span class="fluoride">{{toFixed3 this.stats.[0].avg_fluoride}}</span></p>
-          {{else}}
-          <p><em>No statistics available.</em></p>
-          {{/if}}
-
-          <a href="/boroughs/{{this._id}}" class="btn btn-primary mt-3">View Details</a>
-        </div>
-      </div>
-    </div>
-    {{/each}}
+      </tbody>
+    </table>
   </div>
+
   <hr class="my-4">
 
   <div class="legend-container mb-4">
     <h4>Legend & Water Quality Metrics</h4>
 
     <div class="mb-3">
-      <h5>Card Metrics Dots</h5>
+      <h5>comparison Table Metrics Dots</h5>
       <p>
         <span class="value-dot" style="background:#52c41a;"></span> Good<br>
         <span class="value-dot" style="background:#fadb14;"></span> Average<br>
@@ -257,6 +242,65 @@
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
 
+  function populateTableHeader(boroughs) {
+    const headerRow = $("#boroughTableHeader");
+    headerRow.empty().append("<th>Metric \\ Borough</th>");
+    boroughs.forEach(b => {
+      headerRow.append(`<th>${b.name}</th>`);
+    });
+  }
+
+  function populateTableBody(initial) {
+    const tbody = $("#boroughTableBody");
+    tbody.empty();
+    const extraRows = [
+      { key: "sample_count", label: "Total Samples", valueFn: b => b.sample_count || 0 }
+    ];
+
+    extraRows.forEach(rowInfo => {
+      const row = $("<tr>");
+      row.append(`<th>${rowInfo.label}</th>`);
+      initial.forEach(b => {
+        row.append(`<td data-borough="${b.borough}" data-metric="${rowInfo.label}">${rowInfo.valueFn(b)}</td>`);
+      });
+      tbody.append(row);
+    });
+
+    const metrics = [
+      { key: "avg_chlorine", label: "Avg Chlorine", dotKey: "chlorine" },
+      { key: "avg_turbidity", label: "Avg Turbidity", dotKey: "turbidity" },
+      { key: "avg_coliform", label: "Avg Coliform", dotKey: "coliform" },
+      { key: "avg_e_coli", label: "Avg E Coli", dotKey: "ecoli" },
+      { key: "avg_fluoride", label: "Avg Fluoride", dotKey: "fluoride" }
+    ];
+
+    metrics.forEach(metric => {
+      const row = $("<tr>");
+      row.append(`<th>${metric.label}</th>`);
+
+      initial.forEach(b => {
+        const val = b[metric.key];
+        let cellContent = "N/A";
+
+        if (val !== undefined && val !== null) {
+          const dot = coloredDotHtml(metric.dotKey, val);
+          cellContent = `${dot} ${toFixed3(val)}`;
+        }
+
+        row.append(`<td data-borough="${b.borough}" data-metric="${metric.label}">${cellContent}</td>`);
+      });
+
+      tbody.append(row);
+    });
+
+    const linkRow = $("<tr>");
+    linkRow.append(`<th>View Details</th>`);
+    initial.forEach(b => {
+      linkRow.append(`<td><a href="/boroughs/${b._id}" class="btn btn-primary btn-sm">View Details</a></td>`);
+    });
+    tbody.append(linkRow);
+  }
+
   function getColor(chlorine, turbidity) {
     let score = 100;
     if (!chlorine || chlorine < 0.2 || chlorine > 1.0) score -= 40;
@@ -421,31 +465,6 @@
     if (y && m && d && $("#dateCheck").is(":checked")) fetchAndRefreshMap(y, m, d);
   });
 
-  function updateBoroughCards(stats) {
-    stats.forEach(d => {
-      const name = d.borough.trim();
-      const card = $(`div[data-borough="${name}"]`);
-      card.find(".value-dot").remove();
-
-      card.find(".chlorine").before(coloredDotHtml("chlorine", d.avg_chlorine));
-      card.find(".turbidity").before(coloredDotHtml("turbidity", d.avg_turbidity));
-      card.find(".coliform").before(coloredDotHtml("coliform", d.avg_coliform));
-      card.find(".ecoli").before(coloredDotHtml("ecoli", d.avg_e_coli));
-      card.find(".fluoride").before(coloredDotHtml("fluoride", d.avg_fluoride));
-
-      card.find(".chlorine").text(toFixed3(d.avg_chlorine));
-      card.find(".turbidity").text(toFixed3(d.avg_turbidity));
-      card.find(".coliform").text(toFixed3(d.avg_coliform));
-      card.find(".ecoli").text(toFixed3(d.avg_e_coli));
-      card.find(".fluoride").text(toFixed3(d.avg_fluoride));
-
-      if (card.find(".sample-count").length) card.find(".sample-count").text(d.sample_count || 0);
-      else card.find(".card-body").append(`<p><strong>Total Samples:</strong> <span class="sample-count">${d.sample_count || 0}</span></p>`);
-
-      boroughDict[name] = { chlorine: d.avg_chlorine, turbidity: d.avg_turbidity, coliform: d.avg_coliform, ecoli: d.avg_e_coli, fluoride: d.avg_fluoride, _id: d._id, sample_count: d.sample_count || 0 };
-    });
-  }
-
   function fetchAndRefreshMap(year, month, day) {
     const params = {};
     if (year) params.year = year;
@@ -472,7 +491,7 @@
           });
         }
 
-        updateBoroughCards(data);
+        populateTableBody(data);
         console.log("Updated map + cards", data);
       })
       .fail(err => console.error("Error loading borough stats:", err));
@@ -540,7 +559,7 @@
     loadTrend();
   });
 
-  let trendChart; 
+  let trendChart;
 
   async function loadTrend() {
     const boroughs = [$("#trendBorough").val()];
@@ -573,7 +592,7 @@
 
         const cleanData = data
           .map(d => ({
-            x: new Date(d.date + "T00:00:00Z"), 
+            x: new Date(d.date + "T00:00:00Z"),
             y: Number(d.value)
           }))
           .filter(p => !isNaN(p.x) && !isNaN(p.y));
@@ -637,9 +656,10 @@
       sample_count: boroughDict[k].sample_count
     }));
 
-    updateBoroughCards(initial);
+    populateTableHeader(boroughStats);
+    populateTableBody(initial);
     loadDataDates();
     loadTrendDates();
-    loadTrend(); 
+    loadTrend();
   });
 </script>
