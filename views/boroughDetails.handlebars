@@ -17,6 +17,35 @@
 
     <hr>
 
+    {{#with borough.stats.[0]}}
+
+    {{#if (or (gt avg_chlorine 4.0) (gt avg_turbidity 5.0) (gt avg_e_coli 0.0))}}
+    <div class="alert alert-warning"
+        style="background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin-top: 0; font-weight: 600;">⚠️ Health Tip: Elevated Water Indicators Detected.</p>
+        <ul>
+            {{#if (gt avg_chlorine 4.0)}}
+            <li><strong>Chlorine Alert</strong>: Average free chlorine ({{toFixed3 avg_chlorine}} mg/L) is high. May
+                affect taste or smell.</li>
+            {{/if}}
+            {{#if (gt avg_turbidity 5.0)}}
+            <li><strong>Turbidity Alert</strong>: Average turbidity ({{toFixed3 avg_turbidity}} NTU) is slightly high.
+            </li>
+            {{/if}}
+            {{#if (gt avg_e_coli 0.0)}}
+            <li style="color: #dc3545;"><strong>E. Coli Warning</strong>: E. Coli was detected ({{toFixed3 avg_e_coli}}
+                MPN/100mL). Follow local health guidelines.</li>
+            {{/if}}
+        </ul>
+    </div>
+    {{else}}
+    <div class="alert alert-success"
+        style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin: 0; font-weight: 600;">Health Tip: Water quality is within standard guidelines.</p>
+    </div>
+    {{/if}}
+    {{/with}}
+
     <h3>Borough Statistics</h3>
 
     {{#if borough.stats.[0]}}
@@ -80,21 +109,20 @@
 
                 {{!-- Admin or user Delete Button --}}
                 {{#if ../isAuthenticated}}
-                    {{#with ../currentUser}}
-                        {{#if (or (eq this.role 'admin') (eq this.id ../this.user._id))}}
-                            <button class="btn btn-sm btn-danger delete-comment-btn" 
-                                data-comment-id="{{../this._id}}" 
-                                style="float: right; padding: 4px 8px; font-size: 12px;">
-                                Delete
-                            </button>
-                        {{/if}}
-                    {{/with}}
+                {{#with ../currentUser}}
+                {{#if (or (eq this.role 'admin') (eq this.id ../this.user._id))}}
+                <button class="btn btn-sm btn-danger delete-comment-btn" data-comment-id="{{../this._id}}"
+                    style="float: right; padding: 4px 8px; font-size: 12px;">
+                    Delete
+                </button>
+                {{/if}}
+                {{/with}}
                 {{/if}}
             </li>
             {{/each}}
         </ul>
 
-        {{#unless comments}}
+        {{#unless (gt (len comments) 0)}}
         <p class="text-muted mt-3">Be the first to leave a comment!</p>
         {{/unless}}
     </section>
@@ -103,3 +131,4 @@
 
 <script src="/public/js/like.js"></script>
 <script src="/public/js/comments.js"></script>
+`

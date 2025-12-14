@@ -58,9 +58,25 @@ app.engine(
       eq: (a, b) => a == b,
 
       // Verify admin or user
-      or: (v1, v2) => Boolean(v1 || v2),
+      or: (...args) => {
+        args.pop();
+        return args.some(Boolean);
+      },
 
-      toFixed3: (num) => Number(num).toFixed(3),
+      // Verify array length 
+      len: (arr) => (Array.isArray(arr) ? arr.length : 0),
+      gt: (a, b) => Number(a) > Number(b),
+
+      toFixed3: (v) => {
+        const n = Number(v);
+        if (v === null || v === undefined || Number.isNaN(n) || v === 'N/A') return 'N/A';
+        return n.toFixed(3);
+      },
+
+      // Block comparison
+      ifGreaterThan: (v1, v2, options) =>
+        Number(v1) > Number(v2) ? options.fn(this) : options.inverse(this),
+
       json: (context) => JSON.stringify(context),
       array: (...args) => {
         args.pop();

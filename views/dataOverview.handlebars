@@ -1,0 +1,48 @@
+<div class="container mt-4">
+
+    <h1>Water Quality Data Overview</h1>
+    {{!-- Core Feature: Data Overview / Trend Analytics --}}
+    <p class="lead text-muted">A comparison of current borough statistics and annual trends from 2023 to 2024.</p>
+
+    <hr>
+    
+    <h2>Annual Trend Analysis (2023 vs 2024)</h2>
+
+    <table class="table table-striped table-bordered mt-4">
+        <thead>
+            <tr style="background-color: var(--surface-soft);">
+                <th>Borough</th>
+                <th>Avg Cl (2024)</th>
+                <th>Cl Change (%)</th>
+                <th>Avg Turb (2024)</th>
+                <th>Turb Change (%)</th>
+                <th>Avg E. Coli (2024)</th>
+                <th>E. Coli Change (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each trends}}
+            <tr>
+                <td><strong>{{this.borough}}</strong></td>
+                
+                {{!-- Chlorine (Overview + Trend) --}}
+                <td>{{toFixed3 this.stats2024.avg_chlorine}} mg/L</td>
+                <td>{{toFixed3 this.chlorine_change}}%</td>
+                
+                {{!-- Turbidity (Overview + Trend) --}}
+                <td>{{toFixed3 this.stats2024.avg_turbidity}} NTU</td>
+                <td>{{toFixed3 this.turbidity_change}}%</td>
+                
+                {{!-- E. Coli (Overview + Trend) --}}
+                <td>{{toFixed3 this.stats2024.avg_e_coli}} MPN/100mL</td>
+                <td>{{toFixed3 this.ecoli_change}}%</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    
+    {{#unless (gt (len trends) 0)}}
+        <p class="text-muted mt-5">No trend data available for 2023 or 2024.</p>
+    {{/unless}}
+    
+</div>
