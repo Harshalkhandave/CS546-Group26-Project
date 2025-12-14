@@ -1838,7 +1838,7 @@ body.theme-dark .btn-success:disabled {
 }
 
 .section-header .section-title {
-  margin: 0;                 /* important: removes default h3 margin */
+  margin: 0;                 /* removes default h3 margin */
 }
 
 
@@ -1862,10 +1862,10 @@ body.theme-dark .btn-success:disabled {
 .compare-toggle{
   grid-column: 1;
   
-  display: flex;              /* IMPORTANT: make it act like a row item */
+  display: flex;              
   align-items: center;
   
-  justify-self: stretch;      /* IMPORTANT: fill the column width */
+  justify-self: stretch;      /* fill the column width */
 }
 
 .compare-field,
@@ -1935,7 +1935,7 @@ body.theme-dark .btn-success:disabled {
   padding: 0px 20px;
 }
 
-/* chevron */
+
 .section-collapse__summary::after{
   content: "▾";
   color: var(--text-muted);
@@ -1974,11 +1974,11 @@ body.theme-dark .btn-success:disabled {
 }
 .liked-item:first-child{ border-top:none; }
 
-/* IMPORTANT: remove the left padding that causes “weird” alignment */
+/* remove the left padding that causes weird alignment */
 .liked-name{
   font-weight:700;
   font-size:15px;
-  padding-left:0;     /* <- key fix */
+  padding-left:0;    
   margin:0;
 }
 
@@ -1998,7 +1998,7 @@ body.theme-dark .btn-success:disabled {
 
 .comment-details { margin-top: 12px; }
 
-/* summary becomes the header row */
+
 .comment-summary{
   list-style: none;
   cursor: pointer;
@@ -2018,7 +2018,7 @@ body.theme-dark .btn-success:disabled {
   font-size: 1.1rem;
 }
 
-/* make the "Details" look like your pill button */
+
 .comment-pill{
   display: inline-flex;
   align-items: center;
@@ -2098,3 +2098,54 @@ body.theme-dark .btn-success:disabled {
   text-align: center;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
 }
+
+
+/* ==================== Comment  Borough Detail =========== */
+
+#add-comment-form-container.section-card{
+  background: var(--surface-soft);        
+  border: 1px solid var(--border-subtle, rgba(0,0,0,.06));
+  box-shadow: none;                       
+}
+
+
+#add-comment-form-container .input{
+  background: #fafbff;        
+  border-color: rgba(0,0,0,.08);
+}
+
+
+#add-comment-form-container .input:focus{
+  border-color: var(--primary);
+  box-shadow: none;
+}
+#comment-list .list-group-item{
+  background: transparent;    /* removes card-on-card effect */
+  border: none;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+#comment-list .list-group-item:last-child{
+  border-bottom: none;
+}
+
+.comment-actual {
+  flex-grow: 1; 
+  margin-right: 15px;
+}
+
+.delete-button {
+  flex-shrink: 0; 
+  padding: 5px 10px; 
+  margin-top: 20px; 
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+}
+

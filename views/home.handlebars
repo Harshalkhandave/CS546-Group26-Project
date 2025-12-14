@@ -29,20 +29,20 @@
       <h2>This Week's Best Borough</h2>
       <ul class="snapshot-list">
         {{#each boroughSnapshots}}
-          <li><span>{{this.name}}</span><strong>{{this.voteCount}} votes</strong></li>
+        <li><span>{{this.name}}</span><strong>{{this.voteCount}} votes</strong></li>
         {{/each}}
       </ul>
       <p class="card-note">
         Vote counts this week. Cast your vote to support your favorite borough!
       </p>
       {{#if isAuthenticated}}
-        <p>
-          <a href="/votes/best" class="btn btn-primary">Vote</a>
-        </p>
+      <p>
+        <a href="/votes/best" class="btn btn-primary">Vote</a>
+      </p>
       {{else}}
-        <p>
-          <a href="/users/login?redirect=/votes/best" class="btn btn-outline">Sign in to vote</a>
-        </p>
+      <p>
+        <a href="/users/login?redirect=/votes/best" class="btn btn-outline">Sign in to vote</a>
+      </p>
       {{/if}}
     </aside>
   </div>
@@ -57,7 +57,7 @@
         quality changes over time.
       </p>
     </div>
-    <div class="info-item" >
+    <div class="info-item">
       <h3>Explore Sample Details</h3>
       <p>
         Drill into individual water samples, including collection date,
@@ -65,16 +65,11 @@
       </p>
     </div>
 
-    {{#if currentUser}}
-      <div class="info-item" >
-        <h3>Create a Profile</h3>
-        <p>Signed in as <strong>{{currentUser.username}}</strong>. Manage your profile and favorites.</p>
-      </div>
-    {{else}}
-      <div class="info-item" >
-        <h3>Create a Profile</h3>
-        <p>Sign up to save favorite boroughs, leave comments, and participate in community discussions.</p>
-      </div>
-    {{/if}}
+
+    <div class="info-item">
+      <h3>Create a Profile</h3>
+      <p>Manage your profile: save favorite boroughs, leave comments, and participate in community discussions.</p>
+    </div>
+
   </div>
 </section>
