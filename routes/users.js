@@ -98,19 +98,20 @@ router.get('/login', async (req, res) => {
    LOGIN PAGE (POST)
 =========================================== */
 router.post('/login', async (req, res) => {
-  let { email, password } = req.body;
+  let { email, password, redirect } = req.body;
   try {
     // LOGIN (DATA): VERIFY EMAIL + PASSWORD
     const sessionUser = await userData.login(email, password);
     req.session.user = sessionUser;
-    return res.redirect('/');
+    return res.redirect(redirect || '/');
   } catch (e) {
     return res.status(400).render('login', {
       title: 'Login',
       error: e,
       hasErrors: true,
       email: email,
-      css: '/public/css/styles.css'
+      css: '/public/css/styles.css',
+      redirect
     });
   }
 });
