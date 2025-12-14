@@ -1,9 +1,66 @@
+<!-- Search modal (floating centered) -->
+<div id="searchModalOverlay" class="search-modal-overlay hidden" aria-hidden="true">
+    <div class="search-modal">
+        <button id="closeSearchModal" class="close-search-btn" aria-label="Close search">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+
+        <form id="sampleSearchForm" class="search-grid">
+                <div class="search-field">
+                        <label for="sample_site">Sample Site</label>
+                        <input id="sample_site" name="sample_site" class="form-control" placeholder="Site name" />
+                </div>
+
+                <div class="search-field">
+                        <label for="borough">Borough</label>
+                        <input id="borough" name="borough" class="form-control" placeholder="Manhattan, Brooklyn..." />
+                </div>
+
+                <div class="search-field">
+                        <label for="startDate">Start</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" min="2023-01-01" max="2024-12-31" />
+                </div>
+
+                <div class="search-field">
+                        <label for="endDate">End</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" min="2023-01-01" max="2024-12-31" />
+                </div>
+
+                <div class="search-actions">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button id="searchBtn" class="btn btn-primary">Search</button>
+                        <span id="searchSpinner" class="search-spinner hidden" aria-hidden="true"></span>
+                    </div>
+                    <button id="resetBtn" type="button" class="btn btn-outline btn-icon" aria-label="Reset search">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+        </form>
+    </div>
+</div>
+
 <div class="ws-container">
-    <h2 class="bb-title">Water Quality Data (2023 - 2024)</h2>
-    <p class="ws-description">
-        Showing water quality samples from 2023 to 2024. 
-        Data is loaded via AJAX.
-    </p>
+    
+    <div class="ws-header">
+        <div>
+            <h2 class="bb-title">Water Quality Data (2023 - 2024)</h2>
+            <p class="ws-description">
+                Showing water quality samples from 2023 to 2024. 
+                Data is loaded via AJAX.
+            </p>
+        </div>
+        <!-- Header controls removed; Search + Reset will float on the page -->
+    </div>
+
+    <!-- Floating controls (Search + Reset) - they float on the page -->
+    <div class="search-floating-controls" aria-hidden="false">
+        <button id="openSearchBtn" class="btn btn-primary" aria-label="Open search">Search</button>
+        <button id="openResetBtn" class="btn btn-outline" aria-label="Reset search">Reset</button>
+    </div>
 
     <div id="error-div" class="ws-error hidden"></div>
     <p id="loading-msg" class="ws-status-text hidden">Loading data...</p>
@@ -14,6 +71,203 @@
 
     <p id="no-more-data" class="ws-status-text hidden">No more samples to load.</p>
 </div>
+
+<script>
+    // Search form behavior: show spinner and disable controls while searching
+    (function () {
+        function el(id) { return document.getElementById(id); }
+
+        const form = el('sampleSearchForm');
+        if (!form) return;
+
+        const spinner = el('searchSpinner');
+        const searchBtn = el('searchBtn');
+        const resetBtn = el('resetBtn');
+
+        // Pagination-aware search: show first 10 rows and a Load More button
+        let searchState = {
+            active: false,
+            page: 1,
+            limit: 10,
+            params: null
+        };
+
+        async function searchSamples(params = {}) {
+            // prevent cached GET responses by adding a timestamp and disabling cache
+            const p = Object.assign({}, params);
+            p._ts = Date.now();
+            const qs = new URLSearchParams(p).toString();
+            const res = await fetch('/waterSamples/api/search?' + qs, { cache: 'no-store', headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error('Search failed');
+            return res.json();
+        }
+
+        // Submit handler: initialize search state and run first page
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const params = {
+                sample_site: el('sample_site').value.trim(),
+                borough: el('borough').value.trim(),
+                startDate: el('startDate').value || undefined,
+                endDate: el('endDate').value || undefined
+            };
+            Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
+
+            // initialize search state
+            searchState.active = true;
+            // inform the global loader that a search is active so it won't also load default data
+            window.WSLoader = window.WSLoader || {};
+            window.WSLoader.searchActive = true;
+            searchState.page = 1;
+            searchState.params = params;
+
+            // run the first page
+            const res = await runSearchPage(searchState.page, false);
+            // hide modal after successful search
+            if (typeof hideSearchModal === 'function') hideSearchModal();
+            // keep the main floating Search button visible per user preference
+            // ensure the Edit Search button (if present) remains hidden to avoid duplicate controls
+            const editBtn = el('editSearchBtn');
+            if (editBtn) editBtn.classList.add('hidden');
+        });
+
+        function renderListResults(items, { append = false } = {}) {
+            const list = el('sample-list');
+            if (!append) list.innerHTML = '';
+            if (!items || items.length === 0) {
+                if (!append) list.innerHTML = '<li class="ws-item">No samples found</li>';
+                return;
+            }
+
+            items.forEach(it => {
+                const li = document.createElement('li');
+                li.className = 'ws-item';
+
+                const titleHtml = `<strong>${it.sample_number || ''}</strong> — ${it.sample_site || ''} (${it.borough || ''}) <span class="muted">${it.date || ''}</span>`;
+
+                const p1 = 'Chlorine: ' + (it.chlorine !== undefined && it.chlorine !== null ? (it.chlorine + ' mg/L') : 'N/A') +
+                    ' | Turbidity: ' + (it.turbidity !== undefined && it.turbidity !== null ? (it.turbidity + ' NTU') : 'N/A') +
+                    ' | Fluoride: ' + (it.fluoride !== undefined && it.fluoride !== null ? (it.fluoride + ' mg/L') : 'N/A');
+
+                const p2 = 'Coliform: ' + (it.coliform !== undefined && it.coliform !== null ? it.coliform : 'N/A') +
+                    ' | E.Coli: ' + (it.ecoli !== undefined && it.ecoli !== null ? it.ecoli : 'N/A') +
+                    ' | Sample #: ' + (it.sample_number || 'N/A');
+
+                li.innerHTML = '<div class="ws-title">' + titleHtml + '</div>' +
+                    '<div class="ws-details">' + p1 + '</div>' +
+                    '<div class="ws-details">' + p2 + '</div>';
+
+                list.appendChild(li);
+            });
+        }
+
+        async function runSearchPage(page, append = false) {
+            const params = Object.assign({}, searchState.params || {});
+            params.page = page;
+            params.limit = searchState.limit;
+
+            // UI: spinner + disable
+            if (spinner) spinner.classList.remove('hidden');
+            if (searchBtn) searchBtn.disabled = true;
+            if (resetBtn) resetBtn.disabled = true;
+
+            try {
+                const items = await searchSamples(params);
+                renderListResults(items, { append });
+                // Show/hide load-more depending on returned batch
+                const loadMore = document.getElementById('btn-load-more');
+                if (items && items.length === searchState.limit) {
+                    loadMore.classList.remove('hidden');
+                } else {
+                    loadMore.classList.add('hidden');
+                }
+            } catch (err) {
+                alert('Search failed: ' + (err.message || err));
+            } finally {
+                if (spinner) spinner.classList.add('hidden');
+                if (searchBtn) searchBtn.disabled = false;
+                if (resetBtn) resetBtn.disabled = false;
+            }
+        }
+
+        // Load More button behavior (hooked outside the search function)
+        const loadMoreBtnEl = document.getElementById('btn-load-more');
+        if (loadMoreBtnEl) {
+            loadMoreBtnEl.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (searchState.active) {
+                    // fetch next search page
+                    searchState.page += 1;
+                    runSearchPage(searchState.page, true);
+                } else {
+                    // let original WSLoader handle it by triggering its click handler
+                    if (window.WSLoader && typeof window.WSLoader.loadMore === 'function') {
+                        window.WSLoader.loadMore();
+                    } else {
+                        // fallback: call reset to re-init original loader behavior
+                        if (window.WSLoader && typeof window.WSLoader.reset === 'function') window.WSLoader.reset();
+                    }
+                }
+            });
+        }
+
+        // Modal open/close behavior
+            const searchModalOverlay = el('searchModalOverlay');
+            const openSearchBtn = el('openSearchBtn');
+            const openResetBtn = el('openResetBtn');
+            const closeSearchModal = el('closeSearchModal');
+
+        function showSearchModal() {
+            if (searchModalOverlay) {
+                searchModalOverlay.classList.remove('hidden');
+                searchModalOverlay.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function hideSearchModal() {
+            if (searchModalOverlay) {
+                searchModalOverlay.classList.add('hidden');
+                searchModalOverlay.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+    if (openSearchBtn) openSearchBtn.addEventListener('click', function (e) { e.preventDefault(); showSearchModal(); });
+    const editSearchBtn = el('editSearchBtn');
+    if (editSearchBtn) editSearchBtn.addEventListener('click', function (e) { e.preventDefault(); showSearchModal(); });
+    // Wire the floating Reset button to reuse the modal's reset behavior
+    if (openResetBtn) openResetBtn.addEventListener('click', function (e) { e.preventDefault(); if (typeof resetBtn !== 'undefined' && resetBtn) { resetBtn.click(); } });
+        if (closeSearchModal) closeSearchModal.addEventListener('click', function (e) { e.preventDefault(); hideSearchModal(); });
+
+        // Clicking outside modal content closes it
+        if (searchModalOverlay) {
+            searchModalOverlay.addEventListener('click', function (ev) {
+                if (ev.target === searchModalOverlay) hideSearchModal();
+            });
+        }
+
+        resetBtn && resetBtn.addEventListener('click', function () {
+            form.reset();
+            // clear search active flag so original loader can operate
+            window.WSLoader = window.WSLoader || {};
+            window.WSLoader.searchActive = false;
+            // clear client search state
+            searchState.active = false;
+            // hide the modal when resetting
+            if (typeof hideSearchModal === 'function') hideSearchModal();
+            // show the floating search button again and hide edit button
+            if (openSearchBtn) openSearchBtn.classList.remove('hidden');
+            const editBtn = el('editSearchBtn');
+            if (editBtn) editBtn.classList.add('hidden');
+            searchState.active = false;
+            if (window.WSLoader && typeof window.WSLoader.reset === 'function') {
+                window.WSLoader.reset();
+            } else {
+                document.getElementById('sample-list').innerHTML = '';
+                document.getElementById('btn-load-more').classList.add('hidden');
+            }
+        });
+    })();
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/public/js/ajax_watersamples.js"></script>

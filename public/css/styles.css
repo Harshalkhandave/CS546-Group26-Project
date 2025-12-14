@@ -368,6 +368,171 @@ a:hover {
   color: var(--text-muted);
 }
 
+/* Search panel for water samples */
+.search-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+  margin: 40px auto; /* center horizontally and add vertical spacing */
+  max-width: 980px; /* constrain width so it appears centered on wide screens */
+  width: calc(100% - 3rem);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+}
+
+/* Modal overlay for centered search */
+.search-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  z-index: 1200;
+  padding: 20px;
+}
+
+.search-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 980px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+}
+
+.search-modal .search-grid { grid-template-columns: repeat(4, 1fr); }
+
+.ws-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: static; /* header is not sticky */
+  padding: 12px 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.ws-header .bb-title { margin: 0; }
+
+.search-controls {
+  position: static; /* inline in header */
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.search-floating-controls {
+  position: fixed;
+  /* moved up 100px and left 50px relative to previous position */
+  right: 268px; /* previously 218px; +50px to move left */
+  top: 180px; /* previously 280px; -100px to move up */
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 1600;
+}
+
+.open-search-btn, .open-reset-btn {
+  /* use the site's button sizing but keep them compact in the floating area */
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+/* When the centered search modal is open, hide the floating controls to avoid overlap */
+/* Hide floating controls while modal is open to avoid overlap */
+.search-modal-overlay:not(.hidden) ~ .ws-container .search-floating-controls {
+  display: none;
+}
+
+.ws-container { position: relative; }
+
+.close-search-btn {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.search-grid {
+  display: grid;
+  /* fewer columns so inputs appear larger on desktop */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+.search-field label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.search-field .form-control {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text-main);
+  width: 100%;
+}
+
+.search-actions {
+  display:flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.search-actions .btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .search-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .search-grid { grid-template-columns: 1fr; }
+  .search-actions { justify-content: flex-start; }
+}
+
+/* Icon button variant */
+.btn-icon {
+  display: inline-grid;
+  place-items: center;
+  padding: 8px 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.btn-icon svg { width: 18px; height: 18px; }
+
+/* Search spinner */
+.search-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.15);
+  border-top-color: var(--primary);
+  animation: spin 0.9s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.hidden { display: none !important; }
+
 /* =========================
    LOGIN PAGE
    ========================= */
