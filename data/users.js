@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { userCollection } from "../model/index.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -11,18 +12,15 @@ import {
 
 const saltRounds = 10;
 
-const fitForSession = (user) => {
-  return {
-    id: user._id.toString(),
-    fname: user.fname || "",
-    lname: user.lname || "",
-    email: user.lowerEmail,
-    role: user.role
-  };
-};
+const fitForSession = (user) => ({
+  id: user._id.toString(),
+  fname: user.fname || "",
+  lname: user.lname || "",
+  email: user.lowerEmail,
+  role: user.role
+});
 
 const exportedMethods = {
-
   async createUser(fname, lname, email, password, role = "user") {
     fname = validateName(fname, "First Name");
     lname = validateName(lname, "Last Name");
@@ -30,9 +28,7 @@ const exportedMethods = {
     password = validatePassword(password);
     role = checkString(role, "Role").toLowerCase();
 
-    if (role !== "user" && role !== "admin") {
-      throw "Invalid role";
-    }
+    if (role !== "user" && role !== "admin") throw "Invalid role";
 
     const lowerEmail = email.toLowerCase();
     const existing = await userCollection.findOne({ lowerEmail });
@@ -41,7 +37,6 @@ const exportedMethods = {
     if (existing) {
       if (!existing.isDeleted) throw "Email already exists";
 
-      // Reactivate the deleted account
       const hash = await bcrypt.hash(password, saltRounds);
       const reactivatedUser = await userCollection.findByIdAndUpdate(
         existing._id,
@@ -96,8 +91,7 @@ const exportedMethods = {
     if (!user) throw "User not found";
 
     const newLowerEmail = email.toLowerCase();
-    
-    // Check if the new email is different and already exists
+
     if (newLowerEmail !== user.lowerEmail) {
       const existing = await userCollection.findOne({ lowerEmail: newLowerEmail });
       if (existing) throw "Email already exists. Please use a different email.";
@@ -105,12 +99,7 @@ const exportedMethods = {
 
     const updatedUser = await userCollection.findByIdAndUpdate(
       userId,
-      {
-        fname,
-        lname,
-        lowerEmail: newLowerEmail,
-        updatedAt: new Date()
-      },
+      { fname, lname, lowerEmail: newLowerEmail, updatedAt: new Date() },
       { new: true }
     );
 
@@ -119,26 +108,27 @@ const exportedMethods = {
 
   async removeUser(userId) {
     userId = isValidId(userId);
+
     const updated = await userCollection.findByIdAndUpdate(
       userId,
       { isDeleted: true },
       { new: true }
     );
+
     if (!updated) throw "User not found";
     return true;
   },
 
   async creatPwdResetToken(email) {
     email = validateEmail(email);
+
     const lowerEmail = email.toLowerCase();
     const user = await userCollection.findOne({ lowerEmail, isDeleted: false });
 
-    // Don't reveal if email exists (security best practice)
     if (!user) return null;
 
-    // Generate reset token (random 32-char hex string)
     const resetToken = crypto.randomBytes(16).toString("hex");
-    const resetTokenExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    const resetTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
 
     await userCollection.findByIdAndUpdate(user._id, {
       resetToken,
@@ -159,8 +149,8 @@ const exportedMethods = {
 
     if (!user) throw "Token invalid or expired";
 
-    // Hash new password and update user
     const hash = await bcrypt.hash(newPassword, saltRounds);
+
     await userCollection.findByIdAndUpdate(user._id, {
       hashedPwd: hash,
       resetToken: null,
@@ -168,6 +158,24 @@ const exportedMethods = {
     });
 
     return true;
+  },
+
+  // Toggle like/unlike for a borough
+  async toggleLikeBorough(userId, boroughId) {
+    userId = isValidId(userId);
+    boroughId = isValidId(boroughId);
+
+    const user = await userCollection.findById(userId);
+    if (!user) throw "User not found";
+
+    const boroughObjectId = new mongoose.Types.ObjectId(boroughId);
+    const isLiked = (user.likedBoroughs || []).some((id) => id.equals(boroughObjectId));
+
+    const updateQuery = isLiked
+      ? { $pull: { likedBoroughs: boroughObjectId } }
+      : { $push: { likedBoroughs: boroughObjectId } };
+
+    return userCollection.findByIdAndUpdate(userId, updateQuery, { new: true });
   }
 };
 

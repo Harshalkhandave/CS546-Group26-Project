@@ -1,147 +1,220 @@
-<div class="borough-page">
+<div class="borough-page container">
 
-    <a href="/boroughs" class="back-btn">← Back to Overview</a>
+  <a href="/boroughs" class="back-btn">← Back to Overview</a>
 
-    <h1 class="page-title">{{borough.name}}</h1>
+  {{!-- Header Section & like --}}
+  <div class="stats-header" style="margin-top: 10px;">
+    <h1 class="page-title mb-0">{{borough.name}}</h1>
 
-    <p class="page-desc">{{borough.description}}</p>
+    {{!-- Like/Unlike button for authenticated users --}}
+    {{#if isAuthenticated}}
+    <button id="like-button" data-borough-id="{{borough._id}}"
+      class="btn {{#if isLiked}}btn-danger{{else}}btn-outline{{/if}}" style="font-size: 1.1rem; padding: 8px 16px;">
+      <i class="fas fa-heart"></i>
+      <span id="like-status" style="margin-left: 8px;">{{#if isLiked}}Liked!{{else}}Like This
+        Borough{{/if}}</span>
+    </button>
+    {{/if}}
+  </div>
+  <p class="page-desc">{{borough.description}}</p>
 
-    {{!-- <hr> --}}
-    {{!-- Borough Desc. and Average --}}
-    <div class="section-card">
-        <div class="stats-header">
-            <h3 class="section-title">
-                Borough Statistics
-            </h3>
+  <hr>
 
-            {{!-- health --}}
-            <div class="tips-popover">
-                <button type="button" class="tips-btn" aria-label="Show health tips">
-                    Health Tips
-                </button>
+  {{!-- Borough Desc. and Average --}}
+  <div class="section-card">
+    <div class="stats-header">
+      <h3 class="section-title">
+        Borough Statistics
+      </h3>
 
-                <div class="tips-panel" role="tooltip">
-                    {{#if combinedNotice}}
-                    <div class="health-notice">
-                        <strong>Notice:</strong> {{combinedNotice}}
-                    </div>
-                    {{/if}}
+      {{!-- health --}}
+      <div class="tips-popover">
+        <button type="button" class="tips-btn" aria-label="Show health tips">
+          Health Tips
+        </button>
 
-                    {{#if hasTips}}
-                    <div class="health-tip-card">
-                        <strong>Tips:</strong>
-                        <div class="health-tip-lines">
-                            {{#each tips}}
-                            <div class="health-tip-line">{{this}}</div>
-                            {{/each}}
-                        </div>
-                    </div>
-                    {{/if}}
+        <div class="tips-panel" role="tooltip">
+          {{#if combinedNotice}}
+          <div class="health-notice">
+            <strong>Notice:</strong> {{combinedNotice}}
+          </div>
+          {{/if}}
 
-                    <p class="health-disclaimer">
-                        * These tips are informational (non-medical) and based on average water quality indicators.
-                    </p>
-                </div>
+          {{#if hasTips}}
+          <div class="health-tip-card">
+            <strong>Tips:</strong>
+            <div class="health-tip-lines">
+              {{#each tips}}
+              <div class="health-tip-line">{{this}}</div>
+              {{/each}}
             </div>
+          </div>
+          {{/if}}
+
+          <p class="health-disclaimer">
+            * These tips are informational (non-medical) and based on average water quality indicators.
+          </p>
         </div>
-
-        {{#if borough.stats.[0]}}
-        <ul class="stats-list">
-            <li class="stats-row">
-                <span class="stats-label">Avg Chlorine:</span>
-                <span class="stats-value">{{toFixed3 borough.stats.[0].avg_chlorine}} mg/L</span>
-            </li>
-            <li class="stats-row">
-                <span class="stats-label">Avg Turbidity:</span>
-                <span class="stats-value">{{toFixed3 borough.stats.[0].avg_turbidity}} NTU</span>
-            </li>
-            <li class="stats-row">
-                <span class="stats-label">Avg Coliform:</span>
-                <span class="stats-value">{{toFixed3 borough.stats.[0].avg_coliform}} MPN/100mL</span>
-            </li>
-            <li class="stats-row">
-                <span class="stats-label">Avg E. Coli:</span>
-                <span class="stats-value">{{toFixed3 borough.stats.[0].avg_e_coli}} MPN/100mL</span>
-            </li>
-            <li class="stats-row">
-                <span class="stats-label">Avg Fluoride:</span>
-                <span class="stats-value">{{toFixed3 borough.stats.[0].avg_fluoride}} mg/L</span>
-            </li>
-        </ul>
-        {{else}}
-        <p class="text-muted"><em>No statistics available for this borough.</em></p>
-        {{/if}}
-
+      </div>
     </div>
 
+    {{#if borough.stats.[0]}}
+    <ul class="stats-list">
+      <li class="stats-row">
+        <span class="stats-label">Avg Chlorine:</span>
+        <span class="stats-value">{{toFixed3 borough.stats.[0].avg_chlorine}} mg/L</span>
+      </li>
+      <li class="stats-row">
+        <span class="stats-label">Avg Turbidity:</span>
+        <span class="stats-value">{{toFixed3 borough.stats.[0].avg_turbidity}} NTU</span>
+      </li>
+      <li class="stats-row">
+        <span class="stats-label">Avg Coliform:</span>
+        <span class="stats-value">{{toFixed3 borough.stats.[0].avg_coliform}} MPN/100mL</span>
+      </li>
+      <li class="stats-row">
+        <span class="stats-label">Avg E. Coli:</span>
+        <span class="stats-value">{{toFixed3 borough.stats.[0].avg_e_coli}} MPN/100mL</span>
+      </li>
+      <li class="stats-row">
+        <span class="stats-label">Avg Fluoride:</span>
+        <span class="stats-value">{{toFixed3 borough.stats.[0].avg_fluoride}} mg/L</span>
+      </li>
+    </ul>
+    {{else}}
+    <p class="text-muted"><em>No statistics available for this borough.</em></p>
+    {{/if}}
 
-    {{!-- <hr> --}}
-    {{!-- Neighborhoods --}}
-    {{!-- <section class="soft-panel section-gap"> --}}
-        <h3 class="soft-title">Neighborhoods</h3>
+  </div>
 
-        {{#if borough.neighborhoods}}
-        <div class="nb-list">
-            {{#each borough.neighborhoods}}
-            <div class="nb-item">
-                <h5 class="nb-name">{{this.name}}</h5>
 
-                {{#if this.stats}}
-                <div class="neighborhood-stats">
-                    <div><strong>Avg Chlorine:</strong> {{toFixed3 this.stats.avg_chlorine}} mg/L</div>
-                    <div><strong>Avg Turbidity:</strong> {{toFixed3 this.stats.avg_turbidity}} NTU</div>
-                    <div><strong>Avg Coliform:</strong> {{toFixed3 this.stats.avg_coliform}} MPN/100mL</div>
-                    <div><strong>Avg E. Coli:</strong> {{toFixed3 this.stats.avg_e_coli}} MPN/100mL</div>
-                    <div><strong>Avg Fluoride:</strong> {{toFixed3 this.stats.avg_fluoride}} mg/L</div>
-                    <div><strong>Latest Sample:</strong> {{this.stats.latest_sample_date}}</div>
-                </div>
-                {{else}}
-                <em class="text-muted">No stats available.</em>
-                {{/if}}
-            </div>
-            {{/each}}
+  <hr>
+
+  {{!-- Neighborhoods --}}
+  {{!-- <section class="soft-panel section-gap"> --}}
+    <h3 class="soft-title">Neighborhoods</h3>
+
+    {{#if borough.neighborhoods}}
+    <div class="nb-list">
+      {{#each borough.neighborhoods}}
+      <div class="nb-item">
+        <h5 class="nb-name">{{this.name}}</h5>
+
+        {{#if this.stats}}
+        <div class="neighborhood-stats">
+          <div><strong>Avg Chlorine:</strong> {{toFixed3 this.stats.avg_chlorine}} mg/L</div>
+          <div><strong>Avg Turbidity:</strong> {{toFixed3 this.stats.avg_turbidity}} NTU</div>
+          <div><strong>Avg Coliform:</strong> {{toFixed3 this.stats.avg_coliform}} MPN/100mL</div>
+          <div><strong>Avg E. Coli:</strong> {{toFixed3 this.stats.avg_e_coli}} MPN/100mL</div>
+          <div><strong>Avg Fluoride:</strong> {{toFixed3 this.stats.avg_fluoride}} mg/L</div>
+          <div><strong>Latest Sample:</strong> {{this.stats.latest_sample_date}}</div>
         </div>
         {{else}}
-        <p class="text-muted"><em>No neighborhoods listed.</em></p>
+        <em class="text-muted">No stats available.</em>
         {{/if}}
-        {{!--
-    </section> --}}
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <p class="text-muted"><em>No neighborhoods listed.</em></p>
+    {{/if}}
 
 
+    <hr>
     {{!-- Water Quality Samples --}}
     {{#if samples}}
     <div class="section-card">
-        <h3 class="section-title">Water Quality Samples</h3>
+      <h3 class="section-title">Water Quality Samples</h3>
 
-        <div class="table-wrap">
-            <table class="samples-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Site</th>
-                        <th>Chlorine (mg/L)</th>
-                        <th>Turbidity (NTU)</th>
-                        <th>Coliform</th>
-                        <th>E. Coli</th>
-                        <th>Fluoride (mg/L)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each samples}}
-                    <tr>
-                        <td>{{this.sample_date}}</td>
-                        <td>{{this.sample_site}}</td>
-                        <td>{{toFixed3 this.residual_free_chlorine_mg_l}}</td>
-                        <td>{{toFixed3 this.turbidity_ntu}}</td>
-                        <td>{{this.coliform_quanti_tray_mpn_100ml}}</td>
-                        <td>{{this.e_coli_quanti_tray_mpn_100ml}}</td>
-                        <td>{{toFixed3 this.fluoride_mg_l}}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </div>
+      <div class="table-wrap">
+        <table class="samples-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Site</th>
+              <th>Chlorine (mg/L)</th>
+              <th>Turbidity (NTU)</th>
+              <th>Coliform</th>
+              <th>E. Coli</th>
+              <th>Fluoride (mg/L)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each samples}}
+            <tr>
+              <td>{{this.sample_date}}</td>
+              <td>{{this.sample_site}}</td>
+              <td>{{toFixed3 this.residual_free_chlorine_mg_l}}</td>
+              <td>{{toFixed3 this.turbidity_ntu}}</td>
+              <td>{{this.coliform_quanti_tray_mpn_100ml}}</td>
+              <td>{{this.e_coli_quanti_tray_mpn_100ml}}</td>
+              <td>{{toFixed3 this.fluoride_mg_l}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
     </div>
     {{/if}}
 
+    <hr style="margin-top: 40px; margin-bottom: 40px;">
+
+    {{!-- Comment posting and comment list --}}
+    <section id="comments-section">
+      <h2>Community Feedback ({{len comments}})</h2>
+
+      {{#if isAuthenticated}}
+      <div id="add-comment-form-container" class="section-card" style="margin-top: 20px;">
+        <form id="comment-form" data-borough-id="{{borough._id}}">
+          <div class="field">
+            <label for="comment-text" class="field-label">Leave a Comment (max 200 chars):</label>
+            <textarea class="input" id="comment-text" name="comment" rows="3" maxlength="200"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Post Comment</button>
+          <div id="comment-error" class="error-text hidden" style="margin-top: 10px;"></div>
+        </form>
+      </div>
+      {{else}}
+      <p class="text-muted" style="margin-top: 15px;">
+        Please <a href="/users/login">login</a> to post a comment and share your feedback.
+      </p>
+      {{/if}}
+
+      <ul id="comment-list" class="list-group mt-4">
+        {{#each comments}}
+        <li class="list-group-item d-flex justify-content-between align-items-start" data-comment-id="{{this._id}}">
+          <div style="flex-grow: 1; margin-right: 15px;">
+            <p class="mb-1">{{this.comment}}</p>
+            <small class="text-muted">
+              Posted by
+              {{#if this.user}}
+              <strong>{{this.user.fname}} {{this.user.lname}}</strong>
+              {{else}}
+              <span class="text-danger">Deleted User</span>
+              {{/if}}
+              on {{this.commentDate}}
+            </small>
+          </div>
+
+          {{!-- Admin or user Delete--}}
+          {{#if ../isAuthenticated}}
+          {{#if (or (eq ../currentUser.role 'admin') (eq ../currentUser.id this.user._id))}}
+          <button class="btn btn-sm btn-danger delete-comment-btn ms-3" data-comment-id="{{this._id}}"
+            style="flex-shrink: 0; padding: 5px 10px; font-size: 0.8rem;">
+            Delete
+          </button>
+          {{/if}}
+          {{/if}}
+        </li>
+        {{/each}}
+      </ul>
+
+      {{#unless (gt (len comments) 0)}}
+      <p class="text-muted mt-3">Be the first to leave a comment!</p>
+      {{/unless}}
+    </section>
+
 </div>
+
+<script src="/public/js/like.js"></script>
+<script src="/public/js/comments.js"></script>

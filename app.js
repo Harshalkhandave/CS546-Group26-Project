@@ -6,12 +6,13 @@ import exphbs from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import configRoutes from './routes/index.js';
-import connectDB, { disconnectDB } from './config/mongoConnection.js'
+import connectDB, { disconnectDB } from './config/mongoConnection.js';
 import { logMdw } from './middleware.js';
 
 dotenv.config();
 
 await connectDB();
+// Dynamically import Passport configuration and routes so env vars are available
 await import('./config/passport.js');
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,28 +20,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Load environment variables before registering Passport strategies
-dotenv.config();
-
-// Dynamically import Passport configuration and routes so env vars are available
-await import('./config/passport.js');
-
 // Run file-based users -> Mongo migration (idempotent)
 try {
   const { default: migrateUsers } = await import('./tasks/migrateUsersToMongo.js');
   await migrateUsers();
 } catch (e) {
   console.warn('User migration step skipped or failed:', e && e.message ? e.message : e);
-}
-
-export function logRequest(req, res, next) {
-  const timestamp = new Date().toUTCString();
-  const method = req.method;
-  const path = req.path;
-  let authStatus = 'Non-Authenticated';
-  if (req.session.user) authStatus = `Authenticated ${req.session.user.role}`;
-  console.log(`[${timestamp}]: ${method} ${path} (${authStatus})`);
-  next();
 }
 
 // request parsing
@@ -58,14 +43,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// logging middleware
-app.use(logMdw);
-
 // expose session user to templates
 app.use((req, res, next) => {
   res.locals.currentUser = req.session && req.session.user ? req.session.user : null;
+  res.locals.isAuthenticated = !!req.session.user;
   next();
 });
+
+// logging middleware
+app.use(logMdw);
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
@@ -76,14 +62,24 @@ app.engine(
     defaultLayout: 'main',
     helpers: {
       eq: (a, b) => a == b,
-      toFixed3: (num) => Number(num).toFixed(3),
+      or: (...args) => {
+        args.pop();
+        return args.some(Boolean);
+      },
+      len: (arr) => (Array.isArray(arr) ? arr.length : 0),
+      gt: (a, b) => Number(a) > Number(b),
+      toFixed3: (v) => {
+        const n = Number(v);
+        if (v === null || v === undefined || Number.isNaN(n) || v === 'N/A') return 'N/A';
+        return n.toFixed(3);
+      },
+      ifGreaterThan: (v1, v2, options) =>
+        Number(v1) > Number(v2) ? options.fn(this) : options.inverse(this),
+
       json: (context) => JSON.stringify(context),
       array: (...args) => {
-        args.pop();               // remove Handlebars options object
+        args.pop();
         return args;
-      },
-      ifEquals(a, b, options) {
-        return a === b ? options.fn(this) : options.inverse(this);
       },
       qualityClass: (value, type) => {
         const rules = {
@@ -93,11 +89,18 @@ app.engine(
           ecoli: v => v === 0 ? 'good' : 'poor',
           fluoride: v => v >= 0.6 && v <= 0.9 ? 'good' : (v >= 0.5 && v <= 1.0 ? 'average' : 'poor')
         };
-        return rules[type]?.(value) ?? '';
-      }
+        const numValue = Number(value);
+        if (isNaN(numValue)) return '';
+        return rules[type]?.(numValue) ?? '';
+      },
+
+      ifEquals(a, b, options) {
+        return a === b ? options.fn(this) : options.inverse(this);
+      },
     }
   })
 );
+
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
