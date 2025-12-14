@@ -501,6 +501,7 @@ a:hover {
   gap: 10px;
   justify-content: center; /* center buttons when there's one or more */
   align-items: center;
+  margin-top: 30px;
 }
 
 .oauth-btn {
