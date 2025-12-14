@@ -3,12 +3,10 @@ import usersRoutes from './users.js';
 import boroughsRoutes from './boroughs.js';
 import apiRoutes from './api.js';
 import waterSamplesRoutes from './waterSamples.js';
-import authRoutes from './auth.js';
 import voteRoutes from "./votes.js";
 import commentsRoutes from "./comments.js";
 
 const constructorMethod = (app) => {
-  app.use('/', authRoutes);
   app.use('/users', usersRoutes);
   app.use('/boroughs', boroughsRoutes);
   app.use('/waterSamples', waterSamplesRoutes);
