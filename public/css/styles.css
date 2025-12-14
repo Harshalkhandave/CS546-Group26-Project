@@ -1575,7 +1575,7 @@ body.theme-dark .btn-success:disabled {
 .borough-name { margin: 0 0 8px; font-size: 1.2rem; }
 .borough-desc { margin: 0 0 12px; color: var(--text-muted); line-height: 1.45; }
 
-.divider { height: 1px; background: var(--border); margin: 12px 0; }
+/* .divider { height: 1px; background: var(--border); margin: 12px 0; } */
 
 .borough-meta { margin: 8px 0; color: var(--text-main); }
 
@@ -1635,8 +1635,6 @@ body.theme-dark .btn-success:disabled {
 }
 
 
-
-.metrics-field { grid-column: 1 / -1; }
 
 .metrics-row {
   padding: 10px 12px;
@@ -1704,7 +1702,8 @@ body.theme-dark .btn-success:disabled {
   border-left: 4px solid var(--primary);
   background: var(--surface-soft);
   color: var(--text-main);
-  border-radius: 10px;
+  border-radius: 5px;
+  /* font-family: ??; */
   /* border: 1px solid var(--border); */
 }
 

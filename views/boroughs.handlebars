@@ -45,7 +45,7 @@
       <!-- Help toggle button -->
       <button type="button" id="guideToggleBtn" class="filter-help-btn" aria-expanded="false"
         aria-controls="dashboardGuide">
-        How to Use
+        Guide
       </button>
     </div>
 
@@ -179,7 +179,7 @@
       <h3 class="section-title">Borough Water Quality Trend Analysis</h3>
 
       <button type="button" class="filter-help-btn" aria-expanded="false" aria-controls="trendDashboardGuide">
-        How to Use
+        Guide
       </button>
     </div>
 
@@ -735,7 +735,7 @@
         const isHidden = panel.classList.contains("is-hidden");
         panel.classList.toggle("is-hidden");
         btn.setAttribute("aria-expanded", String(isHidden));
-        btn.textContent = isHidden ? "Close" : "How to Use";
+        btn.textContent = isHidden ? "Close" : "Guide";
       });
     });
   });
