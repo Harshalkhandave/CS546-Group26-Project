@@ -149,3 +149,152 @@ export const getSamplesByPage = async (page) => {
     ecoli: s.e_coli_quanti_tray_mpn_100ml
   }));
 };
+export async function getDataDates() {
+  const results = await waterSampleCollection.aggregate([
+    {
+      $group: {
+        _id: {
+          year: { $year: "$sample_date" },
+          month: { $month: "$sample_date" },
+          day: { $dayOfMonth: "$sample_date" }
+        }
+      }
+    },
+    {
+      $sort: {
+        "_id.year": 1,
+        "_id.month": 1,
+        "_id.day": 1
+      }
+    }
+  ]);
+
+  const years = new Set();
+  const monthsByYear = {};
+  const daysByYearMonth = {}; 
+
+  for (const item of results) {
+    const y = item._id.year;
+    const m = item._id.month;
+    const d = item._id.day;
+
+    years.add(y);
+
+    if (!monthsByYear[y]) monthsByYear[y] = [];
+    if (!monthsByYear[y].includes(m)) {
+      monthsByYear[y].push(m);
+    }
+
+    if (!daysByYearMonth[y]) daysByYearMonth[y] = {};
+    if (!daysByYearMonth[y][m]) daysByYearMonth[y][m] = [];
+
+    daysByYearMonth[y][m].push(d);
+  }
+
+  return {
+    years: Array.from(years),
+    monthsByYear,
+    daysByYearMonth
+  };
+}
+
+export async function getTrendData(borough, year, month, metric) {
+  if (typeof borough !== "string" || borough.trim().length === 0) {
+    throw "borough is required and must be a non-empty string!";
+  }
+
+  if (typeof year === "undefined") {
+    throw "year is required!";
+  }
+
+  if (typeof metric !== "string" || metric.trim().length === 0) {
+    throw "metric is required and must be a string!";
+  }
+
+  const boroughName = borough.trim();
+  const metricKey = metric.trim();
+
+  if (!/^\d{4}$/.test(String(year))) {
+    throw "year must be a 4-digit number!";
+  }
+
+  const y = Number(year);
+  if (y < 2015 || y > new Date().getFullYear()) {
+    throw `year must be between 2015 and ${new Date().getFullYear()}`;
+  }
+
+  let m = null;
+  if (typeof month !== "undefined") {
+    if (!/^\d{1,2}$/.test(String(month))) {
+      throw "month must be a number between 1 and 12!";
+    }
+
+    m = Number(month);
+    if (m < 1 || m > 12) {
+      throw "month must be between 1 and 12!";
+    }
+  }
+
+  const METRIC_MAP = Object.freeze({
+    avg_chlorine: "residual_free_chlorine_mg_l",
+    avg_turbidity: "turbidity_ntu",
+    avg_coliform: "coliform_quanti_tray_mpn_100ml",
+    avg_e_coli: "e_coli_quanti_tray_mpn_100ml",
+    avg_fluoride: "fluoride_mg_l"
+  });
+
+  if (!Object.prototype.hasOwnProperty.call(METRIC_MAP, metricKey)) {
+    throw new Error(
+      `metric must be one of: ${Object.keys(METRIC_MAP).join(", ")}`
+    );
+  }
+
+  const field = METRIC_MAP[metricKey];
+
+  const start = m
+    ? new Date(y, m - 1, 1)
+    : new Date(y, 0, 1);
+
+  const end = m
+    ? new Date(y, m, 0)
+    : new Date(y, 11, 31);
+
+  return await waterSampleCollection.aggregate([
+    {
+      $lookup: {
+        from: "samplesites",
+        localField: "sample_site",
+        foreignField: "sample_site",
+        as: "site"
+      }
+    },
+    { $unwind: "$site" },
+
+    {
+      $match: {
+        "site.borough": borough,
+        sample_date: { $gte: start, $lte: end },
+        [field]: { $ne: null }
+      }
+    },
+
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: "%Y-%m-%d", date: "$sample_date" }
+        },
+        value: { $avg: `$${field}` }
+      }
+    },
+
+    {
+      $project: {
+        _id: 0,
+        date: "$_id",
+        value: { $round: ["$value", 3] }
+      }
+    },
+
+    { $sort: { date: 1 } }
+  ]);
+}

@@ -10,7 +10,8 @@ const NeighborhoodStatsSchema = new Schema(
       avg_coliform: Number,
       avg_e_coli: Number,
       avg_fluoride: Number,
-      latest_sample_date: Date
+      latest_sample_date: Date,
+      sample_count: Number     
     }
   },
   { _id: false }
@@ -23,7 +24,8 @@ const BoroughStatsSchema = new Schema(
     avg_coliform: Number,
     avg_e_coli: Number,
     avg_fluoride: Number,
-    latest_sample_date: Date
+    latest_sample_date: Date,
+    sample_count: Number    
   },
   { _id: false }
 );
@@ -37,17 +39,16 @@ const AlertSchema = new Schema({
 
 const boroughSchema = new Schema(
   {
-    name: { type: String},
+    name: { type: String },
     description: String,
     neighborhoods: { type: [NeighborhoodStatsSchema], default: [] },
     stats: { type: [BoroughStatsSchema], default: [] },
     alerts: { type: [AlertSchema], default: [] }
   },
-  { timestamps: true, versionKey: false}
-  
+  { timestamps: true, versionKey: false }
 );
 
 boroughSchema.index({ name: 1 }, { unique: true });
 
-const boroughCollection = model("Borough", boroughSchema)
+const boroughCollection = model("Borough", boroughSchema);
 export default boroughCollection;

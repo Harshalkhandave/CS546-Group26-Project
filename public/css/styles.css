@@ -610,7 +610,7 @@ body.theme-dark .error-text {
 
 #boroughMap {
     width: 100%;
-    max-width: 800px; 
+    /* max-width: 800px;  */
     height: 500px; 
     display: block !important;
     background: #eaeaea;
@@ -618,6 +618,7 @@ body.theme-dark .error-text {
 }
 
   
+
 
 /* =========================
    TOAST / SERVER MESSAGES
@@ -1410,3 +1411,350 @@ body.theme-dark .btn-success:disabled {
   border-top: 1px solid var(--border);
   transform: rotate(45deg);
 }
+ 
+/* ==========================================================
+   BOROUGHS DASHBOARD PAGE (Bootstrap-free)
+   
+   ========================================================== */
+
+/* ===== Page frame (replaces .container + mt-4) ===== */
+.page {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 24px 20px 70px;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  margin: 0 0 18px;
+  color: var(--text-main);
+}
+
+/* ===== Shared section box (your “former layout” style) ===== */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-soft);
+  margin: 18px 0;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  color: var(--text-main);
+}
+
+/* ===== small divider ===== */
+.soft-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 22px 0;
+}
+
+/* ===== inputs like bootstrap ===== */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-label { font-weight: 700; font-size: .95rem; color: var(--text-main); }
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(25,118,210,.12);
+}
+
+/* ===== checkboxes row ===== */
+.check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-main);
+  user-select: none;
+}
+
+.check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+/* ===== filter select area under checkboxes ===== */
+.filter-selects {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .filter-selects { grid-template-columns: 1fr; }
+}
+
+/* ===== guide formatting ===== */
+.guide-box .guide-list,
+.guide-box .guide-ol {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-main);
+}
+
+.guide-box ul ul { margin-top: 8px; }
+.muted { color: var(--text-muted); }
+
+/* ===== map wrapper ===== */
+.map-frame {
+  height: 500px;
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* ===== borough cards grid ===== */
+.borough-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+@media (max-width: 980px) {
+  .borough-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .borough-grid { grid-template-columns: 1fr; }
+}
+
+.borough-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px 16px 14px;
+  box-shadow: var(--shadow-soft);
+}
+
+.borough-name { margin: 0 0 8px; font-size: 1.2rem; }
+.borough-desc { margin: 0 0 12px; color: var(--text-muted); line-height: 1.45; }
+
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+.borough-meta { margin: 8px 0; color: var(--text-main); }
+
+/* metric rows */
+.metric-list { margin-top: 10px; display: grid; gap: 8px; }
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.metric-label { font-weight: 700; }
+.metric-value { color: var(--text-main); }
+
+/* “View details” button */
+.btn-primary-link {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+.btn-primary-link:hover { background: var(--primary-hover); }
+
+/* ===== legend dots ===== */
+.value-dot, .map-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.map-swatch { width: 18px; height: 18px; border-radius: 4px; }
+
+.value-dot.good, .map-swatch.good { background: #52c41a; }
+.value-dot.average, .map-swatch.average { background: #fadb14; }
+.value-dot.poor, .map-swatch.poor { background: #ff4d4f; }
+
+.legend-block { margin-top: 14px; }
+.legend-subtitle { margin: 0 0 8px; font-size: 1.05rem; }
+.legend-dots { display: grid; gap: 6px; margin: 8px 0 12px; }
+.legend-list { margin: 0; padding-left: 18px; }
+
+/* ===== trend section ===== */
+.trend-controls {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* equal columns */
+  gap: 14px 18px;
+  align-items: end;
+}
+
+.time-field{
+  grid-column: 1;   /* put Time in the left column */
+}
+
+.compare-check { margin-bottom: 2px; }
+
+.metrics-field { grid-column: 1 / -1; }
+
+.metrics-row {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.trend-chart {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+/* =============== Help Block ============= */
+
+.check-row-with-help{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 12px;
+}
+
+.check-row-left{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 12px;
+  align-items:center;
+}
+
+.filter-help-btn{
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+/* Hover */
+.filter-help-btn:hover{
+  background: var(--surface-soft);
+  border-color: var(--border);
+}
+
+/* when opened, make it feel "active" */
+.filter-help-btn[aria-expanded="true"]{
+  background: var(--surface-soft);
+  border-color: var(--primary);
+}
+
+/* Collapsible block */
+.dashboard-guide-collapsible{
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-left: 4px solid var(--primary);
+  background: var(--surface-soft);
+  color: var(--text-main);
+  border-radius: 10px;
+  /* border: 1px solid var(--border); */
+}
+
+/* Hide */
+.dashboard-guide-collapsible.is-hidden{
+  display:none;
+}
+
+.guide-title{
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  color: var(--text-main);
+}
+
+@media (max-width: 900px) {
+  .trend-controls { grid-template-columns: 1fr; }
+}
+
+/* ============= table comparison in Borough ============ */
+.table-wrapper{
+  overflow-x: auto;
+}
+
+.borough-table{
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.borough-table th,
+.borough-table td{
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.borough-table thead th{
+  background: var(--surface-soft);
+  font-weight: 600;
+}
+
+.borough-table tbody tr:nth-child(even){
+  background: var(--surface-soft);
+}
+
+/* Dots */
+.value-dot{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  margin-right:6px;
+  vertical-align:middle;
+}
+
+.value-dot.good{ background:#52c41a; }
+.value-dot.average{ background:#fadb14; }
+.value-dot.poor{ background:#ff4d4f; }
+
+/* Buttons inside table */
+.borough-table .btn-primary-link{
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+   
