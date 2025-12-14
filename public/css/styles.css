@@ -1704,11 +1704,57 @@ body.theme-dark .btn-success:disabled {
   color: var(--text-main);
 }
 
-
-
 @media (max-width: 900px) {
   .trend-controls { grid-template-columns: 1fr; }
 }
 
+/* ============= table comparison in Borough ============ */
+.table-wrapper{
+  overflow-x: auto;
+}
+
+.borough-table{
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.borough-table th,
+.borough-table td{
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.borough-table thead th{
+  background: var(--surface-soft);
+  font-weight: 600;
+}
+
+.borough-table tbody tr:nth-child(even){
+  background: var(--surface-soft);
+}
+
+/* Dots */
+.value-dot{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  margin-right:6px;
+  vertical-align:middle;
+}
+
+.value-dot.good{ background:#52c41a; }
+.value-dot.average{ background:#fadb14; }
+.value-dot.poor{ background:#ff4d4f; }
+
+/* Buttons inside table */
+.borough-table .btn-primary-link{
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
 
    

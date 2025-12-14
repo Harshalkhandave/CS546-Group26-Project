@@ -92,44 +92,101 @@
     </div>
   </section>
 
-  <!-- Borough cards grid -->
-  <section class="borough-grid">
-    {{#each boroughs}}
-    <article class="borough-card" data-borough="{{this.name}}">
-      <div class="borough-card-head">
-        <h3 class="borough-name">{{this.name}}</h3>
-      </div>
+  <!-- Borough table -->
+ <section class="section-card borough-table-section">
+  <h3 class="section-title">Borough Comparison Table</h3>
 
-      <p class="borough-desc">{{this.description}}</p>
+  <div class="table-wrapper">
+    <table class="borough-table">
+      <thead>
+        <tr>
+          <th>Metric \ Borough</th>
+          {{#each boroughs}}
+            <th>{{this.name}}</th>
+          {{/each}}
+        </tr>
+      </thead>
 
-      <div class="divider"></div>
+      <tbody>
+        <!-- Total Samples -->
+        <tr>
+          <td><strong>Total Samples</strong></td>
+          {{#each boroughs}}
+            <td>{{this.stats.[0].sample_count}}</td>
+          {{/each}}
+        </tr>
 
-      <p class="borough-meta"><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
+        <!-- Avg Chlorine -->
+        <tr>
+          <td><strong>Avg Chlorine</strong></td>
+          {{#each boroughs}}
+            <td>
+              <span class="value-dot chlorine {{qualityClass this.stats.[0].avg_chlorine 'chlorine'}}"></span>
+              {{toFixed3 this.stats.[0].avg_chlorine}}
+            </td>
+          {{/each}}
+        </tr>
 
-      {{#if this.stats.[0]}}
-      <p class="borough-meta"><strong>Total Samples:</strong> <span
-          class="sample-count">{{this.stats.[0].sample_count}}</span></p>
+        <!-- Avg Turbidity -->
+        <tr>
+          <td><strong>Avg Turbidity</strong></td>
+          {{#each boroughs}}
+            <td>
+              <span class="value-dot turbidity {{qualityClass this.stats.[0].avg_turbidity 'turbidity'}}"></span>
+              {{toFixed3 this.stats.[0].avg_turbidity}}
+            </td>
+          {{/each}}
+        </tr>
 
-      <div class="metric-list">
-        <div class="metric-row"><span class="metric-label">Avg Chlorine</span><span
-            class="metric-value chlorine">{{toFixed3 this.stats.[0].avg_chlorine}}</span></div>
-        <div class="metric-row"><span class="metric-label">Avg Turbidity</span><span
-            class="metric-value turbidity">{{toFixed3 this.stats.[0].avg_turbidity}}</span></div>
-        <div class="metric-row"><span class="metric-label">Avg Coliform</span><span
-            class="metric-value coliform">{{toFixed3 this.stats.[0].avg_coliform}}</span></div>
-        <div class="metric-row"><span class="metric-label">Avg E Coli</span><span class="metric-value ecoli">{{toFixed3
-            this.stats.[0].avg_e_coli}}</span></div>
-        <div class="metric-row"><span class="metric-label">Avg Fluoride</span><span
-            class="metric-value fluoride">{{toFixed3 this.stats.[0].avg_fluoride}}</span></div>
-      </div>
-      {{else}}
-      <p class="muted"><em>No statistics available.</em></p>
-      {{/if}}
+        <!-- Avg Coliform -->
+        <tr>
+          <td><strong>Avg Coliform</strong></td>
+          {{#each boroughs}}
+            <td>
+              <span class="value-dot coliform {{qualityClass this.stats.[0].avg_coliform 'coliform'}}"></span>
+              {{toFixed3 this.stats.[0].avg_coliform}}
+            </td>
+          {{/each}}
+        </tr>
 
-      <a href="/boroughs/{{this._id}}" class="btn-primary-link">View Details</a>
-    </article>
-    {{/each}}
-  </section>
+        <!-- Avg E Coli -->
+        <tr>
+          <td><strong>Avg E Coli</strong></td>
+          {{#each boroughs}}
+            <td>
+              <span class="value-dot ecoli {{qualityClass this.stats.[0].avg_e_coli 'ecoli'}}"></span>
+              {{toFixed3 this.stats.[0].avg_e_coli}}
+            </td>
+          {{/each}}
+        </tr>
+
+        <!-- Avg Fluoride -->
+        <tr>
+          <td><strong>Avg Fluoride</strong></td>
+          {{#each boroughs}}
+            <td>
+              <span class="value-dot fluoride {{qualityClass this.stats.[0].avg_fluoride 'fluoride'}}"></span>
+              {{toFixed3 this.stats.[0].avg_fluoride}}
+            </td>
+          {{/each}}
+        </tr>
+
+        <!-- View Details -->
+        <tr>
+          <td><strong>View Details</strong></td>
+          {{#each boroughs}}
+            <td>
+              <a href="/boroughs/{{this._id}}" class="btn-primary-link">
+                View Details
+              </a>
+            </td>
+          {{/each}}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
 
   <div class="soft-divider"></div>
 
@@ -698,5 +755,8 @@
     btn.textContent = isHidden ? "Close" : "How to Use";
   });
 });
+
+/* helper for comparison table -> in app.js */
+
 
 </script>

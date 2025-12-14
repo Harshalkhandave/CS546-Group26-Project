@@ -84,8 +84,19 @@ app.engine(
       },
       ifEquals(a, b, options) {
         return a === b ? options.fn(this) : options.inverse(this);
+      },
+      qualityClass: (value, type) => {
+        const rules = {
+          chlorine: v => v >= 0.4 && v <= 0.9 ? 'good' : (v >= 0.2 && v <= 1.0 ? 'average' : 'poor'),
+          turbidity: v => v <= 1 ? 'good' : (v <= 2 ? 'average' : 'poor'),
+          coliform: v => v <= 0.1 ? 'good' : (v <= 1 ? 'average' : 'poor'),
+          ecoli: v => v === 0 ? 'good' : 'poor',
+          fluoride: v => v >= 0.6 && v <= 0.9 ? 'good' : (v >= 0.5 && v <= 1.0 ? 'average' : 'poor')
+        };
+        return rules[type]?.(value) ?? '';
       }
-  }})
+    }
+  })
 );
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
