@@ -1258,7 +1258,8 @@ body.theme-dark .btn-success:disabled {
   color: var(--text-muted);
   max-width: 900px;
   line-height: 1.45;
-  margin: 0 0 18px;
+  /* margin: 100 0 18px; */
+  margin-top: 20px;
 }
 
 /* ===== Unified section card style ===== */
@@ -1267,7 +1268,7 @@ body.theme-dark .btn-success:disabled {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 18px 20px;
-  margin: 18px 0;
+  margin-top: 30px;
   box-shadow: var(--shadow-soft);
   color: var(--text-main);
 }
@@ -1881,3 +1882,219 @@ body.theme-dark .btn-success:disabled {
 .metrics-field{ grid-column: 1 / -1; grid-row: 4; }
 
 
+/* =========================
+   Neighborhoods
+   ========================= */
+
+.section-collapse{
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 620px;
+  background: var(--surface);
+  /* box-shadow: var(--shadow-soft); */
+  overflow: hidden;
+  margin-top: 30px;
+}
+
+.section-collapse__summary{
+  list-style: none;
+  cursor: pointer;
+  width: 620px;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+}
+
+.summary-left{
+  display: flex;
+  align-items: center;
+  gap: 20px; /* space between title & total */
+}
+
+.section-collapse__summary::-webkit-details-marker{ display:none; }
+
+.section-collapse__title{
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.section-collapse__meta{
+  color: var(--text-muted);
+  line-height: 1.2;
+  font-size: 0.9rem;
+}
+
+.section-collapse__body{
+  border-top: 1px solid var(--border);
+  background: var(--surface-soft);
+  padding: 0px 20px;
+}
+
+/* chevron */
+.section-collapse__summary::after{
+  content: "▾";
+  color: var(--text-muted);
+  transition: transform .15s ease;
+}
+.section-collapse[open] .section-collapse__summary::after{
+  transform: rotate(180deg);
+}
+
+/* .neighborhood-row{
+  display: flex;
+  justify-content: flex-end;
+} */
+
+/* ================ PROFILE UI ====================== */
+
+/* =========================
+   Liked Boroughs
+   ========================= */
+
+/* list */
+.liked-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+
+.liked-item{
+  display:flex;
+  align-items:center;
+  justify-content: flex-end;
+  gap:43px;
+  padding:8px 0;
+  border-top:1px dashed var(--border);
+}
+.liked-item:first-child{ border-top:none; }
+
+/* IMPORTANT: remove the left padding that causes “weird” alignment */
+.liked-name{
+  font-weight:700;
+  font-size:15px;
+  padding-left:0;     /* <- key fix */
+  margin:0;
+}
+
+.borough-card {
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: none !important;
+}
+
+
+/* =========================
+   Comments
+   ========================= */
+
+.comment-details { margin-top: 12px; }
+
+/* summary becomes the header row */
+.comment-summary{
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* remove default marker */
+.comment-summary::-webkit-details-marker{ display:none; }
+.comment-summary::marker{ content:""; }
+
+/* keep h2 from messing layout */
+.comment-title{
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* make the "Details" look like your pill button */
+.comment-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/* arrow inside the pill */
+.comment-pill::before{
+  content: "▶";
+  font-size: 12px;
+  transition: transform .15s ease;
+}
+
+.comment-details[open] .comment-pill::before{
+  transform: rotate(90deg);
+}
+
+/* body spacing */
+.comment-card{
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  /* box-shadow: var(--shadow-soft); */
+}
+
+.comment-header {
+  font-size: 14px;
+}
+
+.comment-meta {
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+
+.comment-text {
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.comment-item {
+  padding: 10px 15px;
+  margin-bottom: 12px;
+
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============ Liked button ========== */
+#like-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+}
+
+#like-status {
+  text-align: center;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}

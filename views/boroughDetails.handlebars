@@ -9,9 +9,9 @@
     {{!-- Like/Unlike button for authenticated users --}}
     {{#if isAuthenticated}}
     <button id="like-button" data-borough-id="{{borough._id}}"
-      class="btn {{#if isLiked}}btn-danger{{else}}btn-outline{{/if}}" style="font-size: 1.1rem; padding: 8px 16px;">
+      class="btn {{#if isLiked}}btn-danger{{else}}btn-outline{{/if}}">
       <i class="fas fa-heart"></i>
-      <span id="like-status" style="margin-left: 8px;">{{#if isLiked}}Liked!{{else}}Like This
+      <span id="like-status">{{#if isLiked}}Liked!{{else}}Like This
         Borough{{/if}}</span>
     </button>
     {{/if}}
@@ -88,39 +88,60 @@
   </div>
 
 
-  <hr>
 
-  {{!-- Neighborhoods --}}
-  {{!-- <section class="soft-panel section-gap"> --}}
-    <h3 class="soft-title">Neighborhoods</h3>
 
-    {{#if borough.neighborhoods}}
-    <div class="nb-list">
-      {{#each borough.neighborhoods}}
-      <div class="nb-item">
-        <h5 class="nb-name">{{this.name}}</h5>
+  
 
-        {{#if this.stats}}
-        <div class="neighborhood-stats">
-          <div><strong>Avg Chlorine:</strong> {{toFixed3 this.stats.avg_chlorine}} mg/L</div>
-          <div><strong>Avg Turbidity:</strong> {{toFixed3 this.stats.avg_turbidity}} NTU</div>
-          <div><strong>Avg Coliform:</strong> {{toFixed3 this.stats.avg_coliform}} MPN/100mL</div>
-          <div><strong>Avg E. Coli:</strong> {{toFixed3 this.stats.avg_e_coli}} MPN/100mL</div>
-          <div><strong>Avg Fluoride:</strong> {{toFixed3 this.stats.avg_fluoride}} mg/L</div>
-          <div><strong>Latest Sample:</strong> {{this.stats.latest_sample_date}}</div>
+
+    <div class="neighborhood-row">
+      <details class="section-collapse" close>
+        <summary class="section-collapse__summary">
+          <div class="summary-left">
+            <span class="section-collapse__title">Neighborhoods</span>
+            <span class="section-collapse__meta">
+              * {{#if borough.neighborhoods}}{{borough.neighborhoods.length}} total{{/if}}
+            </span>
+          </div>
+
+        </summary>
+
+        {{#if borough.neighborhoods}}
+        <div class="section-collapse__body">
+          <div class="nb-list">
+            {{#each borough.neighborhoods}}
+            <div class="nb-item">
+              <h5 class="nb-name">{{this.name}}</h5>
+
+              {{#if this.stats}}
+              <div class="neighborhood-stats">
+                <div><strong>Avg Chlorine:</strong> {{toFixed3 this.stats.avg_chlorine}} mg/L</div>
+                <div><strong>Avg Turbidity:</strong> {{toFixed3 this.stats.avg_turbidity}} NTU</div>
+                <div><strong>Avg Coliform:</strong> {{toFixed3 this.stats.avg_coliform}} MPN/100mL</div>
+                <div><strong>Avg E. Coli:</strong> {{toFixed3 this.stats.avg_e_coli}} MPN/100mL</div>
+                <div><strong>Avg Fluoride:</strong> {{toFixed3 this.stats.avg_fluoride}} mg/L</div>
+                <div><strong>Latest Sample:</strong> {{this.stats.latest_sample_date}}</div>
+              </div>
+              {{else}}
+              <em class="text-muted">No stats available.</em>
+              {{/if}}
+            </div>
+            {{/each}}
+          </div>
         </div>
         {{else}}
-        <em class="text-muted">No stats available.</em>
+        <div class="section-collapse__body">
+          <p class="text-muted"><em>No neighborhoods listed.</em></p>
+        </div>
         {{/if}}
-      </div>
-      {{/each}}
+      </details>
+      </details>
     </div>
-    {{else}}
-    <p class="text-muted"><em>No neighborhoods listed.</em></p>
-    {{/if}}
 
 
-    <hr>
+
+
+
+
     {{!-- Water Quality Samples --}}
     {{#if samples}}
     <div class="section-card">
