@@ -43,6 +43,8 @@ app.use(logMdw);
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.session && req.session.user ? req.session.user : null;
+  res.locals.isAuthenticated = typeof req.isAuthenticated === 'function' ? req.isAuthenticated() : false;
+
   next();
 });
 
@@ -54,6 +56,10 @@ app.engine(
     defaultLayout: 'main',
     helpers: {
       eq: (a, b) => a == b,
+
+      // Verify admin or user
+      or: (v1, v2) => Boolean(v1 || v2),
+
       toFixed3: (num) => Number(num).toFixed(3),
       json: (context) => JSON.stringify(context),
       array: (...args) => {

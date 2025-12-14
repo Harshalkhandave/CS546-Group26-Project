@@ -113,4 +113,44 @@
         showError(msg);
       });
   });
+
+  // About delete feature
+  commentList.on('click', '.delete-comment-btn', function (e) {
+    e.preventDefault();
+
+    const deleteButton = $(this);
+    const commentId = deleteButton.data('comment-id');
+
+    if (!confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    $.ajax({
+      method: 'DELETE',
+      url: `/comments/${commentId}`,
+      contentType: 'application/json'
+    })
+      .done(function () {
+        // remove the comment
+        deleteButton.closest('li.list-group-item').remove();
+
+        const h2 = $('#comments-section h2');
+        const m = (h2.text() || '').match(/\((\d+)\)/);
+        let currentCount = m ? parseInt(m[1], 10) : commentList.children().length;
+        if (currentCount > 0) {
+          h2.text(`Community Feedback (${currentCount - 1})`);
+        } else {
+          h2.text(`Community Feedback (0)`);
+        }
+
+        if (commentList.children().length === 0) {
+          $('#comments-section').append('<p class="text-muted mt-3">Be the first to leave a comment!</p>');
+        }
+
+      })
+      .fail(function (jqXHR) {
+        let errorMsg = jqXHR.responseJSON?.error || 'Failed to delete comment.';
+        alert('Error deleting comment: ' + errorMsg);
+      });
+  });
 })(window.jQuery);

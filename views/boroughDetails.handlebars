@@ -66,7 +66,7 @@
 
         <ul id="comment-list" class="list-group mt-4">
             {{#each comments}}
-            <li class="list-group-item">
+            <li class="list-group-item" data-comment-id="{{this._id}}">
                 <p>{{this.comment}}</p>
                 <small class="text-muted">
                     Posted by
@@ -77,6 +77,19 @@
                     {{/if}}
                     on {{this.commentDate}}
                 </small>
+
+                {{!-- Admin or user Delete Button --}}
+                {{#if ../isAuthenticated}}
+                    {{#with ../currentUser}}
+                        {{#if (or (eq this.role 'admin') (eq this.id ../this.user._id))}}
+                            <button class="btn btn-sm btn-danger delete-comment-btn" 
+                                data-comment-id="{{../this._id}}" 
+                                style="float: right; padding: 4px 8px; font-size: 12px;">
+                                Delete
+                            </button>
+                        {{/if}}
+                    {{/with}}
+                {{/if}}
             </li>
             {{/each}}
         </ul>
