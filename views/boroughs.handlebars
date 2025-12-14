@@ -1,32 +1,39 @@
-<div class="container mt-4">
-  <h1 class="mb-4">NYC Borough Water Quality Overview</h1>
-  <div class="filter-box mt-3 mb-3">
-    <label><input type="checkbox" id="overallCheck" checked> Overall Data</label>
-    <label class="ms-3"><input type="checkbox" id="dateCheck"> By Date</label>
-    <label class="ms-3"><input type="checkbox" id="monthCheck"> By Month</label>
-    <label class="ms-3"><input type="checkbox" id="yearCheck"> By Year</label>
+<div class="page boroughs-page">
+  <h1 class="page-title">NYC Borough Water Quality Overview</h1>
 
-    <div id="yearSelectBox" class="mt-2" style="display:none;">
-      <label><strong>Select Year:</strong></label>
-      <select id="yearDropdown" class="form-select"></select>
+  <!-- Filters -->
+  <section class="section-card filter-box">
+    <div class="check-row">
+      <label class="check"><input type="checkbox" id="overallCheck" checked> <span>Overall Data</span></label>
+      <label class="check"><input type="checkbox" id="dateCheck"> <span>By Date</span></label>
+      <label class="check"><input type="checkbox" id="monthCheck"> <span>By Month</span></label>
+      <label class="check"><input type="checkbox" id="yearCheck"> <span>By Year</span></label>
     </div>
 
-    <div id="monthSelectBox" class="mt-2" style="display:none;">
-      <label><strong>Select Month:</strong></label>
-      <select id="monthDropdown" class="form-select"></select>
-    </div>
+    <div class="filter-selects">
+      <div id="yearSelectBox" class="field" style="display:none;">
+        <label class="field-label">Select Year</label>
+        <select id="yearDropdown" class="input"></select>
+      </div>
 
-    <div id="daySelectBox" class="mt-2" style="display:none;">
-      <label><strong>Select Day:</strong></label>
-      <select id="dayDropdown" class="form-select"></select>
-    </div>
-  </div>
+      <div id="monthSelectBox" class="field" style="display:none;">
+        <label class="field-label">Select Month</label>
+        <select id="monthDropdown" class="input"></select>
+      </div>
 
-  <div class="dashboard-guide-box">
-    <ul class="mb-0">
-      <h5>How to Use This Dashboard</h5>
-      <li><strong>Filtering Data:</strong> Use the checkboxes at the top to select how you want to filter the water
-        quality data:
+      <div id="daySelectBox" class="field" style="display:none;">
+        <label class="field-label">Select Day</label>
+        <select id="dayDropdown" class="input"></select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guide -->
+  <section class="section-card guide-box dashboard-guide-box">
+    <h3 class="section-title">How to Use This Dashboard</h3>
+    <ul class="guide-list">
+      <li>
+        <strong>Filtering Data:</strong> Use the checkboxes at the top to select how you want to filter the water quality data:
         <ul>
           <li><strong>Overall Data:</strong> Shows the overall available data for all boroughs.</li>
           <li><strong>By Year:</strong> Choose a year from the dropdown to view statistics for that year.</li>
@@ -34,198 +41,179 @@
           <li><strong>By Date:</strong> Choose a specific year, month, and day to see daily data.</li>
         </ul>
       </li>
-      <li><strong>Interacting with Boroughs:</strong>
+      <li>
+        <strong>Interacting with Boroughs:</strong>
         <ul>
           <li>Click on borough names on the map to view a popup with average metrics and total samples.</li>
-          <li>Colored dots on each card indicate the water quality for that metric: green = good, yellow = average, red
-            = poor.</li>
+          <li>Colored dots on each card indicate the water quality for that metric: green = good, yellow = average, red = poor.</li>
         </ul>
       </li>
     </ul>
-  </div>
+  </section>
 
-  <div class="map-container">
-    <h3>Borough Water Quality Heat Map</h3>
-    <div id="boroughMap" style="height: 500px; width: 100%; margin-top: 20px;"></div>
-  </div>
+  <!-- Map -->
+  <section class="section-card map-container">
+    <h3 class="section-title">Borough Water Quality Heat Map</h3>
+    <div id="boroughMap" class="map-frame"></div>
+  </section>
 
-  <div class="row">
+  <!-- Borough cards grid -->
+  <section class="borough-grid">
     {{#each boroughs}}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100" data-borough="{{this.name}}">
-        <div class="card-body">
-          <h4 class="card-title">{{this.name}}</h4>
-          <p class="card-text">{{this.description}}</p>
-          <hr>
-          <p><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
-
-          {{#if this.stats.[0]}}
-          <p><strong>Total Samples:</strong> <span class="sample-count">{{this.stats.[0].sample_count}}</span></p>
-          <p><strong>Avg Chlorine:</strong> <span class="chlorine">{{toFixed3 this.stats.[0].avg_chlorine}}</span></p>
-          <p><strong>Avg Turbidity:</strong> <span class="turbidity">{{toFixed3 this.stats.[0].avg_turbidity}}</span>
-          </p>
-          <p><strong>Avg Coliform:</strong> <span class="coliform">{{toFixed3 this.stats.[0].avg_coliform}}</span></p>
-          <p><strong>Avg E Coli:</strong> <span class="ecoli">{{toFixed3 this.stats.[0].avg_e_coli}}</span></p>
-          <p><strong>Avg Fluoride:</strong> <span class="fluoride">{{toFixed3 this.stats.[0].avg_fluoride}}</span></p>
-          {{else}}
-          <p><em>No statistics available.</em></p>
-          {{/if}}
-
-          <a href="/boroughs/{{this._id}}" class="btn btn-primary mt-3">View Details</a>
+      <article class="borough-card" data-borough="{{this.name}}">
+        <div class="borough-card-head">
+          <h3 class="borough-name">{{this.name}}</h3>
         </div>
-      </div>
-    </div>
+
+        <p class="borough-desc">{{this.description}}</p>
+
+        <div class="divider"></div>
+
+        <p class="borough-meta"><strong>Total Neighborhoods:</strong> {{this.neighborhoods.length}}</p>
+
+        {{#if this.stats.[0]}}
+          <p class="borough-meta"><strong>Total Samples:</strong> <span class="sample-count">{{this.stats.[0].sample_count}}</span></p>
+
+          <div class="metric-list">
+            <div class="metric-row"><span class="metric-label">Avg Chlorine</span><span class="metric-value chlorine">{{toFixed3 this.stats.[0].avg_chlorine}}</span></div>
+            <div class="metric-row"><span class="metric-label">Avg Turbidity</span><span class="metric-value turbidity">{{toFixed3 this.stats.[0].avg_turbidity}}</span></div>
+            <div class="metric-row"><span class="metric-label">Avg Coliform</span><span class="metric-value coliform">{{toFixed3 this.stats.[0].avg_coliform}}</span></div>
+            <div class="metric-row"><span class="metric-label">Avg E Coli</span><span class="metric-value ecoli">{{toFixed3 this.stats.[0].avg_e_coli}}</span></div>
+            <div class="metric-row"><span class="metric-label">Avg Fluoride</span><span class="metric-value fluoride">{{toFixed3 this.stats.[0].avg_fluoride}}</span></div>
+          </div>
+        {{else}}
+          <p class="muted"><em>No statistics available.</em></p>
+        {{/if}}
+
+        <a href="/boroughs/{{this._id}}" class="btn-primary-link">View Details</a>
+      </article>
     {{/each}}
-  </div>
-  <hr class="my-4">
+  </section>
 
-  <div class="legend-container mb-4">
-    <h4>Legend & Water Quality Metrics</h4>
+  <div class="soft-divider"></div>
 
-    <div class="mb-3">
-      <h5>Card Metrics Dots</h5>
-      <p>
-        <span class="value-dot" style="background:#52c41a;"></span> Good<br>
-        <span class="value-dot" style="background:#fadb14;"></span> Average<br>
-        <span class="value-dot" style="background:#ff4d4f;"></span> Poor
-      </p>
-      <p>Each colored dot before a metric in the borough cards indicates the water quality for that metric:</p>
-      <ul>
-        <li><strong>Avg Chlorine:</strong> Good (0.4–0.9 mg/L), Average (0.2–0.4 or 0.9–1.0 mg/L), Poor (&lt;0.2 or
-          &gt;1.0 mg/L)</li>
-        <li><strong>Avg Turbidity:</strong> Good (&lt;=1 NTU), Average (&gt;1 &amp; <=2 NTU), Poor (&gt;2 NTU)</li>
-        <li><strong>Avg Coliform:</strong> Good (&lt;=0.1 CFU/100mL), Average (&gt;0.1 &amp; <=1), Poor (&gt;1)</li>
+  <!-- Legend -->
+  <section class="section-card legend-container">
+    <h3 class="section-title">Legend &amp; Water Quality Metrics</h3>
+
+    <div class="legend-block">
+      <h4 class="legend-subtitle">Card Metrics Dots</h4>
+      <div class="legend-dots">
+        <div><span class="value-dot good"></span> Good</div>
+        <div><span class="value-dot average"></span> Average</div>
+        <div><span class="value-dot poor"></span> Poor</div>
+      </div>
+
+      <p class="muted">Each colored dot before a metric in the borough cards indicates the water quality for that metric:</p>
+      <ul class="legend-list">
+        <li><strong>Avg Chlorine:</strong> Good (0.4–0.9 mg/L), Average (0.2–0.4 or 0.9–1.0 mg/L), Poor (&lt;0.2 or &gt;1.0 mg/L)</li>
+        <li><strong>Avg Turbidity:</strong> Good (&lt;=1 NTU), Average (&gt;1 &amp; &lt;=2 NTU), Poor (&gt;2 NTU)</li>
+        <li><strong>Avg Coliform:</strong> Good (&lt;=0.1 CFU/100mL), Average (&gt;0.1 &amp; &lt;=1), Poor (&gt;1)</li>
         <li><strong>Avg E Coli:</strong> Good (=0 CFU/100mL), Poor (&gt;0 CFU/100mL)</li>
-        <li><strong>Avg Fluoride:</strong> Good (0.6–0.9 mg/L), Average (0.5–0.6 or 0.9–1.0 mg/L), Poor (&lt;0.5 or
-          &gt;1.0 mg/L)</li>
+        <li><strong>Avg Fluoride:</strong> Good (0.6–0.9 mg/L), Average (0.5–0.6 or 0.9–1.0 mg/L), Poor (&lt;0.5 or &gt;1.0 mg/L)</li>
       </ul>
     </div>
 
-    <div>
-      <h5>Map Colors</h5>
-      <p>
-        <span style="display:inline-block;width:18px;height:18px;background:green;margin-right:5px;"></span> Good<br>
-        <span style="display:inline-block;width:18px;height:18px;background:yellow;margin-right:5px;"></span>
-        Average<br>
-        <span style="display:inline-block;width:18px;height:18px;background:red;margin-right:5px;"></span> Poor
-      </p>
-      <p>The color of each borough on the map represents the overall water quality based on <strong>chlorine</strong>
-        and <strong>turbidity</strong>.</p>
+    <div class="legend-block">
+      <h4 class="legend-subtitle">Map Colors</h4>
+      <div class="legend-dots">
+        <div><span class="map-swatch good"></span> Good</div>
+        <div><span class="map-swatch average"></span> Average</div>
+        <div><span class="map-swatch poor"></span> Poor</div>
+      </div>
+      <p class="muted">The color of each borough on the map represents the overall water quality based on <strong>chlorine</strong> and <strong>turbidity</strong>.</p>
     </div>
-  </div>
+  </section>
 
-  <hr class="my-5">
-  <div class="container">
-    <h3 class="mb-4">Borough Water Quality Trend Analysis</h3>
-    <div class="trend-guide-box">
-      <h5>Trend Analysis Guide</h5>
-      <p>Use this section to explore how water quality metrics change over time for different boroughs.</p>
-      <ol class="mb-0">
+  <div class="soft-divider"></div>
+
+  <!-- Trend analysis -->
+  <section class="section-card trend-card">
+    <h3 class="section-title">Borough Water Quality Trend Analysis</h3>
+
+    <div class="section-card guide-box trend-guide-box">
+      <h4 class="legend-subtitle">Trend Analysis Guide</h4>
+      <p class="muted">Use this section to explore how water quality metrics change over time for different boroughs.</p>
+      <ol class="guide-ol">
         <li><strong>Select Borough:</strong> Use the dropdown to choose the primary borough you want to analyze.</li>
-        <li><strong>Compare Boroughs:</strong>
-          <ul>
-            <li>Enable the "Compare" checkbox to select a second borough for side-by-side comparison.</li>
-            <li>This allows you to see differences in water quality trends between two boroughs on the same chart.</li>
-          </ul>
-        </li>
-        <li><strong>Select Time Interval:</strong>
-          <ul>
-            <li>Use the "Year" checkbox to view trends for a specific year.</li>
-            <li>Use the "Month" checkbox to view more granular, monthly trends.</li>
-            <li>The dropdowns will automatically populate based on your selection, showing only available years and
-              months.</li>
-          </ul>
-        </li>
-        <li><strong>Choose Metrics:</strong>
-          <ul>
-            <li>Select the water quality metrics (Avg Chlorine, Avg Turbidity, Avg Coliform, Avg E Coli, Avg Fluoride)
-              you want to visualize.</li>
-            <li>Multiple metrics can be selected at once, and each will appear as a separate line on the chart.</li>
-          </ul>
-        </li>
-        <li><strong>Chart Interaction:</strong>
-          <ul>
-            <li>The line chart updates automatically when you change boroughs, time, or metrics.</li>
-            <li>Hover over any point to see the exact metric value for that date.</li>
-            <li>Colors correspond to the selected boroughs and metrics for easy comparison.</li>
-          </ul>
-        </li>
-        <li><strong>Tips:</strong>
-          <ul>
-            <li>Always select at least one metric and one borough; otherwise, the chart will remain blank.</li>
-            <li>Switching between "Year" and "Month" allows you to view trends at different levels of detail.</li>
-            <li>If data is missing for a specific date, the chart will automatically skip those points.</li>
-          </ul>
-        </li>
+        <li><strong>Compare Boroughs:</strong> Enable “Compare” to select a second borough for comparison.</li>
+        <li><strong>Select Time Interval:</strong> Use “Year” / “Month” for different granularity.</li>
+        <li><strong>Choose Metrics:</strong> Multiple metrics can be selected; each appears as a separate line.</li>
+        <li><strong>Chart Interaction:</strong> Hover points to see exact values.</li>
       </ol>
     </div>
 
-    <div class="row g-3 align-items-end">
-      <div class="col-md-4">
-        <label class="form-label"><strong>Borough</strong></label>
-        <select id="trendBorough" class="form-select">
+    <div class="trend-controls">
+      <div class="field">
+        <label class="field-label">Borough</label>
+        <select id="trendBorough" class="input">
           {{#each boroughs}}
-          <option value="{{this.name}}" {{#ifEquals this.name "Manhattan" }}selected{{/ifEquals}}>
-            {{this.name}}
-          </option>
+            <option value="{{this.name}}" {{#ifEquals this.name "Manhattan"}}selected{{/ifEquals}}>
+              {{this.name}}
+            </option>
           {{/each}}
         </select>
       </div>
 
-      <div class="col-md-2">
-        <div class="form-check mt-4">
-          <input class="form-check-input" type="checkbox" id="compareToggle">
-          <label class="form-check-label"><strong>Compare</strong></label>
+      <label class="check compare-check">
+        <input type="checkbox" id="compareToggle">
+        <span>Compare</span>
+      </label>
+
+      <div class="field" id="compareBoroughBox" style="display:none;">
+        <label class="field-label">Compare With</label>
+        <select id="compareBorough" class="input">
+          {{#each boroughs}}
+            <option value="{{this.name}}">{{this.name}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Time</label>
+        <div class="check-row">
+          <label class="check"><input type="checkbox" id="trendYearCheck" checked> <span>Year</span></label>
+          <label class="check"><input type="checkbox" id="trendMonthCheck"> <span>Month</span></label>
         </div>
       </div>
 
-      <div class="col-md-4" id="compareBoroughBox" style="display:none;">
-        <label class="form-label"><strong>Compare With</strong></label>
-        <select id="compareBorough" class="form-select">
-          {{#each boroughs}}
-          <option value="{{this.name}}">{{this.name}}</option>
-          {{/each}}
-        </select>
+      <div class="field">
+        <label class="field-label">Year</label>
+        <select id="trendYear" class="input"></select>
+      </div>
+
+      <div class="field" id="trendMonthBox" style="display:none;">
+        <label class="field-label">Month</label>
+        <select id="trendMonth" class="input"></select>
+      </div>
+
+      <div class="field metrics-field">
+        <label class="field-label">Metrics</label>
+        <div class="metrics-row">
+          <label class="check"><input type="checkbox" class="metricCheck" value="avg_chlorine" checked> <span>Avg Chlorine</span></label>
+          <label class="check"><input type="checkbox" class="metricCheck" value="avg_turbidity"> <span>Avg Turbidity</span></label>
+          <label class="check"><input type="checkbox" class="metricCheck" value="avg_coliform"> <span>Avg Coliform</span></label>
+          <label class="check"><input type="checkbox" class="metricCheck" value="avg_e_coli"> <span>Avg E Coli</span></label>
+          <label class="check"><input type="checkbox" class="metricCheck" value="avg_fluoride"> <span>Avg Fluoride</span></label>
+        </div>
       </div>
     </div>
 
-    <div class="row g-3 align-items-end mt-3">
-      <div class="col-md-4">
-        <label class="form-label"><strong>Time</strong></label><br>
-        <label class="me-3">
-          <input type="checkbox" id="trendYearCheck" checked> Year
-        </label>
-        <label>
-          <input type="checkbox" id="trendMonthCheck"> Month
-        </label>
-      </div>
-
-      <div class="col-md-4">
-        <label class="form-label"><strong>Year</strong></label>
-        <select id="trendYear" class="form-select"></select>
-      </div>
-
-      <div class="col-md-4" id="trendMonthBox" style="display:none;">
-        <label class="form-label"><strong>Month</strong></label>
-        <select id="trendMonth" class="form-select"></select>
-      </div>
-    </div>
-
-    <div class="mt-4">
-      <label><strong>Metrics</strong></label><br>
-      <label><input type="checkbox" class="metricCheck" value="avg_chlorine" checked> Avg Chlorine</label>
-      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_turbidity"> Avg Turbidity</label>
-      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_coliform"> Avg Coliform</label>
-      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_e_coli"> Avg E Coli</label>
-      <label class="ms-3"><input type="checkbox" class="metricCheck" value="avg_fluoride"> Avg Fluoride</label>
-    </div>
-
-    <div class="mt-4">
+    <div class="trend-chart">
       <canvas id="trendChart" height="120"></canvas>
     </div>
-
-  </div>
+  </section>
 </div>
+
+
+
+
+
+
+
+
+
+
 
 <script>
   const boroughStats = {{{ json boroughs }}};
