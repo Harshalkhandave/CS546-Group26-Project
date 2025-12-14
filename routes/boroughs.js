@@ -118,11 +118,13 @@ router.get('/:id', async (req, res) => {
     tips.push("All monitored indicators are within the defined guideline range for this borough.");
   }
 
+  const hasTips = tips.length > 0;
   res.render("boroughDetails", {
     borough,
     samples,
     tips,
-    combinedNotice
+    combinedNotice,
+    hasTips
   });
 });
 
