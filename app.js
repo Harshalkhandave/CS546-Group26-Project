@@ -81,6 +81,9 @@ app.engine(
       array: (...args) => {
         args.pop();               // remove Handlebars options object
         return args;
+      },
+      ifEquals(a, b, options) {
+        return a === b ? options.fn(this) : options.inverse(this);
       }
   }})
 );

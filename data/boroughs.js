@@ -35,40 +35,62 @@ export const createOrUpdateBoroughs = async () => {
         const neighborhoodStatsArray = [];
 
         for (const [nName, nSiteIds] of Object.entries(data.neighborhoods)) {
-            const waterData = await waterSampleCollection.find({ sample_site: { $in: nSiteIds } }).lean();
+            const waterData = await waterSampleCollection.find({
+                sample_site: { $in: nSiteIds }
+            }).lean();
 
-            const avg = (key) => waterData.length ? waterData.reduce((sum, x) => sum + (x[key] || 0), 0) / waterData.length : 0;
+            const sample_count = waterData.length;
 
-            const latest_sample_date = waterData.length
-                ? waterData.reduce((a, b) => new Date(a.sample_date) > new Date(b.sample_date) ? a : b).sample_date
+            const avg = (key) =>
+                sample_count
+                    ? waterData.reduce((sum, x) => sum + (x[key] || 0), 0) / sample_count
+                    : 0;
+
+            const latest_sample_date = sample_count
+                ? waterData.reduce((a, b) =>
+                      new Date(a.sample_date) > new Date(b.sample_date) ? a : b
+                  ).sample_date
                 : null;
 
             neighborhoodStatsArray.push({
                 name: nName,
                 stats: {
-                    avg_chlorine: avg('residual_free_chlorine_mg_l'),
-                    avg_turbidity: avg('turbidity_ntu'),
-                    avg_coliform: avg('coliform_quanti_tray_mpn_100ml'),
-                    avg_e_coli: avg('e_coli_quanti_tray_mpn_100ml'),
-                    avg_fluoride: avg('fluoride_mg_l'),
-                    latest_sample_date
+                    avg_chlorine: avg("residual_free_chlorine_mg_l"),
+                    avg_turbidity: avg("turbidity_ntu"),
+                    avg_coliform: avg("coliform_quanti_tray_mpn_100ml"),
+                    avg_e_coli: avg("e_coli_quanti_tray_mpn_100ml"),
+                    avg_fluoride: avg("fluoride_mg_l"),
+                    latest_sample_date,
+                    sample_count 
                 }
             });
         }
 
-        const boroughSamples = await waterSampleCollection.find({ sample_site: { $in: data.site_ids } }).lean();
-        const avgB = (key) => boroughSamples.length ? boroughSamples.reduce((sum, x) => sum + (x[key] || 0), 0) / boroughSamples.length : 0;
-        const borough_latest_sample = boroughSamples.length
-            ? boroughSamples.reduce((a, b) => new Date(a.sample_date) > new Date(b.sample_date) ? a : b).sample_date
+        const boroughSamples = await waterSampleCollection.find({
+            sample_site: { $in: data.site_ids }
+        }).lean();
+
+        const borough_sample_count = boroughSamples.length;
+
+        const avgB = (key) =>
+            borough_sample_count
+                ? boroughSamples.reduce((sum, x) => sum + (x[key] || 0), 0) / borough_sample_count
+                : 0;
+
+        const borough_latest_sample = borough_sample_count
+            ? boroughSamples.reduce((a, b) =>
+                  new Date(a.sample_date) > new Date(b.sample_date) ? a : b
+              ).sample_date
             : null;
 
         const boroughStats = {
-            avg_chlorine: avgB('residual_free_chlorine_mg_l'),
-            avg_turbidity: avgB('turbidity_ntu'),
-            avg_coliform: avgB('coliform_quanti_tray_mpn_100ml'),
-            avg_e_coli: avgB('e_coli_quanti_tray_mpn_100ml'),
-            avg_fluoride: avgB('fluoride_mg_l'),
-            latest_sample_date: borough_latest_sample
+            avg_chlorine: avgB("residual_free_chlorine_mg_l"),
+            avg_turbidity: avgB("turbidity_ntu"),
+            avg_coliform: avgB("coliform_quanti_tray_mpn_100ml"),
+            avg_e_coli: avgB("e_coli_quanti_tray_mpn_100ml"),
+            avg_fluoride: avgB("fluoride_mg_l"),
+            latest_sample_date: borough_latest_sample,
+            sample_count: borough_sample_count // 👈 ADDED
         };
 
         const existing = await boroughCollection.findOne({ name: bName });
@@ -96,23 +118,41 @@ export const createOrUpdateBoroughs = async () => {
 };
 
 
-export async function getBoroughsDataByMonthYear(year, month) {
+
+export async function getBoroughsDataByDayMonthYear(year, month, day) {
     const y = Number(year);
     const m = month !== undefined ? Number(month) : null;
+    const d = day !== undefined ? Number(day) : null;
     if (!Number.isInteger(y) || y < 2015 || y > 2025) {
-        throw new Error("Invalid year! Must be between 2015 and 2025.");
+        throw "Invalid year! Must be between 2015 and 2025.";
     }
+
     if (m !== null) {
         if (!Number.isInteger(m) || m < 1 || m > 12) {
-            throw new Error("Invalid month! Must be between 1 and 12.");
+            throw "Invalid month! Must be between 1 and 12.";
         }
-        const start = new Date(y, m - 1, 1);
-        const end   = new Date(y, m, 0);
-        return aggregateByDateRange(start, end);
     }
-    const startOfYear = new Date(y, 0, 1);
-    const endOfYear   = new Date(y, 11, 31);
-    return aggregateByDateRange(startOfYear, endOfYear);
+
+    if (d !== null) {
+        if (!Number.isInteger(d) || d < 1 || d > 31) {
+            throw "Invalid day! Must be between 1 and 31.";
+        }
+    }
+
+    let start, end;
+
+    if (d !== null && m !== null) {
+        start = new Date(y, m - 1, d);
+        end   = new Date(y, m - 1, d, 23, 59, 59, 999);
+    } else if (m !== null) {
+        start = new Date(y, m - 1, 1);
+        end   = new Date(y, m, 0, 23, 59, 59, 999);
+    } else {
+        start = new Date(y, 0, 1);
+        end   = new Date(y, 11, 31, 23, 59, 59, 999);
+    }
+
+    return aggregateByDateRange(start, end);
 }
 
 async function aggregateByDateRange(start, end) {
