@@ -464,7 +464,7 @@ a:hover {
   gap: 16px;
   position: static; /* header is not sticky */
   padding: 12px 0;
-  background: var(--surface);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -477,16 +477,20 @@ a:hover {
   align-items: center;
 }
 
-.search-floating-controls {
-  position: fixed;
-  /* moved up 100px and left 50px relative to previous position */
-  right: 268px; /* previously 218px; +50px to move left */
-  top: 180px; /* previously 280px; -100px to move up */
+.ws-toolbar{
+  position: sticky;
+  top: 12px;
+  z-index: 5;
+
   display: flex;
-  gap: 8px;
-  align-items: center;
-  z-index: 1600;
+  justify-content: flex-end;
+  gap: 10px;
+
+  background: var(--bg);
+  backdrop-filter: blur(6px);
+  padding: 8px 0;
 }
+
 
 .open-search-btn, .open-reset-btn {
   /* use the site's button sizing but keep them compact in the floating area */
@@ -535,12 +539,43 @@ a:hover {
   width: 100%;
 }
 
-.search-actions {
-  display:flex;
-  gap: 8px;
-  align-items: center;
+.search-actions{
+  grid-column: 1 / -1;      /* span full width of the grid */
+  display: flex;
+  flex-direction: row;    
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 }
+
+
+.search-actions .btn{
+  height: 40px;                 /* force same height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-actions .btn-primary{
+  padding: 0 16px;              
+}
+
+.search-actions .btn-icon{
+  width: 40px;                  /* square icon button */
+  padding: 0;                   /* no extra padding */
+}
+
+
+.search-float-btn{
+  min-width: 96px;   
+  height: 40px;      
+  padding: 0 16px;   
+  border-radius: 999px; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .search-actions .btn {
   padding: 8px 14px;
@@ -1475,6 +1510,19 @@ body.theme-dark .btn-success:disabled {
 }
 
 /* ===== Neighborhoods list density & readability ===== */
+
+#neighborhoodSelect {
+  font-size: 1.05rem;     /* text size */
+  padding: 8px 8px;     /* inner space */
+  border-radius: 10px;    /* softer */
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+.neighborhood-name {
+  margin-top: 30px;
+  font-weight: 700;
+}
+
 .borough-page .neighborhood-item {
   padding: 14px 0;
   border-top: 1px solid var(--border);

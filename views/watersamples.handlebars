@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="search-actions">
-                    <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="search-primary">
                         <button id="searchBtn" class="btn btn-primary">Search</button>
                         <span id="searchSpinner" class="search-spinner hidden" aria-hidden="true"></span>
                     </div>
@@ -53,13 +53,13 @@
                 Data is loaded via AJAX.
             </p>
         </div>
-        <!-- Header controls removed; Search + Reset will float on the page -->
+        
     </div>
 
-    <!-- Floating controls (Search + Reset) - they float on the page -->
-    <div class="search-floating-controls" aria-hidden="false">
-        <button id="openSearchBtn" class="btn btn-primary" aria-label="Open search">Search</button>
-        <button id="openResetBtn" class="btn btn-outline" aria-label="Reset search">Reset</button>
+    <!-- Stick button now -->
+    <div class="search-floating-controls ws-toolbar" aria-hidden="false">
+        <button id="openSearchBtn" class="btn btn-primary search-float-btn" aria-label="Open search">Search</button>
+        <button id="openResetBtn" class="btn btn-outline search-float-btn" aria-label="Reset search">Reset</button>
     </div>
 
     <div id="error-div" class="ws-error hidden"></div>
