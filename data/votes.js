@@ -1,24 +1,24 @@
 import { voteCollection, boroughCollection } from "../model/index.js";
-import { isValidId, getCurrentWeekStart } from "../helper/helper.js";
+import { isValidId } from "../helper/helper.js";
 
 const exportedMethods = {
-  async addVote(userId, boroughId) {
+  async addVote(userId, boroughId, weekStart) {
     userId = isValidId(userId);
     boroughId = isValidId(boroughId);
+
+    if (!(weekStart instanceof Date) || Number.isNaN(weekStart.getTime())) {
+      throw "weekStart must be a valid Date";
+    }
 
     const borough = await boroughCollection.findById(boroughId);
     if (!borough) throw "Borough not found";
 
-    const weekStart = getCurrentWeekStart();
-
     try {
-      // 1 vote per user per week
-      const newVote = await voteCollection.create({
+      return await voteCollection.create({
         userId,
         boroughId,
         weekStart
       });
-      return newVote;
     } catch (e) {
       if (e.code === 11000) {
         throw "You have already voted for a borough this week.";
@@ -27,14 +27,14 @@ const exportedMethods = {
     }
   },
 
-  async getBestBorough() {
-    const weekStart = getCurrentWeekStart();
+  async getBestBorough(weekStart) {
+    if (!(weekStart instanceof Date) || Number.isNaN(weekStart.getTime())) {
+      throw "weekStart must be a valid Date";
+    }
 
-    // Winner for this week
     const agg = await voteCollection.aggregate([
       { $match: { weekStart } },
       { $group: { _id: "$boroughId", count: { $sum: 1 } } },
-      //Prevent multiple best borough
       { $sort: { count: -1, _id: 1 } },
       { $limit: 1 }
     ]);
@@ -51,17 +51,18 @@ const exportedMethods = {
     };
   },
 
-  async getUserVoteForWeek(userId) {
+  async getUserVoteForWeek(userId, weekStart) {
     userId = isValidId(userId);
-    const weekStart = getCurrentWeekStart();
 
-    // Find which borough THIS user voted for this week
+    if (!(weekStart instanceof Date) || Number.isNaN(weekStart.getTime())) {
+      throw "weekStart must be a valid Date";
+    }
+
     const vote = await voteCollection.findOne({ userId, weekStart });
     return vote ? vote.boroughId.toString() : null;
   },
 
   async getAllBoroughs() {
-    // Get all boroughs
     return await boroughCollection.find({}).lean();
   }
 };
