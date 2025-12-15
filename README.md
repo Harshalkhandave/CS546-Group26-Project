@@ -112,6 +112,7 @@
 - User profiles with liked boroughs and comments  
 - Admin moderation capabilities  
 - Client-side AJAX interactions  
+- Simple health tips 
 
 ## Extra Features
 
