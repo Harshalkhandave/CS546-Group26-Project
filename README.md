@@ -106,7 +106,7 @@
 - Borough-level water quality summaries  
 - Detailed borough indicator pages  
 - Community comments and likes  
-- Weekly voting for cleanest borough  
+- Weekly voting for the cleanest borough
 - Trend analysis across years  
 - Data overview comparison table  
 - User profiles with liked boroughs and comments  
@@ -177,6 +177,15 @@ Requires authentication. Displays the logged-in user's account information, like
 Displays the weekly voting page and current results.
 
 ---
+### Community Comments
+**method**: `GET`, `POST`, `DELETE`  
+**route**: `/api/comments`
+
+Allows authenticated users to post comments on borough pages.  
+Comments are submitted via AJAX.  
+Users can delete their own comments after refreshing the page, and admins can moderate all comments.
+
+---
 
 ### Submit Vote
 **method**: `POST`  
@@ -210,7 +219,7 @@ Requires authentication. Toggles the like/unlike status for the selected borough
 npm install
 npm start
 ```
-The application uses a pre-populated MongoDB Atlas database with sufficient test data already seeded to support all core features (users, boroughs, water samples, comments, and voting).
+The application uses a pre-populated MongoDB Atlas database with sufficient test data already seeded to support core features.
 
 The server will start on:
 
@@ -218,6 +227,22 @@ The server will start on:
 http://localhost:3000
 
 ```
+---
+
+## Test Accounts
+
+The following test accounts are provided for grading and testing purposes:
+
+**Regular User Account**
+- Email: `test123@gmail.com`
+- Password: `Password123!`
+
+**Admin Account**
+- Email: `admin123@gmail.com`
+- Password: `Password123!`
+
+These accounts are pre-seeded in the database and can be used to test user features and admin moderation functionality.
+For security reasons, administrator accounts are not publicly creatable and can only be provisioned via database seeding.
 
 ---
 
@@ -226,6 +251,6 @@ http://localhost:3000
 * AJAX is used for dynamic content loading
 * Custom CSS is used throughout the application
 * MongoDB is accessed via Mongoose models
-* The application is tested to ensure* The application has been tested to ensure core features function as intended
+* The application has been tested to ensure core features function as intended
 
 ```
