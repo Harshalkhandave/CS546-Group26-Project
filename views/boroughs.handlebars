@@ -1,7 +1,7 @@
 <div class="page boroughs-page">
   <h1 class="page-title">NYC Borough Water Quality Overview</h1>
 
-  
+
 
   {{!-- <!-- Guide -->
   <section class="section-card guide-box dashboard-guide-box">
@@ -30,7 +30,7 @@
 
   <!-- Map -->
   <section class="map-container">
-    <h3 class="section-title">Borough Water Quality Heat Map</h3>
+    {{!-- <h3 class="section-title">Borough Water Quality Heat Map</h3> --}}
     <div id="boroughMap" class="map-frame"></div>
   </section>
 
@@ -45,7 +45,7 @@
       <!-- Help toggle button -->
       <button type="button" id="guideToggleBtn" class="filter-help-btn" aria-expanded="false"
         aria-controls="dashboardGuide">
-        How to Use
+        Guide
       </button>
     </div>
 
@@ -90,35 +90,36 @@
         <select id="dayDropdown" class="input"></select>
       </div>
     </div>
-  </section>
+    {{!--
+  </section> --}}
 
   <!-- Borough table -->
- <section class="section-card borough-table-section">
-  <h3 class="section-title">Borough Comparison Table</h3>
+  {{!-- <section class="section-card borough-table-section"> --}}
+    <h3 class=" Compare-table-title">Borough Comparison Table</h3>
 
-  <div class="table-wrapper">
-    <table class="borough-table">
-      <thead>
-        <tr>
-          <th>Metric \ Borough</th>
-          {{#each boroughs}}
+    <div class="table-wrapper">
+      <table class="borough-table">
+        <thead>
+          <tr>
+            <th>Metric \ Borough</th>
+            {{#each boroughs}}
             <th>{{this.name}}</th>
-          {{/each}}
-        </tr>
-      </thead>
+            {{/each}}
+          </tr>
+        </thead>
 
-      <tbody id="boroughTableBody">
-        
-      </tbody>
-    </table>
-  </div>
-</section>
+        <tbody id="boroughTableBody">
+
+        </tbody>
+      </table>
+    </div>
+  </section>
 
 
   <div class="soft-divider"></div>
 
   <!-- Legend -->
-  <section class="section-card legend-container">
+  <section class=" legend-container">
     <h3 class="section-title">Legend &amp; Water Quality Metrics</h3>
 
     <div class="legend-block">
@@ -158,10 +159,31 @@
   <div class="soft-divider"></div>
 
   <!-- Trend analysis -->
-  <section class="section-card trend-card">
-    <h3 class="section-title">Borough Water Quality Trend Analysis</h3>
+  <section class=" trend-card">
 
-    <div class="section-card guide-box trend-guide-box">
+    {{!-- <div class="section-card guide-box trend-guide-box">
+      <h4 class="legend-subtitle">Trend Analysis Guide</h4>
+      <p class="muted">Use this section to explore how water quality metrics change over time for different boroughs.
+      </p>
+      <ol class="guide-ol">
+        <li><strong>Select Borough:</strong> Use the dropdown to choose the primary borough you want to analyze.</li>
+        <li><strong>Compare Boroughs:</strong> Enable “Compare” to select a second borough for comparison.</li>
+        <li><strong>Select Time Interval:</strong> Use “Year” / “Month” for different granularity.</li>
+        <li><strong>Choose Metrics:</strong> Multiple metrics can be selected; each appears as a separate line.</li>
+        <li><strong>Chart Interaction:</strong> Hover points to see exact values.</li>
+      </ol>
+    </div> --}}
+
+    <!-- Help toggle button -->
+    <div class="section-header">
+      <h3 class="section-title">Borough Water Quality Trend Analysis</h3>
+
+      <button type="button" class="filter-help-btn" aria-expanded="false" aria-controls="trendDashboardGuide">
+        Guide
+      </button>
+    </div>
+
+    <div id="trendDashboardGuide" class="dashboard-guide-collapsible is-hidden">
       <h4 class="legend-subtitle">Trend Analysis Guide</h4>
       <p class="muted">Use this section to explore how water quality metrics change over time for different boroughs.
       </p>
@@ -175,7 +197,7 @@
     </div>
 
     <div class="trend-controls">
-      <div class="field">
+      <div class="field borough-field">
         <label class="field-label">Borough</label>
         <select id="trendBorough" class="input">
           {{#each boroughs}}
@@ -184,14 +206,15 @@
           </option>
           {{/each}}
         </select>
+        <label class="check compare-toggle">
+          <input type="checkbox" id="compareToggle">
+          <span>Compare</span>
+        </label>
       </div>
 
-      <label class="check compare-check">
-        <input type="checkbox" id="compareToggle">
-        <span>Compare</span>
-      </label>
 
-      <div class="field" id="compareBoroughBox" style="display:none;">
+
+      <div class="field compare-field" id="compareBoroughBox" style="display:none;">
         <label class="field-label">Compare With</label>
         <select id="compareBorough" class="input">
           {{#each boroughs}}
@@ -200,20 +223,21 @@
         </select>
       </div>
 
-      <div class="field time-field">
-        <label class="field-label">Time</label>
-        <div class="check-row">
-          <label class="check"><input type="checkbox" class="filterTimeCheck" id="trendYearCheck" checked> <span>Year</span></label>
-          <label class="check"><input type="checkbox" class="filterTimeCheck" id="trendMonthCheck"> <span>Month</span></label>
-        </div>
-      </div>
 
-      <div class="field">
+      {{!-- <label class="field-label">Time</label> --}}
+      {{!-- <div class="metrics-row">
+        <label class="check"><input type="checkbox" id="trendYearCheck" checked> <span>Year</span></label>
+        <label class="check"><input type="checkbox" id="trendMonthCheck"> <span>Month</span></label>
+      </div> --}}
+
+
+      <div class="field year-field">
         <label class="field-label">Year</label>
         <select id="trendYear" class="input"></select>
+        <label class="check month-toggle"><input type="checkbox" id="trendMonthCheck"> <span>Month</span></label>
       </div>
 
-      <div class="field" id="trendMonthBox" style="display:none;">
+      <div class="field month-field" id="trendMonthBox" style="display:none;">
         <label class="field-label">Month</label>
         <select id="trendMonth" class="input"></select>
       </div>
@@ -601,9 +625,14 @@
       $("#trendYearCheck").prop("checked", false);
       $("#trendMonthBox").show();
       populateTrendMonths($("#trendYear").val());
-      loadTrend();
+    } else {
+      $("#trendMonthBox").hide();
+      $("#trendMonth").val("");   // clear month selection
+      $("#trendYearCheck").prop("checked", true); // fall back to Year mode
     }
+    loadTrend();
   });
+
 
   $("#trendYear").on("change", function () {
     if ($("#trendMonthCheck").is(":checked")) {
@@ -693,7 +722,16 @@
   $("#compareBorough").on("change", loadTrend);
   $("#compareToggle").on("change", loadTrend);
 
-  $(".metricCheck").on("change", loadTrend);
+  $(".metricCheck").on("change", function () {
+  if (!this.checked) {
+    if ($(".metricCheck:checked").length === 0) {
+      $(this).prop("checked", true);
+      return;
+    }
+  }
+
+  loadTrend();
+});
   $("#trendMonth").on("change", loadTrend);
 
 
@@ -719,19 +757,22 @@
 
   // How to use Block
   document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("guideToggleBtn");
-  const panel = document.getElementById("dashboardGuide");
-  if (!btn || !panel) return;
+    document.querySelectorAll(".filter-help-btn").forEach((btn) => {
+      const panelId = btn.getAttribute("aria-controls");
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
 
-  btn.addEventListener("click", () => {
-    const isHidden = panel.classList.contains("is-hidden");
-    panel.classList.toggle("is-hidden");
-    btn.setAttribute("aria-expanded", String(isHidden));
-    btn.textContent = isHidden ? "Close" : "How to Use";
+      btn.addEventListener("click", () => {
+        const isHidden = panel.classList.contains("is-hidden");
+        panel.classList.toggle("is-hidden");
+        btn.setAttribute("aria-expanded", String(isHidden));
+        btn.textContent = isHidden ? "Close" : "Guide";
+      });
+    });
   });
-});
 
-/* helper for comparison table -> in app.js */
+
+  /* helper for comparison table -> in app.js */
 
 
 </script>

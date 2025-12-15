@@ -89,6 +89,18 @@ a:hover {
   z-index: 20;
 }
 
+.nav-user {
+  font-family: 'Manrope';
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+.nav-user span {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
 .header-content {
   max-width: 1250px;
   margin: 0 auto;
@@ -110,7 +122,8 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  padding: 6px 12px;
+  gap: 14px;
 }
 
 .main-nav a {
@@ -123,6 +136,46 @@ a:hover {
 }
 
 /* Buttons */
+
+.theme-toggle {
+  width: 35px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+
+  font-size: 18px;
+  line-height: 1;
+
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-main);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.12s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--surface-soft);
+  border-color: var(--primary);
+}
+
+.theme-toggle:active {
+  transform: scale(0.94);
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(25,118,210,0.18);
+}
+
 
 .btn {
   display: inline-block;
@@ -200,7 +253,7 @@ a:hover {
 }
 
 .hero-content {
-  max-width: 1000px;
+  max-width: 1150px;
   margin: 0 auto;
   background: var(--surface);
   border-radius: 24px;
@@ -411,7 +464,7 @@ a:hover {
   gap: 16px;
   position: static; /* header is not sticky */
   padding: 12px 0;
-  background: var(--surface);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -424,16 +477,20 @@ a:hover {
   align-items: center;
 }
 
-.search-floating-controls {
-  position: fixed;
-  /* moved up 100px and left 50px relative to previous position */
-  right: 268px; /* previously 218px; +50px to move left */
-  top: 180px; /* previously 280px; -100px to move up */
+.ws-toolbar{
+  position: sticky;
+  top: 12px;
+  z-index: 5;
+
   display: flex;
-  gap: 8px;
-  align-items: center;
-  z-index: 1600;
+  justify-content: flex-end;
+  gap: 10px;
+
+  background: var(--bg);
+  backdrop-filter: blur(6px);
+  padding: 8px 0;
 }
+
 
 .open-search-btn, .open-reset-btn {
   /* use the site's button sizing but keep them compact in the floating area */
@@ -482,12 +539,43 @@ a:hover {
   width: 100%;
 }
 
-.search-actions {
-  display:flex;
-  gap: 8px;
-  align-items: center;
+.search-actions{
+  grid-column: 1 / -1;      /* span full width of the grid */
+  display: flex;
+  flex-direction: row;    
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 }
+
+
+.search-actions .btn{
+  height: 40px;                 /* force same height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-actions .btn-primary{
+  padding: 0 16px;              
+}
+
+.search-actions .btn-icon{
+  width: 40px;                  /* square icon button */
+  padding: 0;                   /* no extra padding */
+}
+
+
+.search-float-btn{
+  min-width: 96px;   
+  height: 40px;      
+  padding: 0 16px;   
+  border-radius: 999px; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .search-actions .btn {
   padding: 8px 14px;
@@ -630,6 +718,25 @@ a:hover {
 
 /* Main login button */
 
+.primary-btn{
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid transparent; /* prevents weird height jumps */
+  display: block;                 /* better than inline-block for width:100% */
+  width: 100%;
+}
+
+button.primary-btn{
+  border-radius: 8px !important;
+  padding: 14px !important;
+}
+
+.primary-btn, .oauth-btn{
+  height: 48px;        /* same height */
+  line-height: 20px;
+}
+
+
 .primary-btn {
   width: 100%;
   background: var(--primary);
@@ -770,14 +877,15 @@ body.theme-dark .error-text {
 .map-container {
   position: relative;
   z-index: 0;
-  margin-top: 16px;
+  margin-top: 50px;
+  margin-bottom: 50px;
   clear: both;
 }
 
 #boroughMap {
     width: 100%;
-    /* max-width: 800px;  */
-    height: 500px; 
+    max-width: 900px;
+    height: 600px; 
     display: block !important;
     background: #eaeaea;
     margin: 0 auto;
@@ -1351,7 +1459,8 @@ body.theme-dark .btn-success:disabled {
   color: var(--text-muted);
   max-width: 900px;
   line-height: 1.45;
-  margin: 0 0 18px;
+  /* margin: 100 0 18px; */
+  margin-top: 20px;
 }
 
 /* ===== Unified section card style ===== */
@@ -1360,7 +1469,7 @@ body.theme-dark .btn-success:disabled {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 18px 20px;
-  margin: 18px 0;
+  margin-top: 30px;
   box-shadow: var(--shadow-soft);
   color: var(--text-main);
 }
@@ -1401,6 +1510,19 @@ body.theme-dark .btn-success:disabled {
 }
 
 /* ===== Neighborhoods list density & readability ===== */
+
+#neighborhoodSelect {
+  font-size: 1.05rem;     /* text size */
+  padding: 8px 8px;     /* inner space */
+  border-radius: 10px;    /* softer */
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+.neighborhood-name {
+  margin-top: 30px;
+  font-weight: 700;
+}
+
 .borough-page .neighborhood-item {
   padding: 14px 0;
   border-top: 1px solid var(--border);
@@ -1650,6 +1772,7 @@ body.theme-dark .btn-success:disabled {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-weight: 600;
   color: var(--text-main);
   user-select: none;
@@ -1720,7 +1843,7 @@ body.theme-dark .btn-success:disabled {
 .borough-name { margin: 0 0 8px; font-size: 1.2rem; }
 .borough-desc { margin: 0 0 12px; color: var(--text-muted); line-height: 1.45; }
 
-.divider { height: 1px; background: var(--border); margin: 12px 0; }
+/* .divider { height: 1px; background: var(--border); margin: 12px 0; } */
 
 .borough-meta { margin: 8px 0; color: var(--text-main); }
 
@@ -1773,27 +1896,19 @@ body.theme-dark .btn-success:disabled {
 .legend-list { margin: 0; padding-left: 18px; }
 
 /* ===== trend section ===== */
-.trend-controls {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); /* equal columns */
-  gap: 14px 18px;
-  align-items: end;
-}
+
 
 .time-field{
   grid-column: 1;   /* put Time in the left column */
 }
 
-.compare-check { margin-bottom: 2px; }
 
-.metrics-field { grid-column: 1 / -1; }
 
 .metrics-row {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--surface-soft);
+  background: var(--surface);
   display: flex;
   flex-wrap: wrap;
   gap: 10px 14px;
@@ -1804,7 +1919,7 @@ body.theme-dark .btn-success:disabled {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: var(--surface);
+  background: var(--surface-soft);
 }
 
 /* =============== Help Block ============= */
@@ -1855,7 +1970,8 @@ body.theme-dark .btn-success:disabled {
   border-left: 4px solid var(--primary);
   background: var(--surface-soft);
   color: var(--text-main);
-  border-radius: 10px;
+  border-radius: 5px;
+  /* font-family: ??; */
   /* border: 1px solid var(--border); */
 }
 
@@ -1890,7 +2006,7 @@ body.theme-dark .btn-success:disabled {
 .borough-table td{
   padding: 12px 14px;
   border: 1px solid var(--border);
-  text-align: left;
+  text-align: center;
   vertical-align: middle;
 }
 
@@ -1923,4 +2039,327 @@ body.theme-dark .btn-success:disabled {
   font-size: 0.9rem;
 }
 
-   
+.Compare-table-title {
+  margin-top: 2rem;
+  font-size: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;   /* keeps button at top */
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-header .section-title {
+  margin: 0;                 /* removes default h3 margin */
+}
+
+
+
+/* layout: Borough | Compare | Year+toggle  on row 1
+          CompareWith | Month (when shown) on row 2 */
+.trend-controls{
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* 2 columns only */
+  grid-auto-rows: auto;
+  gap: 14px 18px;
+  align-items: start;
+}
+
+/* LEFT column */
+.borough-field { 
+  grid-column: 1; grid-row: 1; 
+  margin-top: 20px;
+}
+
+.compare-toggle{
+  grid-column: 1;
+  
+  display: flex;              
+  align-items: center;
+  
+  justify-self: stretch;      /* fill the column width */
+}
+
+.compare-field,
+#compareBoroughBox{
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* RIGHT column */
+.year-field { grid-column: 2; grid-row: 1; margin-top: 20px;}
+.month-field{ grid-column: 2; grid-row: 2; }
+
+/* Metrics full width */
+.metrics-field{ grid-column: 1 / -1; grid-row: 4; }
+
+
+/* =========================
+   Neighborhoods
+   ========================= */
+
+.section-collapse{
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 620px;
+  background: var(--surface);
+  /* box-shadow: var(--shadow-soft); */
+  overflow: hidden;
+  margin-top: 30px;
+}
+
+.section-collapse__summary{
+  list-style: none;
+  cursor: pointer;
+  width: 620px;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--surface);
+}
+
+.summary-left{
+  display: flex;
+  align-items: center;
+  gap: 20px; /* space between title & total */
+}
+
+.section-collapse__summary::-webkit-details-marker{ display:none; }
+
+.section-collapse__title{
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.section-collapse__meta{
+  color: var(--text-muted);
+  line-height: 1.2;
+  font-size: 0.9rem;
+}
+
+.section-collapse__body{
+  border-top: 1px solid var(--border);
+  background: var(--surface-soft);
+  padding: 0px 20px;
+}
+
+
+.section-collapse__summary::after{
+  content: "▾";
+  color: var(--text-muted);
+  transition: transform .15s ease;
+}
+.section-collapse[open] .section-collapse__summary::after{
+  transform: rotate(180deg);
+}
+
+/* .neighborhood-row{
+  display: flex;
+  justify-content: flex-end;
+} */
+
+/* ================ PROFILE UI ====================== */
+
+/* =========================
+   Liked Boroughs
+   ========================= */
+
+/* list */
+.liked-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+
+.liked-item{
+  display:flex;
+  align-items:center;
+  justify-content: flex-end;
+  gap:43px;
+  padding:8px 0;
+  border-top:1px dashed var(--border);
+}
+.liked-item:first-child{ border-top:none; }
+
+/* remove the left padding that causes weird alignment */
+.liked-name{
+  font-weight:700;
+  font-size:15px;
+  padding-left:0;    
+  margin:0;
+}
+
+.borough-card {
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: none !important;
+}
+
+
+/* =========================
+   Comments
+   ========================= */
+
+.comment-details { margin-top: 12px; }
+
+
+.comment-summary{
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* remove default marker */
+.comment-summary::-webkit-details-marker{ display:none; }
+.comment-summary::marker{ content:""; }
+
+/* keep h2 from messing layout */
+.comment-title{
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+
+.comment-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/* arrow inside the pill */
+.comment-pill::before{
+  content: "▶";
+  font-size: 12px;
+  transition: transform .15s ease;
+}
+
+.comment-details[open] .comment-pill::before{
+  transform: rotate(90deg);
+}
+
+/* body spacing */
+.comment-card{
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  /* box-shadow: var(--shadow-soft); */
+}
+
+.comment-header {
+  font-size: 14px;
+}
+
+.comment-meta {
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+
+.comment-text {
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.comment-item {
+  padding: 10px 15px;
+  margin-bottom: 12px;
+
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============ Liked button ========== */
+#like-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+}
+
+#like-status {
+  text-align: center;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+
+/* ==================== Comment  Borough Detail =========== */
+
+#add-comment-form-container.section-card{
+  background: var(--surface-soft);        
+  border: 1px solid var(--border-subtle, rgba(0,0,0,.06));
+  box-shadow: none;                       
+}
+
+
+#add-comment-form-container .input{
+  background: #fafbff;        
+  border-color: rgba(0,0,0,.08);
+}
+
+
+#add-comment-form-container .input:focus{
+  border-color: var(--primary);
+  box-shadow: none;
+}
+#comment-list .list-group-item{
+  background: transparent;    /* removes card-on-card effect */
+  border: none;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+#comment-list .list-group-item:last-child{
+  border-bottom: none;
+}
+
+.comment-actual {
+  flex-grow: 1; 
+  margin-right: 15px;
+}
+
+.delete-button {
+  flex-shrink: 0; 
+  padding: 5px 10px; 
+  margin-top: 20px; 
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+}
+
