@@ -2,7 +2,7 @@ import axios from "axios";
 import fs from "fs";
 import { parse } from "json2csv";
 
-const APP_TOKEN = "APP_TOKEN"; // NOTE: .env not implemented yet, so the working token is not being saved.
+const APP_TOKEN = "pssknIRVuZsuvg1c21QYX5GG2";
 const URL = "https://data.cityofnewyork.us/api/v3/views/bkwf-xfky/query.json";
 
 const pageSize = 50000;

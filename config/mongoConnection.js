@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
+    await mongoose.connect( process.env.MONGODB_URI ||
       "mongodb+srv://harshalkhandave19_db_user:NdlOn3UpsnzGKKpW@cluster0.izltwpm.mongodb.net/DeepSip",
       {}
     );

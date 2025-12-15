@@ -14,6 +14,42 @@
 
 ---
 
+
+## Running the Application
+
+```bash
+npm install
+npm start
+```
+The application uses a pre-populated MongoDB Atlas database with sufficient test data already seeded to support core features.
+
+The server will start on:
+
+```text
+http://localhost:3000
+
+```
+---
+
+## Test Accounts
+
+The following test accounts are provided for grading and testing purposes:
+
+**Regular User Account**
+- Email: `test123@gmail.com`
+- Password: `Password123!`
+
+**Admin Account**
+- Email: `admin123@gmail.com`
+- Password: `Password123!`
+
+These accounts are pre-seeded in the database and can be used to test user features and admin moderation functionality.
+For security reasons, administrator accounts are not publicly creatable and can only be provisioned via database seeding.
+
+
+---
+
+
 ## Project Structure
 
 ```
@@ -213,36 +249,39 @@ Requires authentication. Toggles the like/unlike status for the selected borough
 ---
 
 
-## Running the Application
+## Seeding Approach Overview
 
-```bash
-npm install
-npm start
-```
-The application uses a pre-populated MongoDB Atlas database with sufficient test data already seeded to support core features.
+### Data Source
+- The raw dataset was originally fetched from **NYC Open Data** using an API call.
+- The script used to retrieve the CSV is stored in the `archive` folder:
+  - `fetchWaterSamplesAPI.js`
 
-The server will start on:
+### Initial Validation Challenge
+- The original dataset contained approximately **160,000 rows**.
+- Running full validation on every row using validator functions made the seeding process extremely slow (several hours).
 
-```text
-http://localhost:3000
+### Optimization Strategy
+- A **one-time full validation** was performed on the entire dataset.
+- Only validated and cleaned records were inserted into the database.
+- After validation, the sanitized data was **exported from the database into a CSV file**.
 
-```
----
+### Current Seeding Process
+- The file `seedData/drinkingWaterSamples.csv` contains data that has **already passed all validation rules**.
+- During seeding, this CSV is imported directly into the database **without re-running expensive validations**.
 
-## Test Accounts
+### Benefits
+- Significantly faster seeding
+- Data integrity is preserved
+- Consistent and reliable dataset across environments
 
-The following test accounts are provided for grading and testing purposes:
+### Archived Scripts
+The original scripts used during the validation and export process are preserved in the `archive` folder for reference:
+- `oldWaterSampleSeed.js`
+- `waterSampleCSVExport.js`
 
-**Regular User Account**
-- Email: `test123@gmail.com`
-- Password: `Password123!`
+> **Note:** When using the **provided MongoDB server/connection string**, the database is **already seeded**.  
+> No additional seeding is required unless you choose to use your own MongoDB Atlas database.
 
-**Admin Account**
-- Email: `admin123@gmail.com`
-- Password: `Password123!`
-
-These accounts are pre-seeded in the database and can be used to test user features and admin moderation functionality.
-For security reasons, administrator accounts are not publicly creatable and can only be provisioned via database seeding.
 
 ---
 
