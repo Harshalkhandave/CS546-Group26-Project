@@ -722,7 +722,16 @@
   $("#compareBorough").on("change", loadTrend);
   $("#compareToggle").on("change", loadTrend);
 
-  $(".metricCheck").on("change", loadTrend);
+  $(".metricCheck").on("change", function () {
+  if (!this.checked) {
+    if ($(".metricCheck:checked").length === 0) {
+      $(this).prop("checked", true);
+      return;
+    }
+  }
+
+  loadTrend();
+});
   $("#trendMonth").on("change", loadTrend);
 
 
