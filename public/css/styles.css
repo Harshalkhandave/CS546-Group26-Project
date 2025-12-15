@@ -2273,11 +2273,16 @@ body.theme-dark .btn-success:disabled {
   display: block;
   text-align: right;
   font-size: 13px;
+  width: 100%;
   color: var(--text-muted);
+  margin-top: 4px;
 }
 
+.comment-text::before { content: "“"; }
+.comment-text::after  { content: "”"; }
 
 .comment-text {
+  display: block;
   margin: 0 0 6px;
   font-size: 15px;
   line-height: 1.45;
@@ -2286,7 +2291,8 @@ body.theme-dark .btn-success:disabled {
 .comment-item {
   padding: 10px 15px;
   margin-bottom: 12px;
-
+  flex-direction: column;
+  align-items: stretch;
   background: var(--surface-soft);
   border: 1px solid var(--border);
   border-radius: 12px;
