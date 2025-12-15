@@ -35,50 +35,71 @@
 
     {{!--Add "Liked Boroughs" --}}
     <div class="profile-section">
-      <h2>Liked Boroughs</h2>
+      <h2>Community</h2>
+      <div class="comment-header">
+        
 
-      {{#if likedBoroughs}}
-      <ul class="list-group">
-        {{#each likedBoroughs}}
-        <li class="list-group-item"
-          style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--border);">
-          <span style="font-weight: 600;">{{this.name}}</span>
-          <a href="/boroughs/{{this._id}}" class="btn btn-primary" style="padding: 5px 10px;">View Details</a>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-      <p class="text-muted">You have not liked any boroughs yet.</p>
-      {{/if}}
-    </div>
+        <details class="comment-details">
+          <summary class="comment-summary">
+            <h3 class="comment-title">Liked Boroughs</h3>
+            <span class="comment-pill">Display</span>
+          </summary>
 
-    {{!-- Comments history with borough link --}}
-    <div class="profile-section">
-      <h2>Your Comments</h2>
-
-      {{#if userComments}}
-      <ul class="list-group">
-        {{#each userComments}}
-        <li class="list-group-item" style="padding: 10px 15px; border-bottom: 1px solid var(--border);">
-          <p style="margin: 0 0 5px 0;">"{{this.comment}}"</p>
-          <small class="text-muted">
-            on
-            {{#if this.borough}}
-            <a href="/boroughs/{{this.borough._id}}">
-              <strong>{{this.borough.name}}</strong>
-            </a>
+          <div class="borough-card">
+            {{#if likedBoroughs}}
+            <ul class="liked-list">
+              {{#each likedBoroughs}}
+              <li class="liked-item">
+                <span class="liked-name">{{this.name}}</span>
+                <a href="/boroughs/{{this._id}}" class="btn btn-primary liked-btn">
+                  View Details
+                </a>
+              </li>
+              {{/each}}
+            </ul>
             {{else}}
-            [Deleted Borough]
+            <p class="text-muted">You have not liked any boroughs yet.</p>
             {{/if}}
-            — {{this.commentDate}}
-          </small>
-        </li>
-        {{/each}}
-      </ul>
-      {{else}}
-      <p class="text-muted">You have not posted any comments yet.</p>
-      {{/if}}
+          </div>
+        </details>
+
+      </div>
+
+
+
+
+      {{!-- Comments history with borough link --}}
+      <div class="comment-header">
+        <details class="comment-details">
+          <summary class="comment-summary">
+            <h3 class="comment-title">Your Comments</h3>
+            <span class="comment-pill">Display</span>
+          </summary>
+
+          <div class="comment-card">
+            {{#if userComments}}
+            <ul class="comment-list">
+              {{#each userComments}}
+              <li class="comment-item">
+                <p class="comment-text">"{{this.comment}}"</p>
+                <small class="comment-meta">
+                  on
+                  {{#if this.borough}}
+                  <a href="/boroughs/{{this.borough._id}}"><strong>{{this.borough.name}}</strong></a>
+                  {{else}}[Deleted Borough]{{/if}}
+                  — {{this.commentDate}}
+                </small>
+              </li>
+              {{/each}}
+            </ul>
+            {{else}}
+            <p class="text-muted">You have not posted any comments yet.</p>
+            {{/if}}
+          </div>
+        </details>
+      </div>
     </div>
+
 
     <div class="profile-actions">
       <a href="/users/edit-profile" class="btn btn-primary">Edit Profile</a>

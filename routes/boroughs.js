@@ -85,9 +85,9 @@ router.get('/:id', async (req, res) => {
         // Health tips (simple rules, based on averages)
         const GUIDELINES = {
             chlorine: 4.0,
-            turbidity: 0.0,
-            coliform: 0.0,
-            ecoli: 0.0,
+            turbidity: 1,
+            coliform: 2,
+            ecoli: 0.01,
             fluoride: 2.0
         };
 
