@@ -1,18 +1,22 @@
 import { Router } from 'express';
 const router = Router();
-import voteData from '../data/votes.js'; 
+
+import voteData from '../data/votes.js';
+import { getCurrentWeekStart } from '../helper/helper.js';
 
 const requireLogin = (req, res, next) => {
   if (!req.session.user) return res.redirect('/users/login');
   next();
 };
 
+// POST /votes
 router.post('/', requireLogin, async (req, res) => {
   const { boroughId } = req.body;
   const userId = req.session.user.id;
+  const weekStart = getCurrentWeekStart();
 
   try {
-    await voteData.addVote(userId, boroughId);
+    await voteData.addVote(userId, boroughId, weekStart);
 
     req.session.toast = {
       type: 'message',
@@ -21,45 +25,42 @@ router.post('/', requireLogin, async (req, res) => {
   } catch (e) {
     req.session.toast = {
       type: 'error',
-      message: e.toString()
+      message: e.message || e.toString()
     };
   }
-  
-  // stay on Best Borough page after login
+
   return res.redirect('/votes/best');
 });
 
-
-// GET /votes/best 
+// GET /votes/best
 router.get('/best', async (req, res) => {
+  const weekStartObj = getCurrentWeekStart();
+  const weekStartDisplay = weekStartObj.toISOString().slice(0, 10); // YYYY-MM-DD
+
   try {
-    // Toast from session (for this page only)
     let toast = null;
     if (req.session.toast) {
       toast = req.session.toast;
       delete req.session.toast;
     }
 
-    const bestBorough = await voteData.getBestBorough();
+    const bestBorough = await voteData.getBestBorough(weekStartObj);
     const allBoroughs = await voteData.getAllBoroughs();
-    const weekStart = new Date().toDateString();
-    
+
     let userVoteBoroughId = null;
     let userHasVoted = false;
     let votingBoroughs = allBoroughs;
 
     if (req.session.user) {
-      // Find which borough THIS user voted for this week
-      userVoteBoroughId = await voteData.getUserVoteForWeek(req.session.user.id);
-      
+      userVoteBoroughId = await voteData.getUserVoteForWeek(
+        req.session.user.id,
+        weekStartObj
+      );
+
       if (userVoteBoroughId) {
         userHasVoted = true;
-
-        /* Build the borough list shown in "Cast Your Vote"
-           If the user has voted -> show ONLY their borough
-           If not -> show all boroughs */
         votingBoroughs = allBoroughs.filter(
-          b => b._id.toString() === userVoteBoroughId
+          b => b._id.toString() === userVoteBoroughId.toString()
         );
       }
     }
@@ -68,7 +69,7 @@ router.get('/best', async (req, res) => {
       title: 'Vote for Best Borough',
       bestBorough,
       boroughs: votingBoroughs,
-      weekStart,
+      weekStart: weekStartDisplay,
       isAuthenticated: !!req.session.user,
       user: req.session.user || null,
       userHasVoted,
@@ -77,8 +78,11 @@ router.get('/best', async (req, res) => {
     });
 
   } catch (e) {
-    console.error("Vote page error:", e);
-    res.status(500).render('error', { error: "Could not load voting page." });
+    console.error('Vote page error:', e);
+    res.status(500).render('error', {
+      title: 'Error',
+      error: 'Could not load voting page.'
+    });
   }
 });
 
